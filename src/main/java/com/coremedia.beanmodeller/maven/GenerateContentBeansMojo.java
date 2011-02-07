@@ -18,7 +18,7 @@ import java.util.Set;
  * Date: 07.02.11
  * Time: 11:23
  *
- * @goal
+ * @goal generate-contentbeans
  */
 public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
@@ -38,6 +38,11 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+
+    if (targetPackage == null) {
+      throw new MojoFailureException("You must provide a package name for the content beans");
+    }
+
     Set<ContentBeanInformation> roots = analyzeContentBeans();
 
     createContentBeanImplementations(roots);
@@ -75,5 +80,21 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
       throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is not writeable");
     }
     return result;
+  }
+
+  public String getTargetPackage() {
+    return targetPackage;
+  }
+
+  public void setTargetPackage(String targetPackage) {
+    this.targetPackage = targetPackage;
+  }
+
+  public String getTargetPath() {
+    return targetPath;
+  }
+
+  public void setTargetPath(String targetPath) {
+    this.targetPath = targetPath;
   }
 }

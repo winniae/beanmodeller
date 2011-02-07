@@ -45,4 +45,12 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     }
     return roots;
   }
+
+  public String getBeanPackage() {
+    return beanPackage;
+  }
+
+  public void setBeanPackage(String beanPackage) {
+    this.beanPackage = beanPackage;
+  }
 }

@@ -1,18 +1,17 @@
 package com.coremedia.beanmodeller.tests.maven;
 
-import com.coremedia.beanmodeller.maven.GenerateDoctypesMojo;
+import com.coremedia.beanmodeller.maven.GenerateContentBeansMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
 
 /**
- * Created by IntelliJ IDEA.
- * User: aratas
- * Date: 26.01.2011
- * Time: 11:35:41
- * To change this template use File | Settings | File Templates.
+ * Telekom .COM Relaunch 2011
+ * User: marcus
+ * Date: 07.02.11
+ * Time: 15:22
  */
-public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
+public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
   /**
    * {@inheritDoc}
    */
@@ -37,9 +36,11 @@ public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
     assertNotNull(pom);
     assertTrue(pom.exists());
 
-    GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
+    GenerateContentBeansMojo generateDoctypesMojo = (GenerateContentBeansMojo) lookupMojo("generate-contentbeans", pom);
+    generateDoctypesMojo.setBeanPackage("com.coremedia.beanmodeller.testcontentbeans.testmodel");
+    generateDoctypesMojo.setTargetPackage("com.coremedia.test");
+    generateDoctypesMojo.setTargetPath("target/test");
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
   }
-
 }
