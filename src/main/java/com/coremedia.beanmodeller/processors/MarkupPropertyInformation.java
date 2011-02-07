@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
  */
 public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
+  String grammar = "coremedia-richtext-1.0";
+
   public MarkupPropertyInformation(Method method) {
     super(method);
   }
@@ -21,7 +23,11 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
     return CapPropertyDescriptorType.MARKUP;
   }
 
+  public void setGrammar(String grammar) {
+    this.grammar = grammar;
+  }
+
   public String getGrammar() {
-    return "coremedia-richtext-1.0";
+    return grammar;
   }
 }

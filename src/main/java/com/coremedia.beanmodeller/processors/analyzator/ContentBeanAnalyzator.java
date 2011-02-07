@@ -59,6 +59,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
    * TODO make it configurable from outside.
    */
   private int propertyDefaultStringLength = 32;
+  private String propertyDefaultMarkupGrammar = "coremedia-richtext-1.0";
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
 
@@ -361,7 +362,21 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       return new DatePropertyInformation(method);
     }
     else if (returnType.equals(Markup.class)) {
-      return new MarkupPropertyInformation(method);
+      // method annotation
+      final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
+      String grammarName;
+
+      if (methodAnnotation == null || methodAnnotation.propertyXmlGrammar() == ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR) {
+        grammarName = getPropertyDefaultMarkupGrammar();
+      }
+      else {
+        grammarName = methodAnnotation.propertyXmlGrammar();
+      }
+
+      final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
+      markupInformation.setGrammar(grammarName);
+
+      return markupInformation;
     }
     else if (returnType.equals(String.class)) {
       // method annotation
@@ -481,5 +496,13 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
 
   public void setPropertyDefaultStringLength(int propertyDefaultStringLength) {
     this.propertyDefaultStringLength = propertyDefaultStringLength;
+  }
+
+  public String getPropertyDefaultMarkupGrammar() {
+    return propertyDefaultMarkupGrammar;
+  }
+
+  public void setPropertyDefaultMarkupGrammar(String propertyDefaultMarkupGrammar) {
+    this.propertyDefaultMarkupGrammar = propertyDefaultMarkupGrammar;
   }
 }
