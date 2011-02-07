@@ -38,6 +38,7 @@ import java.util.Set;
 public class ContentBeanAnalyzator extends MavenProcessor implements ContentBeanAnalyzer {
   private List<Class> beansToAnalyze = new LinkedList<Class>();
   private Set<ContentBeanInformation> rootBeanInformation = null;
+  private ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
 
   public static final int MAX_CONTENT_TYPE_LENGTH = 16;
   public static final int MAX_PROPERTY_LENGTH = 32;
@@ -68,7 +69,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       getLog().debug("Searching for content beans in package " + packageName);
     }
     ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
-    Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses(packageName);
+    Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses(packageName, getLog());
     if (getLog().isInfoEnabled()) {
       getLog().info("Found " + candidateCBs.size() + " beans in package " + packageName);
     }
@@ -129,6 +130,20 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       throw potentialException;
     }
     getLog().info("Content bean analyzation successfully performed");
+  }
+
+  /**
+   * <p>Finds all candidate content beans that reside in a "packageName". Call this method
+   * before calling analyzeContentBeanInformation() method, if you want Analyzer to search annotated
+   * candidate content bean classes automatically. </p>
+   * @param packageName package name to search for candidate content bean classes, e.g., "com.coremedia"
+   */
+  public void findContentBeanClassesInPackage(String packageName) {
+    ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
+    Set<Class> classes = scanner.findCandidateContentBeanClasses(packageName, this.getLog());
+    for (Class cls: classes) {
+      this.addContentBean(cls);
+    }
   }
 
   private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, Map<Class, AnalyzatorContentBeanInformation> allFoundContentBeanInformation) {

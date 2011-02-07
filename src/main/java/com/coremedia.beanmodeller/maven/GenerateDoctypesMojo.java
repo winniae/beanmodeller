@@ -1,7 +1,18 @@
 package com.coremedia.beanmodeller.maven;
 
+import com.coremedia.beanmodeller.annotations.ContentBean;
+import com.coremedia.schemabeans.DocType;
+import com.coremedia.schemabeans.DocumentTypeModel;
+import com.coremedia.schemabeans.ObjectFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -47,7 +58,23 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   private Integer propertyDefaultLinkListMax;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
+    // Create Doctype xml
+    ObjectFactory of = new ObjectFactory();
+    DocumentTypeModel documentTypeModel = of.createDocumentTypeModel();
 
+    DocType docType = of.createDocType();
+    docType.setName("CMObject");
+
+    documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().add(docType);
+
+    try {
+      JAXBContext jc = JAXBContext.newInstance("com.coremedia.schemabeans");
+      Marshaller m = jc.createMarshaller();
+      m.marshal(documentTypeModel, System.out);
+    }
+    catch (JAXBException e) {
+      e.printStackTrace();
+    }
 
   }
 

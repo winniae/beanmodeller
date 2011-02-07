@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.processors.analyzator;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -21,6 +22,10 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
   /**
    * Create a ClassPathScanningCandidateComponentProvider.
    *
+   * @param useDefaultFilters whether to register the default filters for the
+   *                          {@link org.springframework.stereotype.Component @Component}, {@link org.springframework.stereotype.Repository @Repository},
+   *                          {@link org.springframework.stereotype.Service @Service}, and {@link org.springframework.stereotype.Controller @Controller}
+   *                          stereotype annotations
    * @see #registerDefaultFilters()
    */
   public ClassPathContentBeanScanner() {
@@ -42,7 +47,7 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
    * @param packageName package name where to search for contentbeans
    * @return
    */
-  public Set<Class> findCandidateContentBeanClasses(String packageName) {
+  public Set<Class> findCandidateContentBeanClasses(String packageName, Log log) {
     // contains candidate content bean classes
     Set<Class> candidateBeanClasses = new HashSet<Class>();
 
