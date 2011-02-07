@@ -118,26 +118,42 @@
             <goals>
               <goal>generate</goal>
             </goals>
+            <configuration>
+              <generatePackage>com.coremedia.schemabeans</generatePackage>
+              <extension>true</extension>
+              <includeSchemas>
+                <includeSchema>schema/coremedia-doctypes.xsd</includeSchema>
+              </includeSchemas>
+              <verbose>true</verbose>
+            </configuration>
           </execution>
+          <!-- fails with strange Parser-Error ...
+          <execution>
+            <id>generate-springbeans</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <generatePackage>com.coremedia.springbeans</generatePackage>
+              <extension>true</extension>
+              <includeSchemas>
+                <includeSchema>schema/spring-beans-3.0.xsd</includeSchema>
+              </includeSchemas>
+              <includeBindings>
+                <includeBinding>schema/spring-beans-jaxb-bindings.xjb</includeBinding>
+              </includeBindings>
+              <verbose>true</verbose>
+            </configuration>
+          </execution>-->
         </executions>
-        <configuration>
-          <generatePackage>com.coremedia.schemabeans</generatePackage>
-          <extension>true</extension>
-          <includeSchemas>
-            <!-- Do not use filenames that has "-" in its name! -->
-            <includeSchema>schema/*.xsd</includeSchema>
-            <!--<includeSchema>schema/*.dtd</includeSchema>-->
-          </includeSchemas>
-          <verbose>true</verbose>
-          <!-- uncomment the following line to parse DTD-->
-          <!--<args>-dtd</args>-->
-        </configuration>
-        <dependencies>
+
+        <dependencies><!-- what is ant good for here? Delete?
           <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>1.8.1</version>
-          </dependency>
+          </dependency>-->
           <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
