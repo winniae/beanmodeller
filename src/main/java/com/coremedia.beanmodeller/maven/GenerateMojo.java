@@ -6,9 +6,9 @@ import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * Telekom .COM Relaunch 2011
- * <p> Triggers generation of content beans and DocType XML</p>
+ * <p> Triggers generation of DocType XML</p>
  *
- * @goal generate
+ * @goal generate-doctypes
  */
 public class GenerateMojo extends AbstractMojo {
 
