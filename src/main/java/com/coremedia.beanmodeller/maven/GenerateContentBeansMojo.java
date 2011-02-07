@@ -1,14 +1,10 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -24,14 +20,7 @@ import java.util.Set;
  *
  * @goal
  */
-public class GenerateContentBeansMojo extends AbstractMojo {
-
-  /**
-   * Path for searching abstract content beans.
-   *
-   * @parameter
-   */
-  private String beanPackage;
+public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
   /**
    * The target name of the generated content bean implementations.
@@ -72,28 +61,6 @@ public class GenerateContentBeansMojo extends AbstractMojo {
     catch (IOException e) {
       throw new MojoFailureException("Unable to write content bean code", e);
     }
-  }
-
-  private Set<ContentBeanInformation> analyzeContentBeans() throws MojoFailureException, MojoExecutionException {
-    //create the analyzator
-    ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
-    //set the logging
-    analyzer.setLog(getLog());
-    analyzer.findContentBeans(beanPackage);
-    try {
-      analyzer.analyzeContentBeanInformation();
-    }
-    catch (ContentBeanAnalyzationException e) {
-      throw new MojoFailureException("Unable to analyze the content beans", e);
-    }
-    Set<ContentBeanInformation> roots;
-    try {
-      roots = analyzer.getContentBeanRoots();
-    }
-    catch (ContentBeanAnalyzerException e) {
-      throw new MojoExecutionException("This should have never happened", e);
-    }
-    return roots;
   }
 
   public File getTargetDirectory() throws PluginException {
