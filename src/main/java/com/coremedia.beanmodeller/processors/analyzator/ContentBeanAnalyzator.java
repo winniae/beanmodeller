@@ -63,6 +63,19 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
 
+  public void findContentBeans(String packageName) {
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Searching for content beans in package " + packageName);
+    }
+    ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
+    Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses(packageName);
+    if (getLog().isInfoEnabled()) {
+      getLog().info("Found " + candidateCBs.size() + " beans in package " + packageName);
+    }
+    for (Class contentBean : candidateCBs) {
+      this.addContentBean(contentBean);
+    }
+  }
 
   @Override
   public void addContentBean(Class bean) {
