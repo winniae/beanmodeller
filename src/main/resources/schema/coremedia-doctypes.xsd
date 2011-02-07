@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+     coremedia-doctypes.xsd 1.2 05/08/08
+
+     Copyright (c) 1998-2005 CoreMedia AG, Hamburg. All rights reserved.
+
+     This XML Schema defines the structure of contents describing
+     content types for the CoreMeda Content Application Platform.
+
+-->
+
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified">
+
+  <xs:element name="DocumentTypeModel">
+    <xs:annotation>
+      <xs:documentation>
+
+        The top level element is the contenttypes element which is a container
+        for all the content types and XML grammars stored inside the CAP system.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:sequence>
+	<xs:choice minOccurs="1" maxOccurs="unbounded">
+	  <xs:element ref="XmlGrammar"/>
+      <xs:element ref="XmlSchema"/>
+      <xs:element ref="DocType"/>
+	</xs:choice>
+      </xs:sequence>
+
+      <xs:attribute name="Title" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            The title for this content type definition.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Root" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            The name of the content type, that is used as a root when
+            displaying this content type definition.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Utf8Weight" type="xs:integer" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            The value must be between 100 and 300 and, when divided by 100,
+            defines the ratio between character and byte length for all
+            string properties in the content type definition where the
+            attribute Utf8Length is not explicitly set.
+
+            The default value for the Utf8Weight, if omitted, is 300.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="XmlGrammar">
+    <xs:annotation>
+      <xs:documentation>
+
+        Each XML grammar defines a CAP-internal symbolic name and refers to a DTD
+        by a SystemId and/or an optional PublicId.
+
+        Additionally, the element to be used as the root element for the XML grammar
+        is specified, since XML DTDs provide no mechanism for this.
+        The SystemId should contain a path that is either absolute or relative
+        to $COREM_HOME which specifies the location of the DTD in the CAP server's
+        file system. The SystemId can also be a URL from where the CAP server
+        loads the DTD on startup.
+
+        Grammars are referenced in XmlProperty declarations.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="Name" type="xs:ID" use="required">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    The name of the XML grammar.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Root" type="xs:string" use="required">
+	<xs:annotation>
+	  <xs:documentation>
+
+  	    The name of the element to be used as the root element.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="SystemId" type="xs:string" use="required">
+	<xs:annotation>
+	  <xs:documentation>
+
+            The system id should contain a path that is either absolute or relative
+            to $COREM_HOME which specifies the location of the XML grammar in the
+            CAP server's file system. It can also be a URL from where the CAP server
+            loads the XML grammar on startup.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="PublicId" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            The public id of the XML grammar.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Parent" type="xs:IDREF" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            It is possible to declare inheritance for XML grammars. If
+  	    this attribute is set to the name of another XML grammar, the XML
+  	    grammar may be used when overriding a property with the other XML
+	    grammar.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="XmlSchema">
+    <xs:annotation>
+      <xs:documentation>
+
+     Each XML schema defines a CAP-internal symbolic name and refers to one or more XML schemata.
+
+     Additionally, the name of the element to be used as the root element for the
+     XML schema is specified.
+     The schemaLocation should contain a path that is relative
+     to $COREM_HOME which specifies the location of the XML schema in the CAP
+     server's file system. The clients will access the schemata from the CAP server.
+
+     Schemas are referenced in XmlProperty declarations.
+     An XmlSchema Element has the following Attributes:
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="Name" type="xs:ID" use="required">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    The name of the XML schema.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="SchemaLocation" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+           SchemaLocation: reference(s) to XML Schemata separated by white spaces. The namespace is taken
+	   from the xsd file.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Language" type="xs:string" use="required">
+	<xs:annotation>
+	  <xs:documentation>
+
+        e.g. http://www.w3.org/2001/XMLSchema
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Parent" type="xs:IDREF" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            It is possible to declare inheritance for XML grammars. If
+  	    this attribute is set to the name of another XML grammar, the XML
+  	    grammar may be used when overriding a property with the other XML
+	    grammar.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DocType">
+    <xs:annotation>
+      <xs:documentation>
+
+        Each content type has a specification of all properties that the corresponding
+        contents have. The properties, presented as fields, vary, e.g. simple strings
+        (such as for the author), XML for the textual content or binary data for
+        graphics. This is determined in the content type with appropriate property
+        declarations.
+
+        All property declarations have a name by which the property can be referenced
+        in a content.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="propertydescriptors"/>
+      </xs:choice>
+
+      <xs:attribute name="Name" type="xs:ID" use="required">
+	<xs:annotation>
+	  <xs:documentation>
+
+	     The name of the content type.
+
+	     It can have a maximum length of 18 characters (IBM DB2 users
+  	     are limited to only 15 characters) and must not contain umlauts
+	     or other special characters database queries are case-sensitive.
+
+	     It must not be one of: BlobCodeTable, BlobData, Blobs, ChangeLog,
+	     CmGroups, CmLicenses, CmRules, CmUserGroup, CmUsers, FolderIndex,
+	     LinkLists, MaxIds, QueryIdTable, ReplicatorIdTable, Resources,
+	     SgmlData, SgmlGrammar, SgmlText, System, Texts, TrashIdTable, * or +.
+
+	     A name's last character must not be an underscore, since these
+             content type names are reserved from the CAP server.
+
+	     Furthermore, names corresponding to the name scheme
+	         [doctype][digit][digit]"i"[char]*,
+	     where [doctype] stands for an already defined document type name,
+	     [digit] for a number and "i[char]*" for a word, which begins with
+	     the letter "i" are not allowed.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Parent" type="xs:IDREF" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            There is an inheritance concept for content types. If this
+            attribute is set to the name of another content type, the
+            new content type inherits all property declarations of its
+            parent content type.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Abstract" type="xs:boolean" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    A boolean flag, which, when set to "true", determines that
+	    a content type may not have any concrete content instances.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Comment" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    A comment for this content type.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Index" type="xs:boolean" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    A boolean flag, which, when set to "true", determines that
+	    a database index should be created for each date, int and
+            string property during the content type table creation.
+
+	    The default is "false".
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="IndexName" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    The name of the indices that is used during the content type
+            table creation.
+
+            By default, this is "i_" plus the content type's name.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="PkName" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    The name of the primary key constraint that is used during
+            the content type table creation.
+
+            By default, this is "pk_" plus the content type's name.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="ResourceFkName" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    The name of the foreign key constraint between the content type
+            table and the resource table, that is used during the content
+            type table creation.
+
+            By default, this is "fk_" plus the content type's name.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Tablespace" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+	    The name of the tablespace in which the content type table
+            should be created.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
+	<xs:annotation>
+	  <xs:documentation>
+
+            The name of the tablespace in which the indices for the
+            content type table should be created.
+
+            The default is the document type table's tablespace.
+
+	  </xs:documentation>
+	</xs:annotation>
+      </xs:attribute>
+
+      <xs:anyAttribute namespace="##other" processContents="lax">
+        <xs:annotation>
+          <xs:documentation>
+
+            A document type definition may be extended by custom attributes from other namespaces,
+            which can be accessed and evaluated on the client-side.
+
+          </xs:documentation>
+        </xs:annotation>
+      </xs:anyAttribute>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:group name="propertydescriptors">
+    <xs:choice>
+      <xs:element ref="BlobProperty"/>
+      <xs:element ref="DateProperty"/>
+      <xs:element ref="IntProperty"/>
+      <xs:element ref="LinkListProperty"/>
+      <xs:element ref="StringProperty"/>
+      <xs:element ref="XmlProperty"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:complexType name="propertydescriptor">
+    <xs:attribute name="Name" type="xs:string" use="required">
+      <xs:annotation>
+	<xs:documentation>
+
+          The name of the property descriptor.
+
+          It can have a maximum length of 18 characters (DateProperty names
+          are limited to only 15 characters) and must not contain umlauts or
+          other special characters for database queries are case-sensitive.
+
+          Two properties in a document type differing only in upper or lower
+          case are not allowed. Furthermore, a name's last character must
+          not be an underscore, since these property descriptor names are
+          reserved from the CAP server.
+
+	</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+
+    <xs:attribute name="Override" type="xs:boolean" use="optional">
+      <xs:annotation>
+	<xs:documentation>
+
+          A boolean flag, which, when set to "true", determines that
+	  the property declaration overrides a property declaration of
+          a parent content type.
+
+          When overriding, the type of the property declaration must
+          match and it must specialize the overridden property
+          declaration.
+
+	</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+
+    <xs:attribute name="Comment" type="xs:string" use="optional">
+      <xs:annotation>
+	<xs:documentation>
+
+          A comment for this property descriptor.
+
+	</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+
+    <xs:anyAttribute namespace="##other" processContents="lax">
+      <xs:annotation>
+        <xs:documentation>
+
+          A property descriptor may be extended by custom attributes from other namespaces,
+          which can be accessed and evaluated on the client-side.
+
+        </xs:documentation>
+      </xs:annotation>
+    </xs:anyAttribute>
+  </xs:complexType>
+
+
+  <xs:element name="BlobProperty">
+    <xs:annotation>
+      <xs:documentation>
+
+        BLOB properties store arbitrary binary data with a MIME type used
+        to describe the content of the data.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:complexContent>
+	<xs:extension base="propertydescriptor">
+
+	  <xs:attribute name="MimeType" type="xs:string" use="required">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                BLOBs must be typed, thus the attribute must contain a valid
+                MIME content type. The MimeType must be a valid production of
+                Content-Type (see IETF RFC 1041 and 2045).
+
+                Types and subtypes may be undefined, i.e. "*/*" is a valid
+                production.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+	</xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="DateProperty">
+    <xs:annotation>
+      <xs:documentation>
+
+        Date properties store dates with a timezone.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:complexContent>
+	<xs:extension base="propertydescriptor">
+
+	  <xs:attribute name="Index" type="xs:boolean" use="optional">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                A boolean flag, which, when set to "true", determines that
+                a database index should be created for the property.
+
+		The default is the value of the document type's Index attribute.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+          <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation>
+
+                The name of the tablespace in which the index for this
+                property should be created, if Index is set to true on this
+                property or on the document type.
+
+                The default is the document type's index tablespace.
+
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+	</xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="IntProperty">
+    <xs:annotation>
+      <xs:documentation>
+
+        Integer properties store numbers.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:complexContent>
+	<xs:extension base="propertydescriptor">
+	  <xs:attribute name="Index" type="xs:boolean" use="optional">
+	    <xs:annotation>
+	      <xs:documentation>
+
+  	        A boolean flag, which, when set to "true", determines that
+	        a database index should be created for the property.
+
+                The default is the value of the document type's Index attribute.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+          <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation>
+
+                The name of the tablespace in which the index for this
+                property should be created, if Index is set to true on this
+                property or on the document type.
+
+                The default is the document type's index tablespace.
+
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+	</xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="LinkListProperty">
+    <xs:annotation>
+      <xs:documentation>
+
+        Link properties store typed references to other content.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:complexContent>
+	<xs:extension base="propertydescriptor">
+
+	  <xs:attribute name="LinkType" type="xs:IDREF" use="required">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                Links must be typed, thus the attribute must contain a valid
+                content type name.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+	  <xs:attribute name="Min" type="xs:integer" use="optional">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                The minimum amount of references for this link property.
+
+		Currently not interpreted by the CAP server.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+	  <xs:attribute name="Max" type="xs:integer" use="optional">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                The maximum amount of references for this link property.
+
+                Currently not interpreted by the CAP server.
+
+              </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+	</xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="StringProperty">
+    <xs:annotation>
+      <xs:documentation>
+
+        String properties store UTF-8 character sequences with a maximum length.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:complexContent>
+	<xs:extension base="propertydescriptor">
+
+	  <xs:attribute name="Length" type="xs:integer" use="required">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                The maximum amount of UTF-8 characters for this string property.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+	  <xs:attribute name="Utf8Length" type="xs:integer" use="optional">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                The maximum amount of bytes that is reserved in the database
+                for the UTF-8 character sequences of this string property.
+
+                The Utf8Length must be between the Length and 300. If not
+	        specified, it defaults to the Length multiplied with the
+                Utf8Weight and divided by 100.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+	  <xs:attribute name="Index" type="xs:boolean" use="optional">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                A boolean flag, which, when set to "true", determines that
+                a database index should be created for the property.
+
+                The default is the value of the document type's Index attribute.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+
+          <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
+            <xs:annotation>
+              <xs:documentation>
+
+                The name of the tablespace in which the index for this
+                property should be created, if Index is set to true on this
+                property or on the document type.
+
+                The default is the document type's index tablespace.
+
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+	</xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="XmlProperty">
+    <xs:annotation>
+      <xs:documentation>
+
+        XML properties store XML content.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:complexContent>
+	<xs:extension base="propertydescriptor">
+
+	  <xs:attribute name="Grammar" type="xs:IDREF" use="required">
+	    <xs:annotation>
+	      <xs:documentation>
+
+                XML content may be validated, thus the attribute must contain a
+                valid SystemId that references the grammar element defining the
+                DTD that the XML content stored in this property will have to
+                adhere to.
+
+                All CAP components use XML parsers that expect a XML 1.0
+                compliant DTD.
+
+	      </xs:documentation>
+	    </xs:annotation>
+	  </xs:attribute>
+	</xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

@@ -1,0 +1,134 @@
+ -----
+ Introduction to the new Beangenerator
+ -----
+ -----
+ -----
+
+What is a Beangenerator?
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+    A Beangenerator generates Beans from a description. Beans - more precisely Contentbeans -
+    are Data Access Objects (DAO) to the CoreMedia Content Management Systems (CMS). The CMS
+    is flexible in the way how content is structured. Therefore, no fixed set of Beans exist
+    but Beans are created in implementation projects. The code, though, is generic and can
+    easily be generated from a description.
+
+How does the classic Beangenerator work?
+
+    The usual way to describe Contentbeans is a CoreMedia XML specification, the
+    <<contentbeans.xml>>. The CMS uses it to lay out its datastructure in a Database.
+    The classic Beangenerator uses the same XML to generate Java Interfaces and a <<Base>>
+    Implementation.
+
+    Developers are advised not to edit the <<Base>> Implementation but instead write business
+    logic in a subclass of <<Base>> usually called <<Impl>>. The classic Beangenerator creates
+    the <<Impl>> classes. The hierarchy then looks like:
+
++------------------------------------------------------------------------+
+AInterface        BInterface
+^                 ^
+ABase <- AImpl <- BBase <- BImpl
++------------------------------------------------------------------------+
+
+What is the NEW Beangenerator?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The new Beangenerator changes two things:
+
+    * Beans are described as Java Annotations on existing classes.
+
+    * The class hierarchy is reversed.
+
+    A developer creates a Java class representing his business object and logic.
+    He defines abstract methods and annotates them with Beangenerator specific Annotations.
+    The Beangenerator creates the Content Access code from the Annotation as a subclass of the
+    abstract class.
+    
++------------------------------------------------------------------------+
+AInterface <- AAbstract <- AGenerated
+^             ^
+BInterface <- BAbstract <- BGenerated
++------------------------------------------------------------------------+
+
+    The generated code in BGenerated will have to also contain the code that is generated in
+    AGenerated. But since the code is generated, this duplication does not cause any additional
+    trouble, effort or problems.
+
+
+How to use it in Code?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    1 Annotate your ContentBean-class with @ContentBean.
+
+    2 Make your ContentBean extend from com.coremedia.objectserver.beans.AbstractContentBean.
+
+What to do about too long class and method names?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Sometimes, you just want to specif long Class and Method names, but the CMS doesn't allow it.
+
+    DocTypes have a limit of 11 (or 15) characters. https://documentation.coremedia.com/servlet/permalink/241542/251888/en/5.2
+    
+    Propertys have a limit of ?? character. (TODO verify)
+
+    With the new Beangenerator, you can annotate your classes and methods to use specific names
+    for the generated DocTypes and Propertys.
+
+    For classes, write:
+
++------------------------------------------------------------------------------------------------------------------------------------+
+@ContentBean(doctypeName = "ShortDoctypeName")
+public abstract class CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCharactersButCorrectlyAnnotated extends CBGContent {
+...
+}
++------------------------------------------------------------------------------------------------------------------------------------+
+
+  For methods, write:
+  
++-------------------------------------------------------------------------------------------+
+  @ContentProperty(propertyName = "ShortProperty")
+  abstract int getMethodWithAnOverlyLongMethodNameOfFiftyCharactersButCorrectlyAnnotated();
++-------------------------------------------------------------------------------------------+
+
+    The new Beangenerator checks the length of both and logs the occurrence as error during
+    the analyzation phase. 
+
+
+Which property types are supported?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Currently, there is support for:
+    
+    * Date
+
+    * Integer
+
+    * String
+    
+    * LinkList
+
+    The type is defined by the return-type of an abstract method in a ContentBean. Primitive Java types are not
+    allowed.
+
+*String Property
+
+    A String property must have a length-attribute, that describes its maximum length.
+    The value is taken from the method Annotation:
+
++----------------------------------+
+  @ContentProperty(stringLength = 20)
+  protected abstract String getDescription();
++----------------------------------+
+
+*LinkList Property
+
+    A LinkList property is identified by its return Type <<List>>. You can specify the type of the
+    List. The type must be another ContentBean.
+
++----------------------------------+
+@ContentBean
+public abstract class CBGAppointment extends CBGContent {
+  abstract List<CBGAttendee> getAttendees();
+}
++----------------------------------+
+
+

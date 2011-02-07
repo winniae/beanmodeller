@@ -1,0 +1,213 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.coremedia.maven</groupId>
+  <artifactId>beangenerator-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>beangenerator-maven-plugin Maven Mojo</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <jaxb.version>2.2.2</jaxb.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!-- Global Dependencies -->
+  <dependencies>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>2.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.coremedia.cms</groupId>
+      <artifactId>cap-objectserver</artifactId>
+      <version>5.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>3.0.5.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>${jaxb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-xjc</artifactId>
+      <version>${jaxb.version}</version>
+    </dependency>
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>org.apache.maven.plugin-testing</groupId>
+      <artifactId>maven-plugin-testing-harness</artifactId>
+      <version>1.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.3</version>
+    </dependency>
+  </dependencies>
+
+  <!-- Build Instructions -->
+  <build>
+    <plugins>
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+          <!--<annotationProcessors>
+            <annotationProcessor>DoctypeAnnotationProcessor</annotationProcessor>
+          </annotationProcessors>-->
+        </configuration>
+        <!--<executions>
+          &lt;!&ndash; Override default execution to compile only annotation processors &ndash;&gt;
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <includes>
+                <include>**/processors/*.java</include>
+              </includes>
+              <proc>none</proc>
+            </configuration>
+          </execution>
+          &lt;!&ndash; compile files and process annotations &ndash;&gt;
+          <execution>
+            <id>compile-rest</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>-->
+      </plugin>
+      <plugin>
+        <groupId>com.sun.tools.xjc.maven2</groupId>
+        <artifactId>maven-jaxb-plugin</artifactId>
+        <version>1.1.1</version>
+        <executions>
+          <execution>
+            <id>generate-doctypes</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <generatePackage>com.coremedia.schemabeans</generatePackage>
+          <extension>true</extension>
+          <includeSchemas>
+            <!-- Do not use filenames that has "-" in its name! -->
+            <includeSchema>schema/*.xsd</includeSchema>
+            <!--<includeSchema>schema/*.dtd</includeSchema>-->
+          </includeSchemas>
+          <verbose>true</verbose>
+          <!-- uncomment the following line to parse DTD-->
+          <!--<args>-dtd</args>-->
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.8.1</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2.3</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <!-- Configure Site to generate UTF-8 output.-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <inputEncoding>UTF-8</inputEncoding>
+          <outputEncoding>UTF-8</outputEncoding>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <!-- Used for some JAXB Code -->
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Maven 2 Repository</name>
+      <url>http://download.java.net/maven/2</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
+    <!-- the first too repositories collect any releases and snapshot from proxies, internal & 3rd party -->
+    <repository>
+      <id>telekom.all.releases</id>
+      <name>Telekom All Relesases Repository</name>
+      <url>https://h1844669.stratoserver.net/nexus/content/groups/all-releases/</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>telekom.all.snapshots</id>
+      <name>Telekom All Snapshots Repository</name>
+      <url>https://h1844669.stratoserver.net/nexus/content/groups/all-snapshots/</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <!-- this repository is redundnant. BUT PLEASE DO NOT DELETE IT!
+         It is useful for coremedia consultants to get source code -->
+    <repository>
+      <id>coremedia.external.releases</id>
+      <name>CoreMedia CMS</name>
+      <url>https://repository.coremedia.com/nexus/content/groups/cms/</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <!-- Used for some JAXB Code -->
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Maven 2 Repository</name>
+      <url>http://download.java.net/maven/2</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+</project>

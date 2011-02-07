@@ -1,0 +1,116 @@
+package com.coremedia.beanmodeller.tests;
+
+import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
+import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
+import com.coremedia.beanmodeller.processors.PropertyInformation;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdAnno;
+import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFailA;
+import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFailD;
+import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFails;
+import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+
+import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyzationErrorContainsMessage;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+/**
+ * A test case to test if the names of objects and methods are correctly checked.
+ */
+public class ContentBeanPropertyNameLengthRestrictionTest {
+  ContentBeanAnalyzator analyzator;
+  private PropertyInformation integerProperty;
+  private Class<CBGLongMthdFails> tooLongClass = CBGLongMthdFails.class;
+  private static final String METHOD_PREFIX = "get";
+
+  @Before
+  public void setup() throws NoSuchMethodException {
+    analyzator = new ContentBeanAnalyzator();
+
+    String longJaneName = "MethodWithAnOverlyLongMethodNameOfFiftyCharacters";
+
+    Method longJameMethod = tooLongClass.getDeclaredMethod(METHOD_PREFIX + longJaneName);
+
+    integerProperty = new IntegerPropertyInformation(longJameMethod);
+    ((IntegerPropertyInformation) integerProperty).setDocumentTypePropertyName("LongJane");
+  }
+
+  @Test
+  public void testTooLongClassName() {
+    analyzator.addContentBean(tooLongClass);
+    boolean exceptionThrown = false;
+    try {
+      analyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      exceptionThrown = true;
+      assertTrue(analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE));
+    }
+    assertTrue("Exception wasn't thrown", exceptionThrown);
+  }
+
+  @Test
+  public void testTooLongButCorrectlyAnnotatedClassName() throws NoSuchMethodException {
+    String longJaneName = "MethodWithAnOverlyLongMethodNameOfFiftyCharactersButCorrectlyAnnotated";
+
+    Method longJameMethod = CBGLongMthdAnno.class.getDeclaredMethod(METHOD_PREFIX + longJaneName);
+
+    IntegerPropertyInformation myIntegerProperty = new IntegerPropertyInformation(longJameMethod);
+    ((IntegerPropertyInformation) myIntegerProperty).setDocumentTypePropertyName("LongJane");
+
+    analyzator.addContentBean(CBGLongMthdAnno.class);
+    try {
+      analyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      fail();
+    }
+
+    ContentBeanInformation information = null;
+    try {
+      information = BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots()).get("CBGLongMthdAnno");
+    }
+    catch (ContentBeanAnalyzerException e) {
+      fail();
+    }
+    assertThat((Iterable<IntegerPropertyInformation>) information.getProperties(), hasItem(myIntegerProperty));
+    //if there was no exception everything was ok and the correct annotation was used
+    //we did not want to test more
+  }
+
+  @Test
+  public void testTooLongClassNameEvenWithAnnotation() {
+    analyzator.addContentBean(CBGLongMthdFailA.class);
+    boolean exceptionThrown = false;
+    try {
+      analyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      exceptionThrown = true;
+      assertTrue(analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE));
+    }
+    assertTrue("Exception wasn't thrown", exceptionThrown);
+  }
+
+  @Test
+  public void testTooLongClassNameEvenWithAnnotationTwice() {
+    analyzator.addContentBean(CBGLongMthdFailD.class);
+    boolean exceptionThrown = false;
+    try {
+      analyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      exceptionThrown = true;
+      assertTrue(analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.DUPLICATE_PROPERTY_NAMES_MESSAGES));
+    }
+    assertTrue("Exception wasn't thrown", exceptionThrown);
+  }
+}
