@@ -23,8 +23,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.coremedia.maven</groupId>
-        <artifactId>beangenerator-maven-plugin</artifactId>
+        <groupId>com.coremedia.ps.maven</groupId>
+        <artifactId>beanmodeller-maven-plugin</artifactId>
         <configuration>
           <!-- Specify the BeanGenerator parameters parameter -->
         </configuration>
