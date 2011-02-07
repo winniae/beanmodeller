@@ -21,7 +21,7 @@ public class ClassPathContentBeanScannerTest extends MavenProcessor {
 
   @Before
   public void setup() {
-    scanner = new ClassPathContentBeanScanner(false);
+    scanner = new ClassPathContentBeanScanner();
   }
 
   @Test

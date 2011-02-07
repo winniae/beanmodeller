@@ -1,6 +1,7 @@
-package com.coremedia.beanmodeller.processors.doctypegenerator;
+package com.coremedia.beanmodeller.processors.analyzator;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -27,8 +28,8 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
    *                          stereotype annotations
    * @see #registerDefaultFilters()
    */
-  public ClassPathContentBeanScanner(boolean useDefaultFilters) {
-    super(useDefaultFilters);
+  public ClassPathContentBeanScanner() {
+    super(false);
   }
 
   /**
@@ -46,7 +47,7 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
    * @param packageName package name where to search for contentbeans
    * @return
    */
-  public Set<Class> findCandidateContentBeanClasses(String packageName) {
+  public Set<Class> findCandidateContentBeanClasses(String packageName, Log log) {
     // contains candidate content bean classes
     Set<Class> candidateBeanClasses = new HashSet<Class>();
 

@@ -37,7 +37,7 @@ public class GenerateMojoTest extends AbstractMojoTestCase {
     assertNotNull(pom);
     assertTrue(pom.exists());
 
-    GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate", pom);
+    GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
 

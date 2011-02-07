@@ -8,6 +8,14 @@ import java.util.Set;
 public interface ContentBeanAnalyzer {
 
   /**
+   * Finds all classes marked as ContentBeans in the specified package.
+   * After calling this you can directly call analyzeContentBeans
+   *
+   * @param packageName the java package where to look for content beans
+   */
+  void findContentBeans(String packageName);
+
+  /**
    * Add a content bean for further analysis. This is used by the annotation finder.
    *
    * @param bean the bean that is a content bean

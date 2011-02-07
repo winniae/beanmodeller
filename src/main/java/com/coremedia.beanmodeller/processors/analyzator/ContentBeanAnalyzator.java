@@ -36,7 +36,7 @@ import java.util.Set;
 public class ContentBeanAnalyzator extends MavenProcessor implements ContentBeanAnalyzer {
   private List<Class> beansToAnalyze = new LinkedList<Class>();
   private Set<ContentBeanInformation> rootBeanInformation = null;
-  private ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner(false);
+  private ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
 
   public static final int MAX_CONTENT_TYPE_LENGTH = 16;
   public static final int MAX_PROPERTY_LENGTH = 32;
@@ -60,6 +60,19 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
 
+  public void findContentBeans(String packageName) {
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Searching for content beans in package " + packageName);
+    }
+    ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
+    Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses(packageName, getLog());
+    if (getLog().isInfoEnabled()) {
+      getLog().info("Found " + candidateCBs.size() + " beans in package " + packageName);
+    }
+    for (Class contentBean : candidateCBs) {
+      this.addContentBean(contentBean);
+    }
+  }
 
   @Override
   public void addContentBean(Class bean) {
@@ -122,7 +135,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
    * @param packageName package name to search for candidate content bean classes, e.g., "com.coremedia"
    */
   public void findContentBeanClassesInPackage(String packageName) {
-    ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner(false);
+    ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
     Set<Class> classes = scanner.findCandidateContentBeanClasses(packageName, this.getLog());
     for (Class cls: classes) {
       this.addContentBean(cls);
