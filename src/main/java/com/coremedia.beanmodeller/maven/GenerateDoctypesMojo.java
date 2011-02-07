@@ -68,7 +68,6 @@ public class GenerateDoctypesMojo extends AbstractMojo {
     try {
       analyzer.analyzeContentBeanInformation();
       Set<ContentBeanInformation> rootBeanInformations = analyzer.getContentBeanRoots();
-      getLog().info("Found " + rootBeanInformations.size() + " content bean roots");
       marshaler = new DocTypeMarshaler(rootBeanInformations);
     }
     catch (ContentBeanAnalyzerException e) {
