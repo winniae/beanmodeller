@@ -7,6 +7,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +19,14 @@ import java.util.Set;
  * Date: 07.02.11
  * Time: 11:23
  *
- * @goal
+ * @goal generate-contentbeans
  */
 public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
   /**
    * The target name of the generated content bean implementations.
    *
-   * @parameter
+   * @parameter required = true, description = "Target directory for the generated code.")
    */
   private String targetPackage;
 
@@ -38,6 +39,11 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+
+    if (targetPackage == null) {
+      throw new MojoFailureException("You must provide a package name for the content beans");
+    }
+
     Set<ContentBeanInformation> roots = analyzeContentBeans();
 
     createContentBeanImplementations(roots);
@@ -61,12 +67,22 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
     catch (IOException e) {
       throw new MojoFailureException("Unable to write content bean code", e);
     }
+    MavenProject project = getProject();
+    //if we are running in a project
+    if (project != null) {
+      project.addCompileSourceRoot(targetPath);
+    }
+    else {
+      getLog().warn("Not running in a maven project - source will most probably not be compiled!");
+    }
   }
 
   public File getTargetDirectory() throws PluginException {
     File result = new File(targetPath);
     if (!result.exists()) {
-      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist");
+      if (!result.mkdirs()) {
+        throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist and cannot be generated");
+      }
     }
     if (!result.isDirectory()) {
       throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is no directory");
@@ -75,5 +91,21 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
       throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is not writeable");
     }
     return result;
+  }
+
+  public String getTargetPackage() {
+    return targetPackage;
+  }
+
+  public void setTargetPackage(String targetPackage) {
+    this.targetPackage = targetPackage;
+  }
+
+  public String getTargetPath() {
+    return targetPath;
+  }
+
+  public void setTargetPath(String targetPath) {
+    this.targetPath = targetPath;
   }
 }
