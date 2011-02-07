@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>Maven</name>
     <src>http://maven.apache.org/images/apache-maven-project.png</src>
@@ -14,8 +15,9 @@
   <body>
     <menu name="Beangenerator">
       <item name="Introduction" href="introduction.html"/>
+      <item name="Build Integration" href="integration.html"/>
     </menu>
-		<menu name="Doku Help">
+    <menu name="Doku Help">
       <item name="How to write Doku in apt Format" href="format.html"/>
     </menu>
   </body>
