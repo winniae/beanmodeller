@@ -14,6 +14,7 @@
   <body>
     <menu name="Beangenerator">
       <item name="Introduction" href="introduction.html"/>
+      <item name="Configuration" href="configuration.html"/>
     </menu>
 		<menu name="Doku Help">
       <item name="How to write Doku in apt Format" href="format.html"/>
