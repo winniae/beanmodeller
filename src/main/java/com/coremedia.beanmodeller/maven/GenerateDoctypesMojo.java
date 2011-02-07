@@ -9,8 +9,10 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -22,16 +24,23 @@ import java.util.Set;
 public class GenerateDoctypesMojo extends AbstractMojo {
 
   /**
-   * Path for generating and reading JAXB property beans.
+   * Target path for doctype xml
    *
-   * @parameter expression="${beans.src.path}" default-value="com.coremedia.schemabeans"
+   * @parameter default-value="${project.build.directory}/doctypes"
    */
-  private Object beanSrcPath;
+  private String docTypeTargetPath;
 
+  /**
+   * Filename for doctype XML file
+   *
+   * @parameter default-value="project-doctypes.xml"
+   */
+   private String docTypeTargetFileName;
+  
   /**
    * Path for searching abstract content beans.
    *
-   * @parameter expression="${abstract.bean.path}" default-value="."
+   * @parameter default-value="."
    */
   private String abstractBeanPath;
 
@@ -75,14 +84,27 @@ public class GenerateDoctypesMojo extends AbstractMojo {
     }
 
     try {
-      marshaler.setOutputStream(new FileOutputStream("doctypes.xml"));
-      marshaler.marshallDoctype();
+      File destDir = new File(this.docTypeTargetPath);
+      File destFile = null;
+      if (destDir.mkdir()) {
+        destFile = new File(destDir, this.docTypeTargetFileName);
+        if (destFile.createNewFile()) {
+          marshaler.setOutputStream(new FileOutputStream(destFile));
+          marshaler.marshallDoctype();
+        } else {
+          getLog().error("Error creating directory!");
+        }
+      }
+
     }
     catch (FileNotFoundException e) {
       getLog().error("File could not be created ", e);
     }
     catch (DocTypeMarshalerException e) {
       getLog().error("Error marshaling doctype ", e);
+    }
+    catch (IOException e) {
+      getLog().error("Error creating file ", e);
     }
 
   }
