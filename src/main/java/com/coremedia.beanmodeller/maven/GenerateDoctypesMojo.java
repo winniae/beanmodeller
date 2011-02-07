@@ -10,7 +10,7 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @goal generate-doctypes
  */
-public class GenerateMojo extends AbstractMojo {
+public class GenerateDoctypesMojo extends AbstractMojo {
 
   /**
    * Path for generating and reading JAXB property beans.

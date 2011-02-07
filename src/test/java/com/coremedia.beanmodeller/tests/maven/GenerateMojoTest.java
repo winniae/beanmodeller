@@ -1,6 +1,6 @@
 package com.coremedia.beanmodeller.tests.maven;
 
-import com.coremedia.beanmodeller.maven.GenerateMojo;
+import com.coremedia.beanmodeller.maven.GenerateDoctypesMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
@@ -37,9 +37,9 @@ public class GenerateMojoTest extends AbstractMojoTestCase {
     assertNotNull(pom);
     assertTrue(pom.exists());
 
-    GenerateMojo generateMojo = (GenerateMojo) lookupMojo("generate", pom);
-    assertNotNull(generateMojo);
-    generateMojo.execute();
+    GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate", pom);
+    assertNotNull(generateDoctypesMojo);
+    generateDoctypesMojo.execute();
 
   }
 
