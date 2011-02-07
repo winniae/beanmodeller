@@ -40,8 +40,41 @@ public class GenerateContentBeansMojo extends AbstractMojo {
    */
   private String targetPackage;
 
+  /**
+   * Where the generated content beans should be saved
+   *
+   * @parameter default-value="${project.build.directory}/generated-sources/beanmodeller"
+   */
+  private String targetPath;
+
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    Set<ContentBeanInformation> roots = analyzeContentBeans();
+
+    createContentBeanImplementations(roots);
+  }
+
+  private void createContentBeanImplementations(Set<ContentBeanInformation> roots) throws MojoFailureException {
+    ContentBeanCodeGenerator generator = new ContentBeanCodeGenerator();
+    generator.setPackageName(targetPackage);
+    JCodeModel codeModel = generator.generateCode(roots);
+    File targetDirectory = null;
+    try {
+      targetDirectory = getTargetDirectory();
+    }
+    catch (PluginException e) {
+      throw new MojoFailureException("There was a problem with the target path", e);
+    }
+    try {
+      CodeWriter output = new FileCodeWriter(targetDirectory);
+      codeModel.build(output);
+    }
+    catch (IOException e) {
+      throw new MojoFailureException("Unable to write content bean code", e);
+    }
+  }
+
+  private Set<ContentBeanInformation> analyzeContentBeans() throws MojoFailureException, MojoExecutionException {
     //create the analyzator
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
     //set the logging
@@ -60,19 +93,20 @@ public class GenerateContentBeansMojo extends AbstractMojo {
     catch (ContentBeanAnalyzerException e) {
       throw new MojoExecutionException("This should have never happened", e);
     }
-    ContentBeanCodeGenerator generator = new ContentBeanCodeGenerator();
-    generator.setPackageName(targetPackage);
-    JCodeModel codeModel = generator.generateCode(roots);
-    File targetDirectory = getTargetDirectory();
-    try {
-      CodeWriter output = new FileCodeWriter(targetDirectory);
-    }
-    catch (IOException e) {
-      throw new MojoFailureException("Unabe to write content bean code", e);
-    }
+    return roots;
   }
 
-  public File getTargetDirectory() {
-    return null;
+  public File getTargetDirectory() throws PluginException {
+    File result = new File(targetPath);
+    if (!result.exists()) {
+      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist");
+    }
+    if (!result.isDirectory()) {
+      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is no directory");
+    }
+    if (!result.canWrite()) {
+      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is not writeable");
+    }
+    return result;
   }
 }
