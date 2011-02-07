@@ -12,6 +12,7 @@ import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.SingleStreamCodeWriter;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Set;
@@ -55,5 +56,10 @@ public class CodeGenerationTest {
     //this is a manual test only
     //if we would like to automate it we would have to check the source or compile and check the classes
     //too complicated for now
+  }
+
+  @Test
+  public void testNothing() {
+    //a test class with not test will fail - therefore a dummy test here
   }
 }
