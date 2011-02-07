@@ -106,6 +106,8 @@ Which property types are supported?
     
     * LinkList
 
+    * Markup
+
     The type is defined by the return-type of an abstract method in a ContentBean. Primitive Java types are not
     allowed.
 
@@ -132,3 +134,11 @@ public abstract class CBGAppointment extends CBGContent {
 +----------------------------------+
 
 
+*Markup Property
+
+    Use the Annotation to define your custom XML-Grammar.
+
++----------------------------------+
+@ContentProperty(stringXmlGrammar = "some-richtext")
+  protected abstract Markup getDescription();
++----------------------------------+
