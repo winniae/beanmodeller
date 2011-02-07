@@ -7,6 +7,7 @@ import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 
 import java.util.Set;
 
@@ -23,6 +24,13 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    * @parameter
    */
   private String beanPackage;
+
+  /**
+   * Path for searching abstract content beans.
+   *
+   * @parameter default-value="${project}
+   */
+  private MavenProject project;
 
   protected Set<ContentBeanInformation> analyzeContentBeans() throws MojoFailureException, MojoExecutionException {
     //create the analyzator
@@ -52,5 +60,13 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
 
   public void setBeanPackage(String beanPackage) {
     this.beanPackage = beanPackage;
+  }
+
+  public MavenProject getProject() {
+    return project;
+  }
+
+  public void setProject(MavenProject project) {
+    this.project = project;
   }
 }

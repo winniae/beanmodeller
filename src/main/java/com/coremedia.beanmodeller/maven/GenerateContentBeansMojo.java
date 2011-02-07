@@ -7,6 +7,7 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   /**
    * The target name of the generated content bean implementations.
    *
-   * @parameter
+   * @parameter required = true, description = "Target directory for the generated code.")
    */
   private String targetPackage;
 
@@ -65,6 +66,14 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
     }
     catch (IOException e) {
       throw new MojoFailureException("Unable to write content bean code", e);
+    }
+    MavenProject project = getProject();
+    //if we are running in a project
+    if (project != null) {
+      project.addCompileSourceRoot(targetPath);
+    }
+    else {
+      getLog().warn("Not running in a maven project - source will most probably not be compiled!");
     }
   }
 
