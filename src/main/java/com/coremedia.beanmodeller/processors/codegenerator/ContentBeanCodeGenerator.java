@@ -29,7 +29,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
 
   private String packageName = "com.telekom.myproject";
   //TODO this is a silly name and needs a better alternative
-  private static final String IMPL_SUFFIX = "BeanAccessorizor";
+  public static final String IMPL_SUFFIX = "BeanAccessorizor";
 
   public JCodeModel generateCode(Set<ContentBeanInformation> rootBeans) {
     getLog().info("Starting code generation for content beans.");
@@ -135,7 +135,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
   }
 
   public String getCanonicalGeneratedClassName(ContentBeanInformation beanInformation) {
-    Class beanClass = beanInformation.getClass();
+    Class beanClass = beanInformation.getContentBean();
     return packageName + "." + beanClass.getSimpleName() + IMPL_SUFFIX;
   }
 }
