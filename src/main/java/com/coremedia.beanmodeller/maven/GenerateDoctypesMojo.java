@@ -83,30 +83,45 @@ public class GenerateDoctypesMojo extends AbstractMojo {
       getLog().error("Error while running generate-doctypes", e);
     }
 
-    try {
-      File destDir = new File(this.docTypeTargetPath);
-      File destFile = null;
-      if (destDir.mkdir()) {
-        destFile = new File(destDir, this.docTypeTargetFileName);
-        if (destFile.createNewFile()) {
-          marshaler.setOutputStream(new FileOutputStream(destFile));
-          marshaler.marshallDoctype();
-        } else {
-          getLog().error("Error creating directory!");
-        }
+    File destFile = getDestinationFile();
+
+    if (destFile != null) {
+      try {
+        marshaler.setOutputStream(new FileOutputStream(destFile));
+        marshaler.marshallDoctype();
+      }
+      catch (FileNotFoundException e) {
+        getLog().error("Error createting File Output stream! ", e);
+      }
+      catch (DocTypeMarshalerException e) {
+        getLog().error("Error marshalling document model! ", e);
       }
 
     }
-    catch (FileNotFoundException e) {
-      getLog().error("File could not be created ", e);
-    }
-    catch (DocTypeMarshalerException e) {
-      getLog().error("Error marshaling doctype ", e);
-    }
-    catch (IOException e) {
-      getLog().error("Error creating file ", e);
+
+  }
+
+  /**
+   * <p> Create File object for doctype xml
+   * @return
+   */
+  private File getDestinationFile() {
+    File destDir = new File(this.docTypeTargetPath);
+    if (!destDir.exists()) {
+      destDir.mkdir();
     }
 
+    File destFile = new File(destDir, this.docTypeTargetFileName);
+    if (!destFile.exists()) {
+      try {
+        destFile.createNewFile();
+      }
+      catch (IOException e) {
+        getLog().error("Error creating file ", e);
+      }
+    }
+
+    return destFile;
   }
 
 
