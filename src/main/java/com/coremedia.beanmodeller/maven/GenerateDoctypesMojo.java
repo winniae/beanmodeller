@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.maven;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaler;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
@@ -10,6 +11,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Set;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -59,9 +61,15 @@ public class GenerateDoctypesMojo extends AbstractMojo {
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
     DocTypeMarshaler marshaler = null;
 
+    analyzer.setLog(getLog());
+    // searches for annotated abstract content beans in <abstractBeanPath> package 
+    analyzer.findContentBeans(abstractBeanPath);
+
     try {
       analyzer.analyzeContentBeanInformation();
-      marshaler = new DocTypeMarshaler(analyzer.getContentBeanRoots());
+      Set<ContentBeanInformation> rootBeanInformations = analyzer.getContentBeanRoots();
+      getLog().info("Found " + rootBeanInformations.size() + " content bean roots");
+      marshaler = new DocTypeMarshaler(rootBeanInformations);
     }
     catch (ContentBeanAnalyzerException e) {
       getLog().error("Error while running generate-doctypes", e);
