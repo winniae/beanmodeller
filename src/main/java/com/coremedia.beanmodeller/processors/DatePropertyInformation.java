@@ -7,8 +7,6 @@ import java.lang.reflect.Method;
 /**
  * Telekom .COM Relaunch 2011
  * User: wmosler
- * Date: Jan 27, 2011
- * Time: 3:01:14 PM
  * <p/>
  * No special handling.
  */

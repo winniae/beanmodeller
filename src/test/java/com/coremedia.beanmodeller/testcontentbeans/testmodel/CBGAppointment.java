@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.testcontentbeans.testmodel;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
+import com.coremedia.xml.Markup;
 
 import java.util.Calendar;
 import java.util.List;
@@ -52,4 +53,11 @@ public abstract class CBGAppointment extends CBGContent {
    * @return List of all Attendees.
    */
   abstract List<CBGAttendee> getAttendees();
+
+  /**
+   * get CoreMedia Markup from Content.
+   *
+   * @return always a Markup object containing some or no text.
+   */
+  abstract Markup getText();
 }

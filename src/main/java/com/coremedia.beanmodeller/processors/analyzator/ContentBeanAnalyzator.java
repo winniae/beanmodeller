@@ -12,9 +12,11 @@ import com.coremedia.beanmodeller.processors.DatePropertyInformation;
 import com.coremedia.beanmodeller.processors.EmptyContentBeanInformation;
 import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.UnknownPropertyInformation;
 import com.coremedia.objectserver.beans.AbstractContentBean;
+import com.coremedia.xml.Markup;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -50,12 +52,14 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     VALID_METHOD_RETURN_TYPES.add(Calendar.class);
     VALID_METHOD_RETURN_TYPES.add(List.class);
     VALID_METHOD_RETURN_TYPES.add(String.class);
+    VALID_METHOD_RETURN_TYPES.add(Markup.class);
   }
 
   /**
    * TODO make it configurable from outside.
    */
   private int propertyDefaultStringLength = 32;
+  private String propertyDefaultMarkupGrammar = "coremedia-richtext-1.0";
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
 
@@ -370,6 +374,23 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     else if (returnType.equals(Calendar.class) || returnType.equals(Date.class)) {
       return new DatePropertyInformation(method);
     }
+    else if (returnType.equals(Markup.class)) {
+      // method annotation
+      final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
+      String grammarName;
+
+      if (methodAnnotation == null || methodAnnotation.propertyXmlGrammar() == ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR) {
+        grammarName = getPropertyDefaultMarkupGrammar();
+      }
+      else {
+        grammarName = methodAnnotation.propertyXmlGrammar();
+      }
+
+      final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
+      markupInformation.setGrammar(grammarName);
+
+      return markupInformation;
+    }
     else if (returnType.equals(String.class)) {
       // method annotation
       final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
@@ -488,5 +509,13 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
 
   public void setPropertyDefaultStringLength(int propertyDefaultStringLength) {
     this.propertyDefaultStringLength = propertyDefaultStringLength;
+  }
+
+  public String getPropertyDefaultMarkupGrammar() {
+    return propertyDefaultMarkupGrammar;
+  }
+
+  public void setPropertyDefaultMarkupGrammar(String propertyDefaultMarkupGrammar) {
+    this.propertyDefaultMarkupGrammar = propertyDefaultMarkupGrammar;
   }
 }
