@@ -39,7 +39,7 @@ public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
     GenerateContentBeansMojo generateDoctypesMojo = (GenerateContentBeansMojo) lookupMojo("generate-contentbeans", pom);
     generateDoctypesMojo.setBeanPackage("com.coremedia.beanmodeller.testcontentbeans.testmodel");
     generateDoctypesMojo.setTargetPackage("com.coremedia.test");
-    generateDoctypesMojo.setTargetPath("target/test");
+    generateDoctypesMojo.setTargetPath("target/test-content-beans");
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
   }

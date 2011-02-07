@@ -71,7 +71,9 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   public File getTargetDirectory() throws PluginException {
     File result = new File(targetPath);
     if (!result.exists()) {
-      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist");
+      if (!result.mkdirs()) {
+        throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist and cannot be generated");
+      }
     }
     if (!result.isDirectory()) {
       throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is no directory");
