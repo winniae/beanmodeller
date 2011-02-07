@@ -69,6 +69,7 @@ public class DocTypeMarshalerTest {
         "        <DateProperty Name=\"BeginDate\"/>\n" +
         "        <DateProperty Name=\"EndDate\"/>\n" +
         "        <IntProperty Name=\"NumberOfAttendees\"/>\n" +
+        "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"Text\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAttendee\" Parent=\"CBGContent\"/>\n" +
         "</DocumentTypeModel>";

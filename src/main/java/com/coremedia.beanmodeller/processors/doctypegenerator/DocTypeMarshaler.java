@@ -2,6 +2,7 @@ package com.coremedia.beanmodeller.processors.doctypegenerator;
 
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.schemabeans.DocType;
@@ -10,6 +11,8 @@ import com.coremedia.schemabeans.LinkListProperty;
 import com.coremedia.schemabeans.ObjectFactory;
 import com.coremedia.schemabeans.Propertydescriptor;
 import com.coremedia.schemabeans.StringProperty;
+import com.coremedia.schemabeans.XmlGrammar;
+import com.coremedia.schemabeans.XmlProperty;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -225,6 +228,16 @@ public class DocTypeMarshaler {
 
       case DATE:
         return objectFactory.createDateProperty();
+
+      case MARKUP:
+        final XmlProperty xmlProperty = objectFactory.createXmlProperty();
+        final String grammarName = ((MarkupPropertyInformation) propertyInformation).getGrammar();
+        final XmlGrammar grammarProperty = objectFactory.createXmlGrammar();
+        grammarProperty.setSystemId(grammarName);
+        grammarProperty.setName(grammarName);
+        grammarProperty.setRoot(grammarName);
+        xmlProperty.setGrammar(grammarProperty);
+        return xmlProperty;
 
       default:
         return null;

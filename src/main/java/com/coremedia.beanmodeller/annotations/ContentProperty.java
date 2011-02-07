@@ -10,8 +10,11 @@ import java.lang.annotation.Target;
 public @interface ContentProperty {
   String PROPERTY_NAME_USE_METHOD_NAME = "[useMethodName]";
   int STRING_PROPERTY_DEFAULT_LENGTH = -1;
+  String MARKUP_PROPERTY_DEFAULT_GRAMMAR = "[useDefaultGrammar]";
 
   String propertyName() default PROPERTY_NAME_USE_METHOD_NAME;
 
   int stringLength() default STRING_PROPERTY_DEFAULT_LENGTH;
+
+  String propertyXmlGrammar() default MARKUP_PROPERTY_DEFAULT_GRAMMAR;
 }
