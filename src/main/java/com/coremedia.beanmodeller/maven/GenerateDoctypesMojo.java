@@ -1,6 +1,11 @@
 package com.coremedia.beanmodeller.maven;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
+import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
+import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaler;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
 import com.coremedia.schemabeans.DocType;
 import com.coremedia.schemabeans.DocumentTypeModel;
 import com.coremedia.schemabeans.ObjectFactory;
@@ -14,6 +19,8 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -55,30 +62,53 @@ public class GenerateDoctypesMojo extends AbstractMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
 
-        // Find annotated beans
+    ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
+    DocTypeMarshaler marshaler = null;
+
+    try {
+      analyzer.analyzeContentBeanInformation();
+      marshaler = new DocTypeMarshaler(analyzer.getContentBeanRoots());
+    }
+    catch (ContentBeanAnalyzerException e) {
+      getLog().error("Error while running generate-doctypes", e);
+    }
+
+    try {
+      marshaler.setOutputStream(new FileOutputStream("doctypes.xml"));
+      marshaler.marshallDoctype();
+    }
+    catch (FileNotFoundException e) {
+      getLog().error("File could not be created ", e);
+    }
+    catch (DocTypeMarshalerException e) {
+      getLog().error("Error marshaling doctype ", e);
+    }
+
+
+/*    // Find annotated beans
 ClassPathScanningCandidateComponentProvider
-    scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(ContentBean.class));
-        for (BeanDefinition bd : scanner.findCandidateComponents("com.coremedia.testcontentbeans")) {
-            System.out.println("Found annotated class marked as contentbean: " + bd.getBeanClassName());
-        }
+scanner = new ClassPathScanningCandidateComponentProvider(false);
+scanner.addIncludeFilter(new AnnotationTypeFilter(ContentBean.class));
+for (BeanDefinition bd : scanner.findCandidateComponents("com.coremedia.testcontentbeans")) {
+    System.out.println("Found annotated class marked as contentbean: " + bd.getBeanClassName());
+}
 
-        // Create Doctype xml
-        ObjectFactory of = new ObjectFactory();
-        DocumentTypeModel documentTypeModel = of.createDocumentTypeModel();
+// Create Doctype xml
+ObjectFactory of = new ObjectFactory();
+DocumentTypeModel documentTypeModel = of.createDocumentTypeModel();
 
-        DocType docType = of.createDocType();
-        docType.setName("CMObject");
+DocType docType = of.createDocType();
+docType.setName("CMObject");
 
-        documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().add(docType);
+documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().add(docType);
 
-        try {
-            JAXBContext jc = JAXBContext.newInstance("com.coremedia.schemabeans");
-            Marshaller m = jc.createMarshaller();
-            m.marshal( documentTypeModel, System.out );
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
+try {
+    JAXBContext jc = JAXBContext.newInstance("com.coremedia.schemabeans");
+    Marshaller m = jc.createMarshaller();
+    m.marshal( documentTypeModel, System.out );
+} catch (JAXBException e) {
+    e.printStackTrace();
+}*/
 
   }
 
