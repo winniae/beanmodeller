@@ -21,7 +21,7 @@ import java.util.Set;
  *
  * @goal generate-doctypes
  */
-public class GenerateDoctypesMojo extends AbstractMojo {
+public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
 
   /**
    * Target path for doctype xml

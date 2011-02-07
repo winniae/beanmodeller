@@ -1,16 +1,13 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,21 +19,14 @@ import java.util.Set;
  * Date: 07.02.11
  * Time: 11:23
  *
- * @goal
+ * @goal generate-contentbeans
  */
-public class GenerateContentBeansMojo extends AbstractMojo {
-
-  /**
-   * Path for searching abstract content beans.
-   *
-   * @parameter
-   */
-  private String beanPackage;
+public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
   /**
    * The target name of the generated content bean implementations.
    *
-   * @parameter
+   * @parameter required = true, description = "Target directory for the generated code.")
    */
   private String targetPackage;
 
@@ -49,6 +39,11 @@ public class GenerateContentBeansMojo extends AbstractMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+
+    if (targetPackage == null) {
+      throw new MojoFailureException("You must provide a package name for the content beans");
+    }
+
     Set<ContentBeanInformation> roots = analyzeContentBeans();
 
     createContentBeanImplementations(roots);
@@ -72,34 +67,22 @@ public class GenerateContentBeansMojo extends AbstractMojo {
     catch (IOException e) {
       throw new MojoFailureException("Unable to write content bean code", e);
     }
-  }
-
-  private Set<ContentBeanInformation> analyzeContentBeans() throws MojoFailureException, MojoExecutionException {
-    //create the analyzator
-    ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
-    //set the logging
-    analyzer.setLog(getLog());
-    analyzer.findContentBeans(beanPackage);
-    try {
-      analyzer.analyzeContentBeanInformation();
+    MavenProject project = getProject();
+    //if we are running in a project
+    if (project != null) {
+      project.addCompileSourceRoot(targetPath);
     }
-    catch (ContentBeanAnalyzationException e) {
-      throw new MojoFailureException("Unable to analyze the content beans", e);
+    else {
+      getLog().warn("Not running in a maven project - source will most probably not be compiled!");
     }
-    Set<ContentBeanInformation> roots;
-    try {
-      roots = analyzer.getContentBeanRoots();
-    }
-    catch (ContentBeanAnalyzerException e) {
-      throw new MojoExecutionException("This should have never happened", e);
-    }
-    return roots;
   }
 
   public File getTargetDirectory() throws PluginException {
     File result = new File(targetPath);
     if (!result.exists()) {
-      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist");
+      if (!result.mkdirs()) {
+        throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist and cannot be generated");
+      }
     }
     if (!result.isDirectory()) {
       throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is no directory");
@@ -108,5 +91,21 @@ public class GenerateContentBeansMojo extends AbstractMojo {
       throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is not writeable");
     }
     return result;
+  }
+
+  public String getTargetPackage() {
+    return targetPackage;
+  }
+
+  public void setTargetPackage(String targetPackage) {
+    this.targetPackage = targetPackage;
+  }
+
+  public String getTargetPath() {
+    return targetPath;
+  }
+
+  public void setTargetPath(String targetPath) {
+    this.targetPath = targetPath;
   }
 }

@@ -12,7 +12,7 @@ import java.io.File;
  * Time: 11:35:41
  * To change this template use File | Settings | File Templates.
  */
-public class GenerateMojoTest extends AbstractMojoTestCase {
+public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
   /**
    * {@inheritDoc}
    */
@@ -40,7 +40,6 @@ public class GenerateMojoTest extends AbstractMojoTestCase {
     GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
-
   }
 
 }
