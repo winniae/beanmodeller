@@ -10,14 +10,18 @@ import java.lang.reflect.Method;
  * <p/>
  * No special handling.
  */
-public class DatePropertyInformation extends AbstractPropertyInformation {
+public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
-  public DatePropertyInformation(Method method) {
+  public MarkupPropertyInformation(Method method) {
     super(method);
   }
 
   @Override
   public final CapPropertyDescriptorType getType() {
-    return CapPropertyDescriptorType.DATE;
+    return CapPropertyDescriptorType.MARKUP;
+  }
+
+  public String getGrammar() {
+    return "coremedia-richtext-1.0";
   }
 }

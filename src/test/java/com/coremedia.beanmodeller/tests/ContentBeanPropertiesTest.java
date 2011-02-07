@@ -6,6 +6,7 @@ import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.DatePropertyInformation;
 import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentBeanInWreckedHierarchy;
@@ -39,6 +40,7 @@ public class ContentBeanPropertiesTest {
   DatePropertyInformation datePropertyInformation_begin;
   DatePropertyInformation datePropertyInformation_end;
   LinkListPropertyInformation linkListPropertyInformation;
+  MarkupPropertyInformation markupPropertyInformation;
   ContentBeanInformation cbgAppointment;
   ContentBeanInformation cbgContent;
   ContentBeanInformation cbgAttendee;
@@ -56,12 +58,14 @@ public class ContentBeanPropertiesTest {
     String endDateName = "EndDate";
     String descriptionName = "Description";
     String attendeesName = "Attendees";
+    String textName = "Text";
 
     Method numberOfAttendeesMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + numberOfAttendeesName);
     Method beginDateMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + beginDateName);
     Method endDateMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + endDateName);
     Method descriptionMethod = CBGContent.class.getDeclaredMethod(METHOD_PREFIX + descriptionName);
     Method attendeesMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + attendeesName);
+    Method textMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + textName);
 
     integerProperty = new IntegerPropertyInformation(numberOfAttendeesMethod);
     integerProperty.setDocumentTypePropertyName(numberOfAttendeesName);
@@ -75,6 +79,9 @@ public class ContentBeanPropertiesTest {
     stringProperty = new StringPropertyInformation(descriptionMethod);
     stringProperty.setDocumentTypePropertyName(descriptionName);
     stringProperty.setLength(20);
+
+    markupPropertyInformation = new MarkupPropertyInformation(textMethod);
+    markupPropertyInformation.setDocumentTypePropertyName(textName);
 
     contentBeanAnalyzator.addContentBean(cbgAppointmentClass);
     contentBeanAnalyzator.addContentBean(CBGAttendee.class);
@@ -158,5 +165,10 @@ public class ContentBeanPropertiesTest {
       assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE));
     }
     assertTrue(exceptionThrown);
+  }
+
+  @Test
+  public void testMarkupProperty() {
+    assertThat((Iterable<MarkupPropertyInformation>) cbgAppointment.getProperties(), hasItem(markupPropertyInformation));
   }
 }

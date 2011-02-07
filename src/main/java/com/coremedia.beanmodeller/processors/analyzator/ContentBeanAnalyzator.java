@@ -12,9 +12,11 @@ import com.coremedia.beanmodeller.processors.DatePropertyInformation;
 import com.coremedia.beanmodeller.processors.EmptyContentBeanInformation;
 import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.UnknownPropertyInformation;
 import com.coremedia.objectserver.beans.AbstractContentBean;
+import com.coremedia.xml.Markup;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -50,6 +52,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     VALID_METHOD_RETURN_TYPES.add(Calendar.class);
     VALID_METHOD_RETURN_TYPES.add(List.class);
     VALID_METHOD_RETURN_TYPES.add(String.class);
+    VALID_METHOD_RETURN_TYPES.add(Markup.class);
   }
 
   /**
@@ -356,6 +359,9 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
     else if (returnType.equals(Calendar.class) || returnType.equals(Date.class)) {
       return new DatePropertyInformation(method);
+    }
+    else if (returnType.equals(Markup.class)) {
+      return new MarkupPropertyInformation(method);
     }
     else if (returnType.equals(String.class)) {
       // method annotation
