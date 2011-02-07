@@ -133,4 +133,9 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       this.packageName = packageName;
     }
   }
+
+  public String getCanonicalGeneratedClassName(ContentBeanInformation beanInformation) {
+    Class beanClass = beanInformation.getClass();
+    return packageName + "." + beanClass.getSimpleName() + IMPL_SUFFIX;
+  }
 }
