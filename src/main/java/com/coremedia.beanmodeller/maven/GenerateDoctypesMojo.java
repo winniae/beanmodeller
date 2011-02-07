@@ -1,8 +1,19 @@
 package com.coremedia.beanmodeller.maven;
 
+import com.coremedia.beanmodeller.annotations.ContentBean;
+import com.coremedia.schemabeans.DocType;
+import com.coremedia.schemabeans.DocumentTypeModel;
+import com.coremedia.schemabeans.ObjectFactory;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -44,7 +55,30 @@ public class GenerateDoctypesMojo extends AbstractMojo {
 
   public void execute() throws MojoExecutionException, MojoFailureException {
 
+        // Find annotated beans
+ClassPathScanningCandidateComponentProvider
+    scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AnnotationTypeFilter(ContentBean.class));
+        for (BeanDefinition bd : scanner.findCandidateComponents("com.coremedia.testcontentbeans")) {
+            System.out.println("Found annotated class marked as contentbean: " + bd.getBeanClassName());
+        }
 
+        // Create Doctype xml
+        ObjectFactory of = new ObjectFactory();
+        DocumentTypeModel documentTypeModel = of.createDocumentTypeModel();
+
+        DocType docType = of.createDocType();
+        docType.setName("CMObject");
+
+        documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().add(docType);
+
+        try {
+            JAXBContext jc = JAXBContext.newInstance("com.coremedia.schemabeans");
+            Marshaller m = jc.createMarshaller();
+            m.marshal( documentTypeModel, System.out );
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
 
   }
 
