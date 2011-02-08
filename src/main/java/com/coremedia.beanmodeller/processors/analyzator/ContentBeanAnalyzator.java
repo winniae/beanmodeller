@@ -391,83 +391,97 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       return new DatePropertyInformation(method);
     }
     else if (returnType.equals(Markup.class)) {
-      // method annotation
-      final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
-      String grammarName;
+      return getMarkupPropertyInformation(method);
 
-      if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
-        grammarName = getPropertyDefaultMarkupGrammar();
-      }
-      else {
-        grammarName = methodAnnotation.propertyXmlGrammar();
-      }
-
-      final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
-      markupInformation.setGrammar(grammarName);
-
-      return markupInformation;
     }
     else if (returnType.equals(String.class)) {
-      // method annotation
-      final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
+      return getStringPropertyInformation(method);
 
-      // ## VALIDATE
-      int stringLength;
-      if (methodAnnotation == null || methodAnnotation.stringLength() == ContentProperty.STRING_PROPERTY_DEFAULT_LENGTH) {
-        // use property default value
-        stringLength = getPropertyDefaultStringLength();
-      }
-      else {
-        // it is defined and not the "marker default", use that value then, of course
-        stringLength = methodAnnotation.stringLength();
-      }
-
-      // raise error if stringLength is negative
-      if (stringLength < 0) {
-        throw new Exception(ContentBeanAnalyzationException.STRING_PROPERTY_TOO_SHORT_MESSAGE + stringLength);
-      }
-
-      StringPropertyInformation stringPropertyInformation = new StringPropertyInformation(method);
-      stringPropertyInformation.setLength(stringLength);
-
-      return stringPropertyInformation;
     }
     else if (returnType.equals(List.class)) {
-      LinkListPropertyInformation linkListPropertyInformation = new LinkListPropertyInformation(method);
-
-      // todo read from annotation
-      linkListPropertyInformation.setMin(propertyDefaultLinkListMin);
-      linkListPropertyInformation.setMax(propertyDefaultLinkListMax);
-
-      // read Linktype from return type of the method
-      Type genericReturnType = method.getGenericReturnType();
-
-      if (genericReturnType instanceof ParameterizedType) {
-        // return Type is parameterized -> an explicit type is given
-        // whoo, quite optimistic cast!?
-        Class returnTypeLinkType = (Class) ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
-
-        // find the ContentBeanInformation that represents this LinkType
-        ContentBeanInformation contentBeanInformationLinkType = allFoundContentBeanInformation.get(returnTypeLinkType);
-
-        // ## validate
-        if (contentBeanInformationLinkType == null) {
-          throw new Exception(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + returnTypeLinkType);
-        }
-
-        linkListPropertyInformation.setLinkType(contentBeanInformationLinkType);
-      }
-      else {
-        // no explicit type for linktype given -> use the default
-        linkListPropertyInformation.setLinkType(propertyDefaultLinkListType);
-      }
-
-      return linkListPropertyInformation;
+      return getLinlListPropertyInformation(method, allFoundContentBeanInformation);
     }
     else {
       // default
       return new UnknownPropertyInformation(method);
     }
+  }
+
+  private AbstractPropertyInformation getLinlListPropertyInformation(Method method, Map<Class, AnalyzatorContentBeanInformation> allFoundContentBeanInformation) throws Exception {
+    LinkListPropertyInformation linkListPropertyInformation = new LinkListPropertyInformation(method);
+
+    // todo read from annotation
+    linkListPropertyInformation.setMin(propertyDefaultLinkListMin);
+    linkListPropertyInformation.setMax(propertyDefaultLinkListMax);
+
+    // read Linktype from return type of the method
+    Type genericReturnType = method.getGenericReturnType();
+
+    if (genericReturnType instanceof ParameterizedType) {
+      // return Type is parameterized -> an explicit type is given
+      // whoo, quite optimistic cast!?
+      Class returnTypeLinkType = (Class) ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
+
+      // find the ContentBeanInformation that represents this LinkType
+      ContentBeanInformation contentBeanInformationLinkType = allFoundContentBeanInformation.get(returnTypeLinkType);
+
+      // ## validate
+      if (contentBeanInformationLinkType == null) {
+        throw new Exception(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + returnTypeLinkType);
+      }
+
+      linkListPropertyInformation.setLinkType(contentBeanInformationLinkType);
+    }
+    else {
+      // no explicit type for linktype given -> use the default
+      linkListPropertyInformation.setLinkType(propertyDefaultLinkListType);
+    }
+
+    return linkListPropertyInformation;
+  }
+
+  private AbstractPropertyInformation getStringPropertyInformation(Method method) throws Exception {
+    // method annotation
+    final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
+
+    // ## VALIDATE
+    int stringLength;
+    if (methodAnnotation == null || methodAnnotation.stringLength() == ContentProperty.STRING_PROPERTY_DEFAULT_LENGTH) {
+      // use property default value
+      stringLength = getPropertyDefaultStringLength();
+    }
+    else {
+      // it is defined and not the "marker default", use that value then, of course
+      stringLength = methodAnnotation.stringLength();
+    }
+
+    // raise error if stringLength is negative
+    if (stringLength < 0) {
+      throw new Exception(ContentBeanAnalyzationException.STRING_PROPERTY_TOO_SHORT_MESSAGE + stringLength);
+    }
+
+    StringPropertyInformation stringPropertyInformation = new StringPropertyInformation(method);
+    stringPropertyInformation.setLength(stringLength);
+
+    return stringPropertyInformation;
+  }
+
+  private AbstractPropertyInformation getMarkupPropertyInformation(Method method) {
+    // method annotation
+    final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
+    String grammarName;
+
+    if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
+      grammarName = getPropertyDefaultMarkupGrammar();
+    }
+    else {
+      grammarName = methodAnnotation.propertyXmlGrammar();
+    }
+
+    final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
+    markupInformation.setGrammar(grammarName);
+
+    return markupInformation;
   }
 
   /**
