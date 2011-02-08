@@ -136,12 +136,13 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
    * <p>Finds all candidate content beans that reside in a "packageName". Call this method
    * before calling analyzeContentBeanInformation() method, if you want Analyzer to search annotated
    * candidate content bean classes automatically. </p>
+   *
    * @param packageName package name to search for candidate content bean classes, e.g., "com.coremedia"
    */
   public void findContentBeanClassesInPackage(String packageName) {
     ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
     Set<Class> classes = scanner.findCandidateContentBeanClasses(packageName, this.getLog());
-    for (Class cls: classes) {
+    for (Class cls : classes) {
       this.addContentBean(cls);
     }
   }
@@ -394,7 +395,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
       String grammarName;
 
-      if (methodAnnotation == null || methodAnnotation.propertyXmlGrammar() == ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR) {
+      if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
         grammarName = getPropertyDefaultMarkupGrammar();
       }
       else {

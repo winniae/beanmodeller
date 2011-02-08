@@ -26,11 +26,14 @@ public class ContentBeanMarkupPropertiesTest {
   ContentBeanAnalyzator contentBeanAnalyzator;
   MarkupPropertyInformation markupProperty;
 
-  public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "simple.xsd";
-  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "some-other-grammar";
+  public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "coremedia-richtext-1.0";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "simple.xsd";
+
+  private static final String METHOD_PREFIX = "get";
 
   private Class<CBGMarkupAnno> markupPropertyBeanClass = CBGMarkupAnno.class;
-  private static final String METHOD_PREFIX = "get";
+  private MarkupPropertyInformation anotherTextProperty;
+  private MarkupPropertyInformation otherGrammarProperty;
 
   @Before
   public void setup() throws NoSuchMethodException {
@@ -39,13 +42,24 @@ public class ContentBeanMarkupPropertiesTest {
 
     contentBeanAnalyzator.setPropertyDefaultMarkupGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
+
     String textName = "Text";
     Method textMethod = markupPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + textName);
-
     markupProperty = new MarkupPropertyInformation(textMethod);
     markupProperty.setDocumentTypePropertyName(textName);
+    markupProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
-    markupProperty.setGrammar(CHANGED_MARKUP_PROPERTY_GRAMMAR);
+    String anotherTextName = "another";
+    Method anotherTextMethod = markupPropertyBeanClass.getDeclaredMethod("getAnotherText");
+    anotherTextProperty = new MarkupPropertyInformation(anotherTextMethod);
+    anotherTextProperty.setDocumentTypePropertyName(anotherTextName);
+    anotherTextProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
+
+    String otherGrammarName = "OtherGrammar";
+    Method otherGrammarMethod = markupPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + otherGrammarName);
+    otherGrammarProperty = new MarkupPropertyInformation(otherGrammarMethod);
+    otherGrammarProperty.setDocumentTypePropertyName(otherGrammarName);
+    otherGrammarProperty.setGrammar(CHANGED_MARKUP_PROPERTY_GRAMMAR);
   }
 
   @Test
@@ -71,7 +85,6 @@ public class ContentBeanMarkupPropertiesTest {
       fail();
     }
 
-    markupProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR); // should be the default value definded in analyzer
     assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(markupProperty));
   }
 
@@ -94,13 +107,29 @@ public class ContentBeanMarkupPropertiesTest {
       fail();
     }
 
-    markupProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR); // should be the default value definded in analyzer
-    assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(markupProperty));
+    assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(anotherTextProperty));
   }
 
   @Test
   public void testNonStandardGrammar() {
+    contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
 
+    try {
+      contentBeanAnalyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      fail();
+    }
+
+    ContentBeanInformation cbgContent = null;
+    try {
+      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGMarkupAnno");
+    }
+    catch (ContentBeanAnalyzerException e) {
+      fail();
+    }
+
+    assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(otherGrammarProperty));
   }
 
 //  @Test don't know how to test yet..
