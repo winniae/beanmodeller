@@ -40,6 +40,7 @@ public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
     generateDoctypesMojo.setBeanPackage("com.coremedia.beanmodeller.testcontentbeans.testmodel");
     generateDoctypesMojo.setTargetPackage("com.coremedia.test");
     generateDoctypesMojo.setTargetPath("target/test-content-beans");
+    generateDoctypesMojo.setTargetSpringConfigFileName("target/test-content-beans/contentbeans.xml");
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
   }
