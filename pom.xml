@@ -153,12 +153,7 @@
           </execution>-->
         </executions>
 
-        <dependencies><!-- what is ant good for here? Delete?
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.8.1</version>
-          </dependency>-->
+        <dependencies> 
           <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
