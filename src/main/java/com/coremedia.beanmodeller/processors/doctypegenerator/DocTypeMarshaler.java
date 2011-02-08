@@ -81,24 +81,48 @@ public class DocTypeMarshaler {
     DocumentTypeModel documentTypeModel = objectFactory.createDocumentTypeModel();
     documentTypeModel.setTitle("telekom-document-type");
 
-    SortedSet<ContentBeanInformation> rootBeanInformationsSorted = new TreeSet<ContentBeanInformation>(
+    SortedSet<ContentBeanInformation> sortedRootBeansInformation = getSortedRootBeanInformation();
+
+    getGrammars(documentTypeModel, sortedRootBeansInformation);
+
+    getChildDocTypes(documentTypeModel, sortedRootBeansInformation);
+
+    getProperties(sortedRootBeansInformation);
+
+    writeDocTypeModel(documentTypeModel);
+
+
+  }
+
+  private void getGrammars(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
+  }
+
+  private void getProperties(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
+    for (ContentBeanInformation contentBeanInformation : sortedRootBeansInformation) {
+      extractProperties(contentBeanInformation);
+    }
+  }
+
+  private void getChildDocTypes(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
+    for (ContentBeanInformation contentBeanInformation : sortedRootBeansInformation) {
+      // get doctypes that inherit from this root content bean
+      documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().addAll(extractChildDocTypes(contentBeanInformation, null));
+    }
+  }
+
+  private SortedSet<ContentBeanInformation> getSortedRootBeanInformation() {
+    SortedSet<ContentBeanInformation> sortedRootBeansInformation = new TreeSet<ContentBeanInformation>(
         new Comparator<ContentBeanInformation>() {
           @Override
           public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
             return o1.getDocumentName().compareTo(o2.getDocumentName());
           }
         });
-    rootBeanInformationsSorted.addAll(rootBeanInformations);
+    sortedRootBeansInformation.addAll(rootBeanInformations);
+    return sortedRootBeansInformation;
+  }
 
-    for (ContentBeanInformation contentBeanInformation : rootBeanInformationsSorted) {
-      // get doctypes that inherit from this root content bean
-      documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().addAll(extractChildDocTypes(contentBeanInformation, null));
-    }
-
-    for (ContentBeanInformation contentBeanInformation : rootBeanInformationsSorted) {
-      extractProperties(contentBeanInformation);
-    }
-
+  private void writeDocTypeModel(DocumentTypeModel documentTypeModel) throws DocTypeMarshalerException {
     // setup default output stream
     if (this.outputStream == null) {
       String xmlFileName = documentTypeModel.getTitle() == null ? documentTypeModel.getTitle() + ".xml" : "document-type-model.xml";
@@ -108,7 +132,7 @@ public class DocTypeMarshaler {
         this.outputStream = new FileOutputStream(xmlFile);
       }
       catch (FileNotFoundException e) {
-        e.printStackTrace();
+        throw new DocTypeMarshalerException("unable to find output file", e);
       }
     }
 
@@ -120,7 +144,7 @@ public class DocTypeMarshaler {
       m.marshal(documentTypeModel, this.outputStream);
     }
     catch (JAXBException e) {
-      e.printStackTrace();
+      throw new DocTypeMarshalerException("unable to write the doctypes xml", e);
     }
     finally {
       try {
@@ -128,10 +152,9 @@ public class DocTypeMarshaler {
         this.outputStream.close();
       }
       catch (IOException e) {
-        e.printStackTrace();
+        throw new DocTypeMarshalerException("unable to write the doctypes xml", e);
       }
     }
-
   }
 
   /**

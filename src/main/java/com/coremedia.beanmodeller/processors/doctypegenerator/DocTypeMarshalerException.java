@@ -14,4 +14,7 @@ public class DocTypeMarshalerException extends Exception {
     super(s);
   }
 
+  public DocTypeMarshalerException(String s, Throwable throwable) {
+    super(s, throwable);
+  }
 }
