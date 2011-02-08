@@ -53,11 +53,11 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
     // delegate to find candidate components, which may be candidate beans
     Set<BeanDefinition> candidateComponents = this.findCandidateComponents(packageName);
 
-    for (BeanDefinition bd : candidateComponents) {
-      Class cls = null;
+    for (BeanDefinition definition : candidateComponents) {
+      Class beanClass = null;
       try {
-        cls = Class.forName(bd.getBeanClassName());
-        candidateBeanClasses.add(cls);
+        beanClass = Class.forName(definition.getBeanClassName());
+        candidateBeanClasses.add(beanClass);
       }
       catch (ClassNotFoundException e) {
         // ignore 
