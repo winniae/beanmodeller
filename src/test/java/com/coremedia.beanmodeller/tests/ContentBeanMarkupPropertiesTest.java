@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -26,7 +26,7 @@ public class ContentBeanMarkupPropertiesTest {
   ContentBeanAnalyzator contentBeanAnalyzator;
   MarkupPropertyInformation markupProperty;
 
-  public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "some-grammar";
+  public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "simple.xsd";
   public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "some-other-grammar";
 
   private Class<CBGMarkupAnno> markupPropertyBeanClass = CBGMarkupAnno.class;
@@ -96,6 +96,11 @@ public class ContentBeanMarkupPropertiesTest {
 
     markupProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR); // should be the default value definded in analyzer
     assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(markupProperty));
+  }
+
+  @Test
+  public void testNonStandardGrammar() {
+
   }
 
 //  @Test don't know how to test yet..
