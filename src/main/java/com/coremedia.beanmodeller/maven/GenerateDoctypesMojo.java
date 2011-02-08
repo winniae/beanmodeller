@@ -36,8 +36,8 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    *
    * @parameter default-value="project-doctypes.xml"
    */
-   private String docTypeTargetFileName;
-  
+  private String docTypeTargetFileName;
+
   /**
    * Path for searching abstract content beans.
    *
@@ -66,7 +66,9 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    */
   private Integer propertyDefaultLinkListMax;
 
-  public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created!";
+  public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
+  public static final String ERROR_CREATING_TARGET_FILE = "Error creating file! ";
+  public static final String ERROR_GENERATING_DOCTYPES = "Error while running generate-doctypes! ";
 
   public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -83,10 +85,18 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       marshaler = new DocTypeMarshaler(rootBeanInformations);
     }
     catch (ContentBeanAnalyzerException e) {
-      getLog().error("Error while running generate-doctypes", e);
+      getLog().error(ERROR_GENERATING_DOCTYPES, e);
+      throw new MojoFailureException(ERROR_GENERATING_DOCTYPES, e);
     }
 
-    File destFile = getDestinationFile();
+    File destFile = null;
+    try {
+      destFile = getDestinationFile();
+    }
+    catch (IOException e) {
+      getLog().error(ERROR_CREATING_TARGET_FILE, e);
+      throw new MojoFailureException(ERROR_CREATING_TARGET_FILE, e);
+    }
 
     if (destFile != null) {
       try {
@@ -95,21 +105,23 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         marshaler.marshallDoctype();
       }
       catch (FileNotFoundException e) {
-        throw new MojoFailureException("The File could not be created! ", e);
+        getLog().error("Error createting File Output stream! ", e);
+        throw new MojoFailureException("Error createting File Output stream! ", e);
       }
       catch (DocTypeMarshalerException e) {
-        throw new MojoFailureException("Error marshaling document types ", e);
+        getLog().error("Error marshalling document model! ", e);
+        throw new MojoFailureException("Error marshalling document model! ", e);
       }
 
     }
-
   }
 
   /**
    * <p> Create File object for doctype xml
+   *
    * @return
    */
-  private File getDestinationFile() throws MojoFailureException {
+  private File getDestinationFile() throws MojoFailureException, IOException {
     File destDir = new File(this.docTypeTargetPath);
     if (!destDir.exists() && !destDir.mkdir()) {
       // target directory does not exist and could not be created
@@ -118,16 +130,57 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
 
     File destFile = new File(destDir, this.docTypeTargetFileName);
     if (!destFile.exists()) {
-      try {
-        destFile.createNewFile();
-      }
-      catch (IOException e) {
-        getLog().error("Error creating file ", e);
-      }
+      destFile.createNewFile();
     }
 
     return destFile;
   }
 
+  public String getDocTypeTargetPath() {
+    return docTypeTargetPath;
+  }
 
+  public void setDocTypeTargetPath(String docTypeTargetPath) {
+    this.docTypeTargetPath = docTypeTargetPath;
+  }
+
+  public String getDocTypeTargetFileName() {
+    return docTypeTargetFileName;
+  }
+
+  public void setDocTypeTargetFileName(String docTypeTargetFileName) {
+    this.docTypeTargetFileName = docTypeTargetFileName;
+  }
+
+  public String getAbstractBeanPath() {
+    return abstractBeanPath;
+  }
+
+  public void setAbstractBeanPath(String abstractBeanPath) {
+    this.abstractBeanPath = abstractBeanPath;
+  }
+
+  public Integer getPropertyDefaultStringLength() {
+    return propertyDefaultStringLength;
+  }
+
+  public void setPropertyDefaultStringLength(Integer propertyDefaultStringLength) {
+    this.propertyDefaultStringLength = propertyDefaultStringLength;
+  }
+
+  public Integer getPropertyDefaultLinkListMin() {
+    return propertyDefaultLinkListMin;
+  }
+
+  public void setPropertyDefaultLinkListMin(Integer propertyDefaultLinkListMin) {
+    this.propertyDefaultLinkListMin = propertyDefaultLinkListMin;
+  }
+
+  public Integer getPropertyDefaultLinkListMax() {
+    return propertyDefaultLinkListMax;
+  }
+
+  public void setPropertyDefaultLinkListMax(Integer propertyDefaultLinkListMax) {
+    this.propertyDefaultLinkListMax = propertyDefaultLinkListMax;
+  }
 }

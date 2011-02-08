@@ -2,8 +2,13 @@ package com.coremedia.beanmodeller.tests.maven;
 
 import com.coremedia.beanmodeller.maven.GenerateContentBeansMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.custommonkey.xmlunit.DetailedDiff;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Test;
 
 import java.io.File;
+import java.io.FileReader;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -12,12 +17,29 @@ import java.io.File;
  * Time: 15:22
  */
 public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
+
+  private static final String CONTENTBEANS_XML_PATH = "target/test-content-beans/contentbeans.xml";
+  private static final String CONTENTBEANS_XML_PATH_TESTREFERENCE = "src/test/resources/unit/test-project/contentbeans.xml";
+
+
   /**
    * {@inheritDoc}
    */
   protected void setUp() throws Exception {
     // required
     super.setUp();
+
+    File pom = getTestFile("src/test/resources/unit/test-project/pom.xml");
+    assertNotNull(pom);
+    assertTrue(pom.exists());
+
+    GenerateContentBeansMojo generateDoctypesMojo = (GenerateContentBeansMojo) lookupMojo("generate-contentbeans", pom);
+    generateDoctypesMojo.setBeanPackage("com.coremedia.beanmodeller.testcontentbeans.testmodel");
+    generateDoctypesMojo.setTargetPackage("com.coremedia.test");
+    generateDoctypesMojo.setTargetPath("target/test-content-beans");
+    generateDoctypesMojo.setTargetSpringConfigFileName(CONTENTBEANS_XML_PATH);
+    assertNotNull(generateDoctypesMojo);
+    generateDoctypesMojo.execute();
   }
 
   /**
@@ -32,15 +54,31 @@ public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
    * @throws Exception if any
    */
   public void testSomething() throws Exception {
-    File pom = getTestFile("src/test/resources/unit/test-project/pom.xml");
-    assertNotNull(pom);
-    assertTrue(pom.exists());
+    // setUp
+  }
 
-    GenerateContentBeansMojo generateDoctypesMojo = (GenerateContentBeansMojo) lookupMojo("generate-contentbeans", pom);
-    generateDoctypesMojo.setBeanPackage("com.coremedia.beanmodeller.testcontentbeans.testmodel");
-    generateDoctypesMojo.setTargetPackage("com.coremedia.test");
-    generateDoctypesMojo.setTargetPath("target/test-content-beans");
-    assertNotNull(generateDoctypesMojo);
-    generateDoctypesMojo.execute();
+  @Test
+  public void testContentBeanSpringConfig() {
+    // ignore whitespaces
+    XMLUnit.setIgnoreWhitespace(true);
+    XMLUnit.setNormalizeWhitespace(true);
+
+    try {
+      final FileReader referenceXML = new FileReader(new File(CONTENTBEANS_XML_PATH_TESTREFERENCE));
+      final FileReader testXML = new FileReader(new File(CONTENTBEANS_XML_PATH));
+      DetailedDiff myDiff = new DetailedDiff(new Diff(
+          referenceXML,
+          testXML
+      ));
+
+
+      assertTrue("XML similar " + myDiff.toString(),
+          myDiff.similar());
+      assertTrue("XML identical " + myDiff.toString(),
+          myDiff.identical());
+    }
+    catch (Exception e) {
+      fail();
+    }
   }
 }
