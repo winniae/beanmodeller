@@ -23,10 +23,12 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.coremedia.ps.maven</groupId>
+        <groupId>com.coremedia.maven</groupId>
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <configuration>
-          <!-- Specify the BeanGenerator parameters parameter -->
+          <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
+          <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
+          <docTypeTargetPath>${project.build.directory}/doctypes/</docTypeTargetPath>
         </configuration>
       </plugin>
     </plugins>
