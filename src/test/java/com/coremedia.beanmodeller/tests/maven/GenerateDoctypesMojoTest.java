@@ -4,6 +4,8 @@ import com.coremedia.beanmodeller.maven.GenerateDoctypesMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.

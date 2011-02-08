@@ -32,6 +32,8 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
   }
 
   /**
+   * <p> Tests if plugin recognizes invalid target directory
+   * 
    * @throws Exception if any
    */
   public void testInvalidDirectorySetting() throws Exception {
@@ -53,6 +55,8 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
   }
 
   /**
+   * <p> Tests if plugin recognizes invalid filename.
+   *
    * @throws Exception if any
    */
   public void testInvalidFilename() throws Exception {
