@@ -5,7 +5,6 @@ import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaler;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -35,8 +34,8 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    *
    * @parameter default-value="project-doctypes.xml"
    */
-   private String docTypeTargetFileName;
-  
+  private String docTypeTargetFileName;
+
   /**
    * Path for searching abstract content beans.
    *
@@ -81,9 +80,17 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     }
     catch (ContentBeanAnalyzerException e) {
       getLog().error("Error while running generate-doctypes", e);
+      throw new MojoFailureException("Error while running generate-doctypes", e);
     }
 
-    File destFile = getDestinationFile();
+    File destFile = null;
+    try {
+      destFile = getDestinationFile();
+    }
+    catch (IOException e) {
+      getLog().error("Error creating file ", e);
+      throw new MojoFailureException("Error creating file", e);
+    }
 
     if (destFile != null) {
       try {
@@ -92,20 +99,22 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       }
       catch (FileNotFoundException e) {
         getLog().error("Error createting File Output stream! ", e);
+        throw new MojoFailureException("Error createting File Output stream! ", e);
       }
       catch (DocTypeMarshalerException e) {
         getLog().error("Error marshalling document model! ", e);
+        throw new MojoFailureException("Error marshalling document model! ", e);
       }
 
     }
-
   }
 
   /**
    * <p> Create File object for doctype xml
+   *
    * @return
    */
-  private File getDestinationFile() {
+  private File getDestinationFile() throws IOException {
     File destDir = new File(this.docTypeTargetPath);
     if (!destDir.exists()) {
       destDir.mkdir();
@@ -113,16 +122,57 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
 
     File destFile = new File(destDir, this.docTypeTargetFileName);
     if (!destFile.exists()) {
-      try {
-        destFile.createNewFile();
-      }
-      catch (IOException e) {
-        getLog().error("Error creating file ", e);
-      }
+      destFile.createNewFile();
     }
 
     return destFile;
   }
 
+  public String getDocTypeTargetPath() {
+    return docTypeTargetPath;
+  }
 
+  public void setDocTypeTargetPath(String docTypeTargetPath) {
+    this.docTypeTargetPath = docTypeTargetPath;
+  }
+
+  public String getDocTypeTargetFileName() {
+    return docTypeTargetFileName;
+  }
+
+  public void setDocTypeTargetFileName(String docTypeTargetFileName) {
+    this.docTypeTargetFileName = docTypeTargetFileName;
+  }
+
+  public String getAbstractBeanPath() {
+    return abstractBeanPath;
+  }
+
+  public void setAbstractBeanPath(String abstractBeanPath) {
+    this.abstractBeanPath = abstractBeanPath;
+  }
+
+  public Integer getPropertyDefaultStringLength() {
+    return propertyDefaultStringLength;
+  }
+
+  public void setPropertyDefaultStringLength(Integer propertyDefaultStringLength) {
+    this.propertyDefaultStringLength = propertyDefaultStringLength;
+  }
+
+  public Integer getPropertyDefaultLinkListMin() {
+    return propertyDefaultLinkListMin;
+  }
+
+  public void setPropertyDefaultLinkListMin(Integer propertyDefaultLinkListMin) {
+    this.propertyDefaultLinkListMin = propertyDefaultLinkListMin;
+  }
+
+  public Integer getPropertyDefaultLinkListMax() {
+    return propertyDefaultLinkListMax;
+  }
+
+  public void setPropertyDefaultLinkListMax(Integer propertyDefaultLinkListMax) {
+    this.propertyDefaultLinkListMax = propertyDefaultLinkListMax;
+  }
 }
