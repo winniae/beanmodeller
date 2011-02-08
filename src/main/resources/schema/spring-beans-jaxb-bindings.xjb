@@ -1,0 +1,57 @@
+<jxb:bindings version="1.0"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <jxb:bindings schemaLocation="./spring-beans-3.0.xsd" node="/xs:schema">
+
+    <!-- From: http://forum.springsource.org/showthread.php?t=75719 -->
+
+    <!--  <jxb:bindings node="//xs:complexType[@name='propsType']">
+    <jxb:class name="newpropsType" implClass= "newpropsTypeImplClass">
+    </jxb:class>
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:complexType[@name='mapType']">
+    <jxb:class name="newMapType" implClass= "newMapTypeImplClass">
+    </jxb:class>
+    </jxb:bindings>-->
+
+    <jxb:bindings node="//xs:element[@name='constructor-arg']/xs:complexType/xs:attribute[@name='ref']">
+      <jxb:property name="newRef">
+      </jxb:property>
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:element[@name='constructor-arg']/xs:complexType/xs:attribute[@name='value']">
+      <jxb:property name="newValue">
+      </jxb:property>
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:complexType[@name='entryType']/xs:attribute[@name='key']">
+      <jxb:property name="newKey">
+      </jxb:property>
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:complexType[@name='propertyType']/xs:attribute[@name='ref']">
+      <jxb:property name="newRef2">
+      </jxb:property>
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:complexType[@name='propertyType']/xs:attribute[@name='value']">
+      <jxb:property name="newValue2">
+      </jxb:property>
+    </jxb:bindings>
+
+    <jxb:bindings node="//xs:attributeGroup[@name='beanAttributes']/xs:attribute[@name='class']">
+      <jxb:property name="newClass">
+      </jxb:property>
+    </jxb:bindings>
+
+    <jxb:schemaBindings>
+      <jxb:package name="com.coremedia.springbeans"/>
+      <jxb:nameXmlTransform>
+        <jxb:elementName suffix="Element"/>
+      </jxb:nameXmlTransform>
+    </jxb:schemaBindings>
+
+
+  </jxb:bindings>
+</jxb:bindings>
