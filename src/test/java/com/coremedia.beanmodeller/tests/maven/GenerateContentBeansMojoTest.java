@@ -18,7 +18,7 @@ import java.io.FileReader;
  */
 public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
 
-  private static final String CONTENTBEANS_XML_PATH = "target/test-content-beans/contentbeans.xml";
+  private static final String CONTENTBEANS_XML_PATH = "target/test-content-beans/spring/contentbeans.xml";
   private static final String CONTENTBEANS_XML_PATH_TESTREFERENCE = "src/test/resources/unit/test-project/contentbeans.xml";
 
 
