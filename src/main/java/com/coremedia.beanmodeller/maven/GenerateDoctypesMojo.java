@@ -89,14 +89,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       throw new MojoFailureException(ERROR_GENERATING_DOCTYPES, e);
     }
 
-    File destFile = null;
-    try {
-      destFile = getDestinationFile();
-    }
-    catch (IOException e) {
-      getLog().error(ERROR_CREATING_TARGET_FILE, e);
-      throw new MojoFailureException(ERROR_CREATING_TARGET_FILE, e);
-    }
+    File destFile = getDestinationFile();
 
     if (destFile != null) {
       try {
@@ -121,16 +114,23 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    *
    * @return
    */
-  private File getDestinationFile() throws MojoFailureException, IOException {
+  private File getDestinationFile() throws MojoFailureException {
     File destDir = new File(this.docTypeTargetPath);
     if (!destDir.exists() && !destDir.mkdir()) {
       // target directory does not exist and could not be created
+      getLog().error(ERROR_CREATING_TARGET_DIRECTORY + ": " + this.docTypeTargetPath);
       throw new MojoFailureException(ERROR_CREATING_TARGET_DIRECTORY);
     }
 
     File destFile = new File(destDir, this.docTypeTargetFileName);
     if (!destFile.exists()) {
-      destFile.createNewFile();
+      try {
+        destFile.createNewFile();
+      }
+      catch (IOException e) {
+        getLog().error(ERROR_CREATING_TARGET_FILE + ": " + this.docTypeTargetFileName, e);
+        throw new MojoFailureException(ERROR_CREATING_TARGET_FILE, e);
+      }
     }
 
     return destFile;
