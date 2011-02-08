@@ -184,6 +184,15 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   public File getTargetSpringConfigFile() throws PluginException, IOException {
     File result = new File(targetSpringConfigFileName);
     if (!result.exists()) {
+      final File parentFile = result.getParentFile();
+
+      if (!parentFile.exists()) {
+        // try to create folder
+        if (!parentFile.mkdirs()) {
+          throw new PluginException("The folder hierarchy \'" + parentFile + "\' could not be created for the config.");
+        }
+      }
+
       if (!result.createNewFile()) {
         throw new PluginException("The target file \'" + targetSpringConfigFileName + "\' for the config does not exist");
       }
