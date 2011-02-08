@@ -13,7 +13,9 @@ import java.net.URL;
  */
 public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
-  private String grammarName = "coremedia-richtext-1.0";
+  public static final String COREMEDIA_RICHTEXT_GRAMMAR_NAME = "coremedia-richtext-1.0";
+
+  private String grammarName = COREMEDIA_RICHTEXT_GRAMMAR_NAME;
   private URL grammarURL = null;
 
   public MarkupPropertyInformation(Method method) {

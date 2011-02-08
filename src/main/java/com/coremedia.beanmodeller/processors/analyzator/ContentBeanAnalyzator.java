@@ -62,7 +62,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
    * TODO make it configurable from outside.
    */
   private int propertyDefaultStringLength = 32;
-  private String propertyDefaultMarkupGrammar = "coremedia-richtext-1.0";
+  private String propertyDefaultMarkupGrammar = MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME;
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
 
