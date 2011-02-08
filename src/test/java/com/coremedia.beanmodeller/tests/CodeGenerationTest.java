@@ -19,6 +19,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -28,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class CodeGenerationTest {
 
+  private static final String TEST_PACKAGE_NAME = "test.code";
   private ContentBeanAnalyzator analyzator;
   private ContentBeanCodeGenerator codegenerator;
 
@@ -40,7 +42,7 @@ public class CodeGenerationTest {
     analyzator.analyzeContentBeanInformation();
 
     codegenerator = new ContentBeanCodeGenerator();
-    codegenerator.setPackageName("test.code");
+    codegenerator.setPackageName(TEST_PACKAGE_NAME);
   }
 
 //  @Test doesn't succeed in Idea, but hangs in Status "terminated" and prevents further test execution.
@@ -59,7 +61,22 @@ public class CodeGenerationTest {
   }
 
   @Test
-  public void testNothing() {
-    //a test class with not test will fail - therefore a dummy test here
+  public void testClassnameGeneration() throws ContentBeanAnalyzerException {
+    Set<ContentBeanInformation> roots = analyzator.getContentBeanRoots();
+    assertNotNull(roots);
+    assertFalse(roots.isEmpty());
+    //root should have a element for CBGContent
+    ContentBeanInformation cbgContentInformation = null;
+    for (ContentBeanInformation beanInformation : roots) {
+      if (CBGContent.class.equals(beanInformation.getContentBean())) {
+        cbgContentInformation = beanInformation;
+        //found it
+        break;
+      }
+    }
+    assertNotNull(cbgContentInformation);
+    String targetname = TEST_PACKAGE_NAME + ".CBGContent" + codegenerator.IMPL_SUFFIX;
+    String canonicalGeneratedClassName = codegenerator.getCanonicalGeneratedClassName(cbgContentInformation);
+    assertTrue(targetname.equals(canonicalGeneratedClassName));
   }
 }

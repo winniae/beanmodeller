@@ -1,18 +1,19 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.annotations.ContentBean;
-import com.coremedia.schemabeans.DocType;
-import com.coremedia.schemabeans.DocumentTypeModel;
-import com.coremedia.schemabeans.ObjectFactory;
+import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaler;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -23,16 +24,23 @@ import javax.xml.bind.Marshaller;
 public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
 
   /**
-   * Path for generating and reading JAXB property beans.
+   * Target path for doctype xml
    *
-   * @parameter expression="${beans.src.path}" default-value="com.coremedia.schemabeans"
+   * @parameter default-value="${project.build.directory}/doctypes"
    */
-  private Object beanSrcPath;
+  private String docTypeTargetPath;
 
+  /**
+   * Filename for doctype XML file
+   *
+   * @parameter default-value="project-doctypes.xml"
+   */
+   private String docTypeTargetFileName;
+  
   /**
    * Path for searching abstract content beans.
    *
-   * @parameter expression="${abstract.bean.path}" default-value="."
+   * @parameter default-value="."
    */
   private String abstractBeanPath;
 
@@ -58,24 +66,62 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   private Integer propertyDefaultLinkListMax;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
-    // Create Doctype xml
-    ObjectFactory of = new ObjectFactory();
-    DocumentTypeModel documentTypeModel = of.createDocumentTypeModel();
 
-    DocType docType = of.createDocType();
-    docType.setName("CMObject");
+    ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
+    DocTypeMarshaler marshaler = null;
 
-    documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().add(docType);
+    analyzer.setLog(getLog());
+    // searches for annotated abstract content beans in <abstractBeanPath> package 
+    analyzer.findContentBeans(abstractBeanPath);
 
     try {
-      JAXBContext jc = JAXBContext.newInstance("com.coremedia.schemabeans");
-      Marshaller m = jc.createMarshaller();
-      m.marshal(documentTypeModel, System.out);
+      analyzer.analyzeContentBeanInformation();
+      Set<ContentBeanInformation> rootBeanInformations = analyzer.getContentBeanRoots();
+      marshaler = new DocTypeMarshaler(rootBeanInformations);
     }
-    catch (JAXBException e) {
-      e.printStackTrace();
+    catch (ContentBeanAnalyzerException e) {
+      getLog().error("Error while running generate-doctypes", e);
     }
 
+    File destFile = getDestinationFile();
+
+    if (destFile != null) {
+      try {
+        marshaler.setOutputStream(new FileOutputStream(destFile));
+        marshaler.marshallDoctype();
+      }
+      catch (FileNotFoundException e) {
+        getLog().error("Error createting File Output stream! ", e);
+      }
+      catch (DocTypeMarshalerException e) {
+        getLog().error("Error marshalling document model! ", e);
+      }
+
+    }
+
+  }
+
+  /**
+   * <p> Create File object for doctype xml
+   * @return
+   */
+  private File getDestinationFile() {
+    File destDir = new File(this.docTypeTargetPath);
+    if (!destDir.exists()) {
+      destDir.mkdir();
+    }
+
+    File destFile = new File(destDir, this.docTypeTargetFileName);
+    if (!destFile.exists()) {
+      try {
+        destFile.createNewFile();
+      }
+      catch (IOException e) {
+        getLog().error("Error creating file ", e);
+      }
+    }
+
+    return destFile;
   }
 
 

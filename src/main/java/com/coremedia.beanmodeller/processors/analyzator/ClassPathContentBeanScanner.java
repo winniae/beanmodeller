@@ -22,10 +22,6 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
   /**
    * Create a ClassPathScanningCandidateComponentProvider.
    *
-   * @param useDefaultFilters whether to register the default filters for the
-   *                          {@link org.springframework.stereotype.Component @Component}, {@link org.springframework.stereotype.Repository @Repository},
-   *                          {@link org.springframework.stereotype.Service @Service}, and {@link org.springframework.stereotype.Controller @Controller}
-   *                          stereotype annotations
    * @see #registerDefaultFilters()
    */
   public ClassPathContentBeanScanner() {

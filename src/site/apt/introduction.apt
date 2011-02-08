@@ -62,6 +62,8 @@ How to use it in Code?
 
     2 Make your ContentBean extend from com.coremedia.objectserver.beans.AbstractContentBean.
 
+    3 Declare and configure plugin in your project's (project-workspace). See {{{./configuration.html}Configuring Bean Modeller}} section.
+
 What to do about too long class and method names?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Sometimes, you just want to specif long Class and Method names, but the CMS doesn't allow it.

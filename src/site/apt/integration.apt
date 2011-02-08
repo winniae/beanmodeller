@@ -15,13 +15,13 @@ What does the Bean Modeller provide
 
     * The configuration of the content bean factory.
 
-Configuring the Bean Modeller
+Configuring the Bean Modeller for DocType generation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  The Bean Modeller does a lot of useful stuff for you. But you have to help a bit.
-  For it's generation Task it has to look for content beans somewhere. And most probably this is consistent for the
-  whole project. Therefore you have to add the module containing the content beans as dependencies in the plugin
-  management.
+  This section will describe you how to use Bean modeller's doctype generation capabilities in your project.
+  Before you can use it you have to configure plugin in your project's build configurations as shown in section below.
+  As we are generating doctype XML beanmodeller needs a dependency to a module that holds abstract content beans.
+  In our case abstract content beans are defined in a "contentbeans" module.
 
 +------------------------------------------------------------------------+
   <build>
@@ -31,6 +31,11 @@ Configuring the Bean Modeller
           <groupId>com.coremedia.maven</groupId>
           <artifactId>beanmodeller-maven-plugin</artifactId>
           <version>1.0-SNAPSHOT</version>
+          <configuration>
+            <abstractBeanPath>com.dtag.relaunchcom2011.develop.abstractbeans</abstractBeanPath>
+            <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
+            <docTypeTargetPath>${project.build.directory}/doctypes</docTypeTargetPath>
+          </configuration>
           <dependencies>
             <dependency>
               <groupId>${project.groupId}</groupId>
@@ -43,6 +48,15 @@ Configuring the Bean Modeller
 +------------------------------------------------------------------------+
 
   You can of course define that everywhere you use the Bean Modeller plugin, but that would be a bit cumbersome.
+
+  Parameter descriptions, which are necessary for doctype generation:
+  
+  <<abstractBeanPath>>        - tells beanmodeller where to search for abstract content beans
+
+  <<docTypeTargetFileName>>   - how beanmodeller should name the doctype XML
+
+  <<docTypeTargetPath>>       - tells beanmodller where to put doctype XML
+
 
 Generating Content Access Implementations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
