@@ -26,9 +26,10 @@
         <groupId>com.coremedia.maven</groupId>
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <configuration>
-            <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
-            <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
-            <docTypeTargetPath>${project.basedir}/target/doct???ypes</docTypeTargetPath>
+          <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
+          <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
+          <!-- The wrong path parameter-->
+          <docTypeTargetPath>target/doc??types/</docTypeTargetPath>
         </configuration>
       </plugin>
     </plugins>

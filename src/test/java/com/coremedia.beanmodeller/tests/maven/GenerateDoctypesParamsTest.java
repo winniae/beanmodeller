@@ -49,7 +49,6 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
       // should not come here
     }
     catch (MojoFailureException e) {
-      System.out.println(GenerateDoctypesMojo.ERROR_CREATING_TARGET_DIRECTORY.length());
       assertEquals(GenerateDoctypesMojo.ERROR_CREATING_TARGET_DIRECTORY , e.getMessage());
       return;
     }

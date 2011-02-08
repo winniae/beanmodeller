@@ -25,10 +25,11 @@
       <plugin>
         <groupId>com.coremedia.maven</groupId>
         <artifactId>beanmodeller-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
         <configuration>
           <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
           <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
-          <docTypeTargetPath>${project.build.directory}/doctypes/</docTypeTargetPath>
+          <docTypeTargetPath>target/testdoctypes/</docTypeTargetPath>
         </configuration>
       </plugin>
     </plugins>

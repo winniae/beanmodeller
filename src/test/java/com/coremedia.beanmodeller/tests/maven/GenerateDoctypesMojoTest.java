@@ -39,9 +39,6 @@ public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
 
     GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
     assertNotNull(generateDoctypesMojo);
-    generateDoctypesMojo.setAbstractBeanPath("com.coremedia.beanmodeller.testcontentbeans.testmodel");
-    generateDoctypesMojo.setDocTypeTargetFileName("doctypes.xml");
-    generateDoctypesMojo.setDocTypeTargetPath("target/test/");
     generateDoctypesMojo.execute();
   }
 
