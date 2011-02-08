@@ -119,7 +119,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     if (!destDir.exists() && !destDir.mkdir()) {
       // target directory does not exist and could not be created
       getLog().error(ERROR_CREATING_TARGET_DIRECTORY + ": " + this.docTypeTargetPath);
-      throw new MojoFailureException(ERROR_CREATING_TARGET_DIRECTORY);
+      throw new MojoFailureException(ERROR_CREATING_TARGET_DIRECTORY, new RuntimeException(ERROR_CREATING_TARGET_DIRECTORY));
     }
 
     File destFile = new File(destDir, this.docTypeTargetFileName);

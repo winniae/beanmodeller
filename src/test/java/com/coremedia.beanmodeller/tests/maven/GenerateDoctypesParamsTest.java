@@ -45,9 +45,6 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
     try {
       generateDoctypesMojo.execute();
     }
-    catch (MojoExecutionException e) {
-      // should not come here
-    }
     catch (MojoFailureException e) {
       assertEquals(GenerateDoctypesMojo.ERROR_CREATING_TARGET_DIRECTORY , e.getMessage());
       return;
@@ -59,7 +56,22 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
    * @throws Exception if any
    */
   public void testInvalidFilename() throws Exception {
-    
+    File pom = getTestFile("src/test/resources/unit/test-project/pom-invalid-target-filename.xml");
+    assertNotNull(pom);
+    assertTrue(pom.exists());
+
+    GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
+    assertNotNull(generateDoctypesMojo);
+
+    try {
+      generateDoctypesMojo.execute();
+    }
+    catch (MojoFailureException e) {
+      assertEquals(GenerateDoctypesMojo.ERROR_CREATING_TARGET_FILE , e.getMessage());
+      return;
+    }
+    fail("Didn't find the expected exception");
+
   }
 
 }
