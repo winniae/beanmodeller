@@ -4,6 +4,8 @@ import com.coremedia.beanmodeller.maven.GenerateDoctypesMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,9 +41,6 @@ public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
 
     GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
     assertNotNull(generateDoctypesMojo);
-    generateDoctypesMojo.setAbstractBeanPath("com.coremedia.beanmodeller.testcontentbeans.testmodel");
-    generateDoctypesMojo.setDocTypeTargetFileName("doctypes.xml");
-    generateDoctypesMojo.setDocTypeTargetPath("target/test/");
     generateDoctypesMojo.execute();
   }
 
