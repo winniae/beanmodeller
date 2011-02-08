@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.processors;
 import com.coremedia.cap.common.CapPropertyDescriptorType;
 
 import java.lang.reflect.Method;
+import java.net.URL;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -12,7 +13,8 @@ import java.lang.reflect.Method;
  */
 public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
-  String grammar = "coremedia-richtext-1.0";
+  private String grammarName = "coremedia-richtext-1.0";
+  private URL grammarURL = null;
 
   public MarkupPropertyInformation(Method method) {
     super(method);
@@ -23,11 +25,19 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
     return CapPropertyDescriptorType.MARKUP;
   }
 
-  public void setGrammar(String grammar) {
-    this.grammar = grammar;
+  public void setGrammarName(String grammarName) {
+    this.grammarName = grammarName;
   }
 
-  public String getGrammar() {
-    return grammar;
+  public String getGrammarName() {
+    return grammarName;
+  }
+
+  public URL getGrammarURL() {
+    return grammarURL;
+  }
+
+  public void setGrammarURL(URL grammarURL) {
+    this.grammarURL = grammarURL;
   }
 }

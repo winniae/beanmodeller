@@ -144,3 +144,6 @@ public abstract class CBGAppointment extends CBGContent {
 @ContentProperty(stringXmlGrammar = "some-richtext")
   protected abstract Markup getDescription();
 +----------------------------------+
+
+  The XML schema definition for the markup is automatically read and deployed in the content server. Therefore it
+  must be present in resources/xml_schema_definitions.

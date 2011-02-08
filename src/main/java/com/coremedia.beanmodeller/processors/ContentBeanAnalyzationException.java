@@ -20,7 +20,8 @@ public class ContentBeanAnalyzationException extends ContentBeanAnalyzerExceptio
   public static final String STRING_PROPERTY_TOO_SHORT_MESSAGE = "String property must have a positive length, but is: ";
   public static final String PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE = "Method return type could not be mapped to a property type :";
   public static final String INVALID_RETURN_TYPES_MESSAGE = "Thou shalt not use primitive data types like int or boolean and only use ";
-
+  public static final String SCHEMA_DEFINITION_NOT_FOUND_MESSAGE = "The schema definition could not be found: ";
+  //TODO rename to _MESSAGE
   public static final String LINKED_DOCTYPE_UNKNOWN = "A referenced document type is not part of the defined ContentBeans: ";
 
   private List<ContentBeanAnalyzationError> errors = new LinkedList<ContentBeanAnalyzationError>();

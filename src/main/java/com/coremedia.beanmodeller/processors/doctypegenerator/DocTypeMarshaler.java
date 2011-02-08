@@ -231,7 +231,7 @@ public class DocTypeMarshaler {
 
       case MARKUP:
         final XmlProperty xmlProperty = objectFactory.createXmlProperty();
-        final String grammarName = ((MarkupPropertyInformation) propertyInformation).getGrammar();
+        final String grammarName = ((MarkupPropertyInformation) propertyInformation).getGrammarName();
         final XmlGrammar grammarProperty = objectFactory.createXmlGrammar();
         grammarProperty.setSystemId(grammarName);
         grammarProperty.setName(grammarName);

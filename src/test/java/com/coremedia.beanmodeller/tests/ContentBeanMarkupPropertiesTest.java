@@ -47,19 +47,19 @@ public class ContentBeanMarkupPropertiesTest {
     Method textMethod = markupPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + textName);
     markupProperty = new MarkupPropertyInformation(textMethod);
     markupProperty.setDocumentTypePropertyName(textName);
-    markupProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
+    markupProperty.setGrammarName(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
     String anotherTextName = "another";
     Method anotherTextMethod = markupPropertyBeanClass.getDeclaredMethod("getAnotherText");
     anotherTextProperty = new MarkupPropertyInformation(anotherTextMethod);
     anotherTextProperty.setDocumentTypePropertyName(anotherTextName);
-    anotherTextProperty.setGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
+    anotherTextProperty.setGrammarName(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
     String otherGrammarName = "OtherGrammar";
     Method otherGrammarMethod = markupPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + otherGrammarName);
     otherGrammarProperty = new MarkupPropertyInformation(otherGrammarMethod);
     otherGrammarProperty.setDocumentTypePropertyName(otherGrammarName);
-    otherGrammarProperty.setGrammar(CHANGED_MARKUP_PROPERTY_GRAMMAR);
+    otherGrammarProperty.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR);
   }
 
   @Test

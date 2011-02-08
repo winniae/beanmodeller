@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
 
   public static final int MAX_CONTENT_TYPE_LENGTH = 16;
   public static final int MAX_PROPERTY_LENGTH = 32;
+  public static final String SCHEMA_DEFINITION_LOCATION = "/xml_schema_definitions/";
 
   private static final ContentBeanInformation propertyDefaultLinkListType = EmptyContentBeanInformation.getInstance();
 
@@ -466,20 +468,26 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     return stringPropertyInformation;
   }
 
-  private AbstractPropertyInformation getMarkupPropertyInformation(Method method) {
+  private AbstractPropertyInformation getMarkupPropertyInformation(Method method) throws Exception {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
     String grammarName;
+    URL grammarURL = null;
 
     if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
       grammarName = getPropertyDefaultMarkupGrammar();
     }
     else {
       grammarName = methodAnnotation.propertyXmlGrammar();
+      grammarURL = getClass().getResource(SCHEMA_DEFINITION_LOCATION + grammarName);
+      if (grammarURL == null) {
+        throw new Exception(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
+      }
     }
 
     final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
-    markupInformation.setGrammar(grammarName);
+    markupInformation.setGrammarName(grammarName);
+    markupInformation.setGrammarURL(grammarURL);
 
     return markupInformation;
   }
