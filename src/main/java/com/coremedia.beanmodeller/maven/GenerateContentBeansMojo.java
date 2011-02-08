@@ -12,7 +12,10 @@ import org.apache.maven.project.MavenProject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -44,7 +47,7 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   /**
    * Where the generated bean configuration should be saved
    *
-   * @parameter default-value="${project.build.directory}/resource/contentbeans.xml"
+   * @parameter default-value="${project.build.directory}/webapp/WEB-INF/spring/contentbeans.xml"
    */
   private String targetSpringConfigFileName;
 
@@ -93,8 +96,19 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
     }
   }
 
-  private void writeBeanConfigRecursive(Set<? extends ContentBeanInformation> roots, FileWriter writer) throws IOException {
-    for (ContentBeanInformation contentBeanInformation : roots) {
+  private void writeBeanConfigRecursive(Set<? extends ContentBeanInformation> contentBeanInformations, FileWriter writer) throws IOException {
+    // sort beans
+    SortedSet<ContentBeanInformation> beanInformationsSorted = new TreeSet<ContentBeanInformation>(
+        new Comparator<ContentBeanInformation>() {
+          @Override
+          public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
+            return o1.getDocumentName().compareTo(o2.getDocumentName());
+          }
+        });
+    beanInformationsSorted.addAll(contentBeanInformations);
+
+    // for each bean, write code and call recursive
+    for (ContentBeanInformation contentBeanInformation : beanInformationsSorted) {
       writer.append(getBeanXml(contentBeanInformation));
 
       writeBeanConfigRecursive(contentBeanInformation.getChilds(), writer);
@@ -186,12 +200,11 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   private String getBeanXml(ContentBeanInformation contentBeanInformation) {
     StringBuilder stringBuilder = new StringBuilder();
 
-    stringBuilder.append("\t<bean\n");
-    stringBuilder.append("\t\tname=\"").append(getBeanName(contentBeanInformation)).append("\"\n");
+    stringBuilder.append("\t<bean name=\"").append(getBeanName(contentBeanInformation)).append("\"\n");
     stringBuilder.append("\t\tparent=\"").append(getBeanName(contentBeanInformation.getParent())).append("\"\n");
     stringBuilder.append("\t\tscope=\"prototype\"\n");
-    stringBuilder.append("\t\tclass=\"").append(generator.getCanonicalGeneratedClassName(contentBeanInformation)).append("\"\n");
-    stringBuilder.append("\t/>\n");
+    stringBuilder.append("\t\tclass=\"").append(generator.getCanonicalGeneratedClassName(contentBeanInformation)).append("\"");
+    stringBuilder.append("/>\n");
 
     return stringBuilder.toString();
   }

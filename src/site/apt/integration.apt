@@ -13,7 +13,7 @@ What does the Bean Modeller provide
 
     * The implementation for the content access.
 
-    * The configuration of the content bean factory.
+    * The configuration of the content bean factory: contentbeans.xml
 
 Configuring the Bean Modeller for DocType generation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -93,6 +93,8 @@ Generating Content Access Implementations
   </build>
 +------------------------------------------------------------------------+
 
+*Mandatory Configuration
+
   The parameter <<beanPackage>> specifies the package in which the content beans can be found. This ca of course
   be the parent package.
 
@@ -100,6 +102,11 @@ Generating Content Access Implementations
   specific package. All generated classes have the suffix 'Accesorizor' to distinguish them enough from the original
   beans.
 
+*Optional Configuration
+
   There is also a parameter <<targetPath>> which controls where the generated sources should go. By default it is
   'target/generated-resource/beanmodeller'. If you want to change it free to do so. The bean modeller currently
   always overwrites it - so it is not really useful to use the 'src' folder.
+
+  The parameter <<targetSpringConfigFileName>> controls the filename and directory for <<contentbeans.xml>>. The default
+  value is 'target/webapp/WEB-INF/spring/contentbeans.xml'.
