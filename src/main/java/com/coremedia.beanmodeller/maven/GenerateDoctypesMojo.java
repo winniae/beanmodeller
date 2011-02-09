@@ -78,11 +78,10 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     // searches for annotated abstract content beans in <abstractBeanPath> package 
     analyzer.findContentBeans(abstractBeanPath);
 
+    Set<ContentBeanInformation> rootBeanInformations;
     try {
       analyzer.analyzeContentBeanInformation();
-      Set<ContentBeanInformation> rootBeanInformations = analyzer.getContentBeanRoots();
-      marshaller = new DocTypeMarshaller(rootBeanInformations);
-      marshaller.setLog(getLog());
+      rootBeanInformations = analyzer.getContentBeanRoots();
     }
     catch (ContentBeanAnalyzerException e) {
       getLog().error(ERROR_GENERATING_DOCTYPES, e);
@@ -92,9 +91,11 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     File destFile = getDestinationFile();
 
     if (destFile != null) {
+      getLog().info("Writing doctype XML to " + destFile.getPath());
       try {
-        OutputStream os = new FileOutputStream(destFile);
-        marshaller.setOutputStream(os);
+        OutputStream doctypeXMLOutputStream = new FileOutputStream(destFile);
+        marshaller = new DocTypeMarshaller(rootBeanInformations, doctypeXMLOutputStream);
+        marshaller.setLog(getLog());
         marshaller.marshallDoctype();
       }
       catch (FileNotFoundException e) {
@@ -105,7 +106,6 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         getLog().error("Error marshalling document model! ", e);
         throw new MojoFailureException("Error marshalling document model! ", e);
       }
-
     }
   }
 

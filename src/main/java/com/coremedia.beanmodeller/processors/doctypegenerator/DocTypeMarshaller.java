@@ -18,9 +18,6 @@ import com.coremedia.schemabeans.XmlProperty;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -57,9 +54,10 @@ public class DocTypeMarshaller extends MavenProcessor {
   /**
    * @param rootBeanInformations Set of RootBeanInformation objects whose hierarchies must be marshaled
    */
-  public DocTypeMarshaller(Set<ContentBeanInformation> rootBeanInformations) {
+  public DocTypeMarshaller(Set<ContentBeanInformation> rootBeanInformations, OutputStream outputStream) {
     this.rootBeanInformations = rootBeanInformations;
     this.objectFactory = new ObjectFactory();
+    this.outputStream = outputStream;
   }
 
   /**
@@ -75,13 +73,15 @@ public class DocTypeMarshaller extends MavenProcessor {
   /**
    * Triggers Marshaller to write XML to output stream
    *
-   * @throws throws a DocTypeMarhalerException if it cannot write the XML
+   * @throws DocTypeMarshalerException if it cannot write the XML
    */
   public void marshallDoctype() throws DocTypeMarshalerException {
     // there must be
     if (this.rootBeanInformations == null) {
       throw new DocTypeMarshalerException(DocTypeMarshalerException.ERROR_MARSHALING);
     }
+
+    getLog().info("Creating doctype XML");
 
     DocumentTypeModel documentTypeModel = objectFactory.createDocumentTypeModel();
     documentTypeModel.setTitle("telekom-document-type");
@@ -156,15 +156,7 @@ public class DocTypeMarshaller extends MavenProcessor {
   private void writeDocTypeModel(DocumentTypeModel documentTypeModel) throws DocTypeMarshalerException {
     // setup default output stream
     if (this.outputStream == null) {
-      String xmlFileName = documentTypeModel.getTitle() == null ? documentTypeModel.getTitle() + ".xml" : "document-type-model.xml";
-      File outputDir = new File("target");
-      File xmlFile = new File(outputDir, xmlFileName);
-      try {
-        this.outputStream = new FileOutputStream(xmlFile);
-      }
-      catch (FileNotFoundException e) {
-        throw new DocTypeMarshalerException("unable to find output file", e);
-      }
+      throw new DocTypeMarshalerException("Writing doctype XML");
     }
 
     // Write xml to output stream
@@ -298,4 +290,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     }
   }
 
+  public Map<String, URL> getFoundMarkupSchemaDefinitions() {
+    return foundMarkupSchemaDefinitions;
+  }
 }
