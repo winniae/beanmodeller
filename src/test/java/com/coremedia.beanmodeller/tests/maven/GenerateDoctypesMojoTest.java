@@ -4,8 +4,6 @@ import com.coremedia.beanmodeller.maven.GenerateDoctypesMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,6 +40,11 @@ public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
     GenerateDoctypesMojo generateDoctypesMojo = (GenerateDoctypesMojo) lookupMojo("generate-doctypes", pom);
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
+
+
+    File expectedGrammarFile = new File("target/xsd/simple.xsd");
+    assertTrue(expectedGrammarFile.exists());
+
   }
 
 }
