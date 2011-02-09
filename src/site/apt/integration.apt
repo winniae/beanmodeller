@@ -15,13 +15,19 @@ What does the Bean Modeller provide
 
     * The configuration of the content bean factory: contentbeans.xml
 
-Configuring the Bean Modeller for DocType generation
+Configuring the Bean Modeller
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  This section will describe you how to use Bean modeller's doctype generation capabilities in your project.
-  Before you can use it you have to configure plugin in your project's build configurations as shown in section below.
-  As we are generating doctype XML beanmodeller needs a dependency to a module that holds abstract content beans.
-  In our case abstract content beans are defined in a "contentbeans" module.
+  The Bean Modeller is best configured in the plugin management of your project. There are two important settings that
+  define it's behaviour:
+
+  * The dependencies are the maven modules in which the content beans are searched.
+
+  * The <<contentBeanPackage>> defines the topmost package in which your beans are searched.
+
+  These settings are valid and reused for all the executions of the Bean Modeller and therefore it is good to put it
+  in the plugin management.
+  You can of course define that everywhere you use the Bean Modeller plugin, but that would be a bit cumbersome.
 
 +------------------------------------------------------------------------+
   <build>
@@ -32,9 +38,7 @@ Configuring the Bean Modeller for DocType generation
           <artifactId>beanmodeller-maven-plugin</artifactId>
           <version>1.0-SNAPSHOT</version>
           <configuration>
-            <abstractBeanPath>com.dtag.relaunchcom2011.develop.abstractbeans</abstractBeanPath>
-            <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
-            <docTypeTargetPath>${project.build.directory}/doctypes</docTypeTargetPath>
+            <contentBeanPackage>com.dtag.relaunchcom2011.develop.abstractbeans</contentBeanPackage>
           </configuration>
           <dependencies>
             <dependency>
@@ -47,15 +51,46 @@ Configuring the Bean Modeller for DocType generation
         ....
 +------------------------------------------------------------------------+
 
+
+Configuring the Bean Modeller for DocType generation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  This section will describe you how to use Bean modeller's doctype generation capabilities in your project.
+  Before you can use it you have to configure plugin in your project's build configurations as shown in section below.
+  As we are generating doctype XML beanmodeller needs a dependency to a module that holds abstract content beans.
+  In our case abstract content beans are defined in a "contentbeans" module.
+
++------------------------------------------------------------------------+
+  <build>
+      <!-- configuration of beanmodeller plugin -->
+      <plugin>
+        <groupId>com.coremedia.maven</groupId>
+        <artifactId>beanmodeller-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-doctypes</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>generate-doctypes</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
++------------------------------------------------------------------------+
+
   You can of course define that everywhere you use the Bean Modeller plugin, but that would be a bit cumbersome.
 
   Parameter descriptions, which are necessary for doctype generation:
   
-  <<abstractBeanPath>>        - tells beanmodeller where to search for abstract content beans
+  <<contentBeanPackage>>    - tells bean modeller where to search for the content beans
 
-  <<docTypeTargetFileName>>   - how beanmodeller should name the doctype XML
+  <<docTypeTargetFileName>> - how bean modeller should name the doctype XML
 
-  <<docTypeTargetPath>>       - tells beanmodller where to put doctype XML
+  <<docTypeTargetPath>>     - tells bean modeller where to put doctype XML
+
+  <<xsdTargetPath>>         - tells the bean modeller where to put the custom xsd for the custom xml properties
 
 
 Generating Content Access Implementations
@@ -84,7 +119,7 @@ Generating Content Access Implementations
             <phase>generate-sources</phase>
             <configuration>
               <contentBeanPackage>where.are.your.beans</contentBeanPackage>
-              <targetPackage>where.should.the.implementations.go</targetPackage>
+              <accessorizerBeansPackage>where.should.the.implementations.go</accessorizerBeansPackage>
             </configuration>
           </execution>
         </executions>
