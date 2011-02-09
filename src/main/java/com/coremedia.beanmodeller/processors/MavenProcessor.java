@@ -1,4 +1,4 @@
-package com.coremedia.beanmodeller.maven;
+package com.coremedia.beanmodeller.processors;
 
 import org.apache.maven.plugin.logging.Log;
 

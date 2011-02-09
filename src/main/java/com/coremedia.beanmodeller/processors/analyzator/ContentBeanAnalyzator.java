@@ -2,7 +2,6 @@ package com.coremedia.beanmodeller.processors.analyzator;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.annotations.ContentProperty;
-import com.coremedia.beanmodeller.maven.MavenProcessor;
 import com.coremedia.beanmodeller.processors.AbstractPropertyInformation;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzer;
@@ -13,6 +12,7 @@ import com.coremedia.beanmodeller.processors.EmptyContentBeanInformation;
 import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
+import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.UnknownPropertyInformation;
 import com.coremedia.objectserver.beans.AbstractContentBean;

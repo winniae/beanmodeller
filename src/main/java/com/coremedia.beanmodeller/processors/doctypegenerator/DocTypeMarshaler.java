@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.processors.doctypegenerator;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
+import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.schemabeans.DocType;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,11 +42,12 @@ import java.util.TreeSet;
  * Date: 31.01.2011
  * Time: 11:30:42
  */
-public class DocTypeMarshaler {
+public class DocTypeMarshaler extends MavenProcessor {
 
   private Set<ContentBeanInformation> rootBeanInformations = null;
   private ObjectFactory objectFactory = null;
   private OutputStream outputStream = null;
+  private Map<String, URL> foundMarkupSchemaDefinitions = new HashMap<String, URL>();
 
   /**
    * global store to remember known DocTypes. This is required when linking properties back to DocTypes.
@@ -71,6 +74,8 @@ public class DocTypeMarshaler {
 
   /**
    * Triggers Marshaller to write XML to output stream
+   *
+   * @throws throws a DocTypeMarhalerException if it cannot write the XML
    */
   public void marshallDoctype() throws DocTypeMarshalerException {
     // there must be
@@ -83,7 +88,7 @@ public class DocTypeMarshaler {
 
     SortedSet<ContentBeanInformation> sortedRootBeansInformation = getSortedRootBeanInformation();
 
-    getGrammars(documentTypeModel, sortedRootBeansInformation);
+    getGrammars(sortedRootBeansInformation);
 
     getChildDocTypes(documentTypeModel, sortedRootBeansInformation);
 
@@ -91,10 +96,36 @@ public class DocTypeMarshaler {
 
     writeDocTypeModel(documentTypeModel);
 
+    //copyGrammars();
+  }
+
+  private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
+    findGrammars(sortedRootBeansInformation);
 
   }
 
-  private void getGrammars(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
+  private void findGrammars(Set<? extends ContentBeanInformation> beanInformations) {
+    for (ContentBeanInformation beanInformation : beanInformations) {
+      //first check all properties
+      for (PropertyInformation propertyInformation : beanInformation.getProperties()) {
+        if (propertyInformation instanceof MarkupPropertyInformation) {
+          MarkupPropertyInformation markupPropertyInformation = (MarkupPropertyInformation) propertyInformation;
+          String grammarName = markupPropertyInformation.getGrammarName();
+          URL grammarURL = markupPropertyInformation.getGrammarURL();
+          if (grammarURL != null) {
+            foundMarkupSchemaDefinitions.put(grammarName, grammarURL);
+          }
+          else {
+            if (!MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME.equals(grammarName)) {
+              getLog().warn("No xsd given for " + grammarName);
+              //todo we can stop here with an exception
+            }
+          }
+        }
+      }
+      //and then down the hierarchy
+      findGrammars(beanInformation.getChilds());
+    }
   }
 
   private void getProperties(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {

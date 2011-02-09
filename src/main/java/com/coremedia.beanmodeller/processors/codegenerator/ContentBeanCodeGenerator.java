@@ -1,7 +1,7 @@
 package com.coremedia.beanmodeller.processors.codegenerator;
 
-import com.coremedia.beanmodeller.maven.MavenProcessor;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
