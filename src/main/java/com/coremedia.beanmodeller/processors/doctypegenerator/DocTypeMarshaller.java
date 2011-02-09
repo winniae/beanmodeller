@@ -42,7 +42,7 @@ import java.util.TreeSet;
  * Date: 31.01.2011
  * Time: 11:30:42
  */
-public class DocTypeMarshaler extends MavenProcessor {
+public class DocTypeMarshaller extends MavenProcessor {
 
   private Set<ContentBeanInformation> rootBeanInformations = null;
   private ObjectFactory objectFactory = null;
@@ -57,7 +57,7 @@ public class DocTypeMarshaler extends MavenProcessor {
   /**
    * @param rootBeanInformations Set of RootBeanInformation objects whose hierarchies must be marshaled
    */
-  public DocTypeMarshaler(Set<ContentBeanInformation> rootBeanInformations) {
+  public DocTypeMarshaller(Set<ContentBeanInformation> rootBeanInformations) {
     this.rootBeanInformations = rootBeanInformations;
     this.objectFactory = new ObjectFactory();
   }

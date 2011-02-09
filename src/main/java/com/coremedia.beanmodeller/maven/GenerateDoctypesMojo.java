@@ -3,9 +3,8 @@ package com.coremedia.beanmodeller.maven;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaler;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
-import org.apache.maven.plugin.AbstractMojo;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -73,7 +72,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
 
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
-    DocTypeMarshaler marshaler = null;
+    DocTypeMarshaller marshaller = null;
 
     analyzer.setLog(getLog());
     // searches for annotated abstract content beans in <abstractBeanPath> package 
@@ -82,7 +81,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     try {
       analyzer.analyzeContentBeanInformation();
       Set<ContentBeanInformation> rootBeanInformations = analyzer.getContentBeanRoots();
-      marshaler = new DocTypeMarshaler(rootBeanInformations);
+      marshaller = new DocTypeMarshaller(rootBeanInformations);
     }
     catch (ContentBeanAnalyzerException e) {
       getLog().error(ERROR_GENERATING_DOCTYPES, e);
@@ -94,8 +93,8 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     if (destFile != null) {
       try {
         OutputStream os = new FileOutputStream(destFile);
-        marshaler.setOutputStream(os);
-        marshaler.marshallDoctype();
+        marshaller.setOutputStream(os);
+        marshaller.marshallDoctype();
       }
       catch (FileNotFoundException e) {
         getLog().error("Error createting File Output stream! ", e);

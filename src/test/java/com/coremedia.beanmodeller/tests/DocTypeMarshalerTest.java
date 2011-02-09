@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzer;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaler;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
  */
 public class DocTypeMarshalerTest {
 
-  private DocTypeMarshaler marshaler = null;
+  private DocTypeMarshaller marshaller = null;
 
   @Before
   public void setup() {
@@ -37,7 +37,7 @@ public class DocTypeMarshalerTest {
 
     try {
       analyzator.analyzeContentBeanInformation();
-      marshaler = new DocTypeMarshaler(analyzator.getContentBeanRoots());
+      marshaller = new DocTypeMarshaller(analyzator.getContentBeanRoots());
     }
     catch (Exception e) {
       fail();
@@ -51,10 +51,10 @@ public class DocTypeMarshalerTest {
   @Test
   public void testMarshalerBasic() {
     OutputStream os = new ByteArrayOutputStream();
-    assertNotNull(marshaler);
-    marshaler.setOutputStream(os);
+    assertNotNull(marshaller);
+    marshaller.setOutputStream(os);
     try {
-      marshaler.marshallDoctype();
+      marshaller.marshallDoctype();
     }
     catch (Exception e) {
       fail();
