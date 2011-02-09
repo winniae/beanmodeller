@@ -33,7 +33,7 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   /**
    * The target name of the generated content bean implementations.
    *
-   * @parameter required = true, description = "Target directory for the generated code.")
+   * @parameter required = true, description = "Target directory for the generated code."
    */
   private String targetPackage;
 

@@ -69,18 +69,18 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   /**
    * Where should the custom XML Schema definitions copied.
    *
-   * @parameter default-value="${project.build.directory}/contentserver/lib/xml", required=true, description="Where should the xml schemas be copied"
+   * @parameter default-value="${project.build.directory}/contentserver/lib/xml"
    */
   private String xsdTargetDir;
 
   public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
-  public static final String ERROR_CREATING_TARGET_FILE = "Error creating file! ";
+  public static final String ERROR_CREATING_TARGET_FILE = "Error creating file ";
   public static final String ERROR_GENERATING_DOCTYPES = "Error while running generate-doctypes! ";
 
   public void execute() throws MojoExecutionException, MojoFailureException {
 
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
-    DocTypeMarshaller marshaller = null;
+    DocTypeMarshaller marshaller;
 
     analyzer.setLog(getLog());
     // searches for annotated abstract content beans in <abstractBeanPath> package 
@@ -134,7 +134,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    */
   private File getDestinationFile() throws MojoFailureException {
     File destDir = new File(this.docTypeTargetPath);
-    if (!destDir.exists() && !destDir.mkdir()) {
+    if (!destDir.exists() && !destDir.mkdirs()) {
       // target directory does not exist and could not be created
       getLog().error(ERROR_CREATING_TARGET_DIRECTORY + ": " + this.docTypeTargetPath);
       throw new MojoFailureException(ERROR_CREATING_TARGET_DIRECTORY, new RuntimeException(ERROR_CREATING_TARGET_DIRECTORY));

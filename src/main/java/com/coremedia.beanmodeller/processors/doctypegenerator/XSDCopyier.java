@@ -24,6 +24,9 @@ public class XSDCopyier extends MavenProcessor {
   }
 
   public void copyXSD(Map<String, URL> schemas) throws DocTypeMarshalerException {
+    if (xsdPath == null) {
+      throw new DocTypeMarshalerException("You must provide a target path for the XSDs");
+    }
     if (schemas == null) {
       throw new DocTypeMarshalerException("You must provide schemas to copy!");
     }

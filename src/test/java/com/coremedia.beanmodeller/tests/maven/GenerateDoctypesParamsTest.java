@@ -1,7 +1,6 @@
 package com.coremedia.beanmodeller.tests.maven;
 
 import com.coremedia.beanmodeller.maven.GenerateDoctypesMojo;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
@@ -33,7 +32,7 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
 
   /**
    * <p> Tests if plugin recognizes invalid target directory
-   * 
+   *
    * @throws Exception if any
    */
   public void testInvalidDirectorySetting() throws Exception {
@@ -48,7 +47,7 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
       generateDoctypesMojo.execute();
     }
     catch (MojoFailureException e) {
-      assertEquals(GenerateDoctypesMojo.ERROR_CREATING_TARGET_DIRECTORY , e.getMessage());
+      assertEquals(GenerateDoctypesMojo.ERROR_CREATING_TARGET_DIRECTORY, e.getMessage());
       return;
     }
     fail("Didn't find the expected exception");
@@ -71,7 +70,7 @@ public class GenerateDoctypesParamsTest extends AbstractMojoTestCase {
       generateDoctypesMojo.execute();
     }
     catch (MojoFailureException e) {
-      assertEquals(GenerateDoctypesMojo.ERROR_CREATING_TARGET_FILE , e.getMessage());
+      assertTrue(e.getMessage().startsWith(GenerateDoctypesMojo.ERROR_CREATING_TARGET_FILE));
       return;
     }
     fail("Didn't find the expected exception");
