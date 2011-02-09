@@ -37,7 +37,8 @@ public class DocTypeMarshalerTest {
 
     try {
       analyzator.analyzeContentBeanInformation();
-      marshaller = new DocTypeMarshaller(analyzator.getContentBeanRoots());
+      //not ok, but ok here to use null as output stream
+      marshaller = new DocTypeMarshaller(analyzator.getContentBeanRoots(), null);
     }
     catch (Exception e) {
       fail();
