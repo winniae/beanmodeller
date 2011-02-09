@@ -558,7 +558,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   private boolean hasValidReturnType(Method method) {
     final Class<?> returnType = method.getReturnType();
 
-    return returnType.isPrimitive()
+    return !returnType.isPrimitive()
         || VALID_METHOD_RETURN_TYPES.contains(returnType)
         || allFoundContentBeanInformation.containsKey(returnType);
   }
