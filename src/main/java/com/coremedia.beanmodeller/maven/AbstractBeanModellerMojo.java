@@ -23,7 +23,7 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    *
    * @parameter
    */
-  private String beanPackage;
+  private String contentBeanPackage;
 
   /**
    * Path for searching abstract content beans.
@@ -40,7 +40,7 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
     //set the logging
     analyzer.setLog(getLog());
-    analyzer.findContentBeans(beanPackage);
+    analyzer.findContentBeans(contentBeanPackage);
     try {
       analyzer.analyzeContentBeanInformation();
     }
@@ -78,12 +78,12 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     return System.currentTimeMillis() - startTime;
   }
 
-  public String getBeanPackage() {
-    return beanPackage;
+  public String getContentBeanPackage() {
+    return contentBeanPackage;
   }
 
-  public void setBeanPackage(String beanPackage) {
-    this.beanPackage = beanPackage;
+  public void setContentBeanPackage(String contentBeanPackage) {
+    this.contentBeanPackage = contentBeanPackage;
   }
 
   public MavenProject getProject() {
