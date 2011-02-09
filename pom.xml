@@ -154,7 +154,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <additionalClasspathElements>
-            <additionalClasspathElement>${project.basedir}/test/resources</additionalClasspathElement>
+            <additionalClasspathElement>${project.basedir}/src/test/resources</additionalClasspathElement>
+            <additionalClasspathElement>${project.basedir}/target/test-classes/</additionalClasspathElement>
           </additionalClasspathElements>
         </configuration>
       </plugin>
