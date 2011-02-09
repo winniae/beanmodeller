@@ -29,7 +29,8 @@
           <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
           <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
           <!-- The wrong path parameter-->
-          <docTypeTargetPath>target/doc//types/</docTypeTargetPath>
+          <docTypeTargetPath>target/doc/*/types/</docTypeTargetPath>
+          <xsdTargetDir>target/xsd</xsdTargetDir>
         </configuration>
       </plugin>
     </plugins>

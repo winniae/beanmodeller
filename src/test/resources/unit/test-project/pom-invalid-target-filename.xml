@@ -30,6 +30,7 @@
           <!-- The wrong filename parameter-->
           <docTypeTargetFileName>dta/g-doctypes.xml</docTypeTargetFileName>
           <docTypeTargetPath>target/doctypes/</docTypeTargetPath>
+          <xsdTargetDir>target/xsd</xsdTargetDir>
         </configuration>
       </plugin>
     </plugins>

@@ -55,6 +55,7 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    startTimeMeasurements();
 
     if (targetPackage == null) {
       throw new MojoFailureException("You must provide a package name for the content beans");
@@ -62,12 +63,17 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
 
     Set<ContentBeanInformation> roots = analyzeContentBeans();
 
+    getLog().info("Analyzing contentbeans took " + getTimeSinceLastMeasurement() + "ms.");
+
     generator = new ContentBeanCodeGenerator();
     generator.setPackageName(targetPackage);
 
     createContentBeanImplementations(roots);
+    getLog().info("Creating implementations took " + getTimeSinceLastMeasurement() + "ms.");
 
     createSpringConfig(roots);
+    getLog().info("Creating Spring config took " + getTimeSinceLastMeasurement() + "ms.");
+    getLog().info("Total runtime was " + getTimeSinceStart() + "ms.");
   }
 
   private void createSpringConfig(Set<ContentBeanInformation> roots) throws MojoFailureException {

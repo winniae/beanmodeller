@@ -85,6 +85,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
     analyzer.setLog(getLog());
     // searches for annotated abstract content beans in <abstractBeanPath> package 
     analyzer.findContentBeans(abstractBeanPath);
+    getLog().info("Analyzing content beans took " + getTimeSinceLastMeasurement() + "ms.");
 
     Set<ContentBeanInformation> rootBeanInformations;
     try {
@@ -115,6 +116,8 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         throw new MojoFailureException("Error marshaling document model! ", e);
       }
 
+      getLog().info("Generating doctype.xml took " + getTimeSinceLastMeasurement() + "ms.");
+
       //copy the xsd
       XSDCopyier copyier = new XSDCopyier(xsdTargetDir);
       copyier.setLog(getLog());
@@ -125,6 +128,8 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         throw new MojoFailureException("Unable to copy the XSD", e);
       }
     }
+    getLog().info("Copying XSDs took " + getTimeSinceLastMeasurement() + "ms.");
+    getLog().info("Total runtime was " + getTimeSinceStart() + "ms.");
   }
 
   /**

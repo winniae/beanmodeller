@@ -32,6 +32,9 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    */
   private MavenProject project;
 
+  private long startTime;
+  private Long lastMeasurement = null;
+
   protected Set<ContentBeanInformation> analyzeContentBeans() throws MojoFailureException, MojoExecutionException {
     //create the analyzator
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
@@ -52,6 +55,27 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
       throw new MojoExecutionException("This should have never happened", e);
     }
     return roots;
+  }
+
+  public long getTimeSinceLastMeasurement() {
+    if (lastMeasurement == null) {
+      lastMeasurement = System.currentTimeMillis();
+      return lastMeasurement - startTime;
+    }
+    else {
+      long now = System.currentTimeMillis();
+      long result = now - lastMeasurement;
+      lastMeasurement = now;
+      return result;
+    }
+  }
+
+  protected void startTimeMeasurements() {
+    startTime = System.currentTimeMillis();
+  }
+
+  public long getTimeSinceStart() {
+    return System.currentTimeMillis() - startTime;
   }
 
   public String getBeanPackage() {
