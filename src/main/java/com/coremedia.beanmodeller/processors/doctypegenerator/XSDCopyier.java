@@ -45,7 +45,7 @@ public class XSDCopyier extends MavenProcessor {
           FileUtils.copyFile(sourceFile, targetFile);
         }
         catch (IOException e) {
-          throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir);
+          throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir, e);
         }
       }
     }
