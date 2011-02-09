@@ -3,8 +3,8 @@ package com.coremedia.beanmodeller.maven;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -110,7 +110,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         getLog().error("Error createting File Output stream! ", e);
         throw new MojoFailureException("Error creating File Output stream! ", e);
       }
-      catch (DocTypeMarshalerException e) {
+      catch (DocTypeMarshallerException e) {
         getLog().error("Error marshalling document model! ", e);
         throw new MojoFailureException("Error marshaling document model! ", e);
       }
@@ -121,7 +121,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       try {
         copyier.copyXSD(marshaller.getFoundMarkupSchemaDefinitions());
       }
-      catch (DocTypeMarshalerException e) {
+      catch (DocTypeMarshallerException e) {
         throw new MojoFailureException("Unable to copy the XSD", e);
       }
     }
