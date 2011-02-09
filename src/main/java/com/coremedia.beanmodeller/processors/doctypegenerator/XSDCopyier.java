@@ -23,12 +23,12 @@ public class XSDCopyier extends MavenProcessor {
     this.xsdPath = xsdPath;
   }
 
-  public void copyXSD(Map<String, URL> schemas) throws DocTypeMarshalerException {
+  public void copyXSD(Map<String, URL> schemas) throws DocTypeMarshallerException {
     if (xsdPath == null) {
-      throw new DocTypeMarshalerException("You must provide a target path for the XSDs");
+      throw new DocTypeMarshallerException("You must provide a target path for the XSDs");
     }
     if (schemas == null) {
-      throw new DocTypeMarshalerException("You must provide schemas to copy!");
+      throw new DocTypeMarshallerException("You must provide schemas to copy!");
     }
     File targetDir = new File(xsdPath);
     if (!targetDir.exists()) {
@@ -45,7 +45,7 @@ public class XSDCopyier extends MavenProcessor {
           FileUtils.copyFile(sourceFile, targetFile);
         }
         catch (IOException e) {
-          throw new DocTypeMarshalerException("Unable to copy " + sourceFile + " to " + targetDir);
+          throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir);
         }
       }
     }

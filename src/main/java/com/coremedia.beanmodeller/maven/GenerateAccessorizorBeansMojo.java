@@ -25,7 +25,7 @@ import java.util.TreeSet;
  *
  * @goal generate-contentbeans
  */
-public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
+public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
   private static final String SPRING_BEAN_CONFIG_DEFAULT_ROOT_PARENT = "abstractContentBean";
   private static final String SPRING_BEAN_NAME_PREFIX = "contentBeanFactory:";
@@ -35,39 +35,45 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
    *
    * @parameter required = true, description = "Target directory for the generated code."
    */
-  private String targetPackage;
+  private String accessorizorBeansTargetPackage;
 
   /**
    * Where the generated content beans should be saved
    *
    * @parameter default-value="${project.build.directory}/generated-sources/beanmodeller"
    */
-  private String targetPath;
+  private String accessorizorBeansTargetPath;
 
   /**
    * Where the generated bean configuration should be saved
    *
    * @parameter default-value="${project.build.directory}/webapp/WEB-INF/spring/contentbeans.xml"
    */
-  private String targetSpringConfigFileName;
+  private String springConfigTargetFileName;
 
   private ContentBeanCodeGenerator generator;
 
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
+    startTimeMeasurements();
 
-    if (targetPackage == null) {
+    if (accessorizorBeansTargetPackage == null) {
       throw new MojoFailureException("You must provide a package name for the content beans");
     }
 
     Set<ContentBeanInformation> roots = analyzeContentBeans();
 
+    getLog().info("Analyzing contentbeans took " + getTimeSinceLastMeasurement() + "ms.");
+
     generator = new ContentBeanCodeGenerator();
-    generator.setPackageName(targetPackage);
+    generator.setPackageName(accessorizorBeansTargetPackage);
 
     createContentBeanImplementations(roots);
+    getLog().info("Creating implementations took " + getTimeSinceLastMeasurement() + "ms.");
 
     createSpringConfig(roots);
+    getLog().info("Creating Spring config took " + getTimeSinceLastMeasurement() + "ms.");
+    getLog().info("Total runtime was " + getTimeSinceStart() + "ms.");
   }
 
   private void createSpringConfig(Set<ContentBeanInformation> roots) throws MojoFailureException {
@@ -89,10 +95,10 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
       writer.close();
     }
     catch (PluginException e) {
-      throw new MojoFailureException("There was a problem with the target file " + targetSpringConfigFileName, e);
+      throw new MojoFailureException("There was a problem with the target file " + springConfigTargetFileName, e);
     }
     catch (IOException e) {
-      throw new MojoFailureException("There was a problem with the target file " + targetSpringConfigFileName, e);
+      throw new MojoFailureException("There was a problem with the target file " + springConfigTargetFileName, e);
     }
   }
 
@@ -134,7 +140,7 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
     MavenProject project = getProject();
     //if we are running in a project
     if (project != null) {
-      project.addCompileSourceRoot(targetPath);
+      project.addCompileSourceRoot(accessorizorBeansTargetPath);
     }
     else {
       getLog().warn("Not running in a maven project - source will most probably not be compiled!");
@@ -142,23 +148,23 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
   }
 
   public File getTargetDirectory() throws PluginException {
-    File result = new File(targetPath);
+    File result = new File(accessorizorBeansTargetPath);
     if (!result.exists()) {
       if (!result.mkdirs()) {
-        throw new PluginException("The target path \'" + targetPath + "\' for the generated beans does not exist and cannot be generated");
+        throw new PluginException("The target path \'" + accessorizorBeansTargetPath + "\' for the generated beans does not exist and cannot be generated");
       }
     }
     if (!result.isDirectory()) {
-      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is no directory");
+      throw new PluginException("The target path \'" + accessorizorBeansTargetPath + "\' for the generated beans is no directory");
     }
     if (!result.canWrite()) {
-      throw new PluginException("The target path \'" + targetPath + "\' for the generated beans is not writeable");
+      throw new PluginException("The target path \'" + accessorizorBeansTargetPath + "\' for the generated beans is not writeable");
     }
     return result;
   }
 
   public File getTargetSpringConfigFile() throws PluginException, IOException {
-    File result = new File(targetSpringConfigFileName);
+    File result = new File(springConfigTargetFileName);
     if (!result.exists()) {
       final File parentFile = result.getParentFile();
 
@@ -170,14 +176,14 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
       }
 
       if (!result.createNewFile()) {
-        throw new PluginException("The target file \'" + targetSpringConfigFileName + "\' for the config does not exist");
+        throw new PluginException("The target file \'" + springConfigTargetFileName + "\' for the config does not exist");
       }
     }
     if (result.isDirectory()) {
-      throw new PluginException("The target file \'" + targetSpringConfigFileName + "\' for the config is a directory");
+      throw new PluginException("The target file \'" + springConfigTargetFileName + "\' for the config is a directory");
     }
     if (!result.canWrite()) {
-      throw new PluginException("The target file \'" + targetSpringConfigFileName + "\' for the config is not writeable");
+      throw new PluginException("The target file \'" + springConfigTargetFileName + "\' for the config is not writeable");
     }
     return result;
   }

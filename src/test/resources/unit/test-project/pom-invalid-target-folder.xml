@@ -26,10 +26,11 @@
         <groupId>com.coremedia.maven</groupId>
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <configuration>
-          <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
+          <contentBeanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</contentBeanPackage>
           <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
           <!-- The wrong path parameter-->
-          <docTypeTargetPath>target/doc//types/</docTypeTargetPath>
+          <docTypeTargetPath>target/doc/*/types/</docTypeTargetPath>
+          <xsdTargetPath>target/xsd</xsdTargetPath>
         </configuration>
       </plugin>
     </plugins>

@@ -1,10 +1,8 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -27,7 +25,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   /**
    * Target path for doctype xml
    *
-   * @parameter default-value="${project.build.directory}/doctypes"
+   * @parameter default-value="${project.build.directory}/contentserver/config/contentserver/doctypes"
    */
   private String docTypeTargetPath;
 
@@ -39,65 +37,46 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   private String docTypeTargetFileName;
 
   /**
-   * Path for searching abstract content beans.
-   *
-   * @parameter default-value="."
-   */
-  private String abstractBeanPath;
-
-  /**
    * Default length for string properties
    *
    * @parameter default-value="32"
    */
-  private Integer propertyDefaultStringLength;
+  private Integer stringPropertyDefaultLength;
 
   /**
    * Minimal number of items in LinkList
    *
    * @parameter default-value="0"
    */
-  private Integer propertyDefaultLinkListMin;
+  private Integer linkListPropertyDefaultMin;
 
   /**
    * Maximum number of items in LinkList
    *
-   * @parameter default-value="1000000"
+   * @parameter
    */
-  private Integer propertyDefaultLinkListMax;
+  private Integer linkListPropertyDefaultMax = Integer.MAX_VALUE;
 
   /**
    * Where should the custom XML Schema definitions copied.
    *
    * @parameter default-value="${project.build.directory}/contentserver/lib/xml"
    */
-  private String xsdTargetDir;
+  private String xsdTargetPath;
 
   public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
   public static final String ERROR_CREATING_TARGET_FILE = "Error creating file ";
   public static final String ERROR_GENERATING_DOCTYPES = "Error while running generate-doctypes! ";
 
   public void execute() throws MojoExecutionException, MojoFailureException {
+    startTimeMeasurements();
 
-    ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
-    DocTypeMarshaller marshaller;
-
-    analyzer.setLog(getLog());
-    // searches for annotated abstract content beans in <abstractBeanPath> package 
-    analyzer.findContentBeans(abstractBeanPath);
-
-    Set<ContentBeanInformation> rootBeanInformations;
-    try {
-      analyzer.analyzeContentBeanInformation();
-      rootBeanInformations = analyzer.getContentBeanRoots();
-    }
-    catch (ContentBeanAnalyzerException e) {
-      getLog().error(ERROR_GENERATING_DOCTYPES, e);
-      throw new MojoFailureException(ERROR_GENERATING_DOCTYPES, e);
-    }
+    Set<ContentBeanInformation> rootBeanInformations = analyzeContentBeans();
+    getLog().info("Analyzing content beans took " + getTimeSinceLastMeasurement() + "ms.");
 
     File destFile = getDestinationFile();
 
+    DocTypeMarshaller marshaller;
     if (destFile != null) {
       getLog().info("Writing doctype XML to " + destFile.getPath());
       try {
@@ -110,21 +89,25 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         getLog().error("Error createting File Output stream! ", e);
         throw new MojoFailureException("Error creating File Output stream! ", e);
       }
-      catch (DocTypeMarshalerException e) {
+      catch (DocTypeMarshallerException e) {
         getLog().error("Error marshalling document model! ", e);
         throw new MojoFailureException("Error marshaling document model! ", e);
       }
 
+      getLog().info("Generating doctype.xml took " + getTimeSinceLastMeasurement() + "ms.");
+
       //copy the xsd
-      XSDCopyier copyier = new XSDCopyier(xsdTargetDir);
+      XSDCopyier copyier = new XSDCopyier(xsdTargetPath);
       copyier.setLog(getLog());
       try {
         copyier.copyXSD(marshaller.getFoundMarkupSchemaDefinitions());
       }
-      catch (DocTypeMarshalerException e) {
+      catch (DocTypeMarshallerException e) {
         throw new MojoFailureException("Unable to copy the XSD", e);
       }
     }
+    getLog().info("Copying XSDs took " + getTimeSinceLastMeasurement() + "ms.");
+    getLog().info("Total runtime was " + getTimeSinceStart() + "ms.");
   }
 
   /**

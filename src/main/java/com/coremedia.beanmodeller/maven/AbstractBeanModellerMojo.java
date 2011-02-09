@@ -23,7 +23,7 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    *
    * @parameter
    */
-  private String beanPackage;
+  private String contentBeanPackage;
 
   /**
    * Path for searching abstract content beans.
@@ -32,12 +32,15 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    */
   private MavenProject project;
 
+  private long startTime;
+  private Long lastMeasurement = null;
+
   protected Set<ContentBeanInformation> analyzeContentBeans() throws MojoFailureException, MojoExecutionException {
     //create the analyzator
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
     //set the logging
     analyzer.setLog(getLog());
-    analyzer.findContentBeans(beanPackage);
+    analyzer.findContentBeans(contentBeanPackage);
     try {
       analyzer.analyzeContentBeanInformation();
     }
@@ -54,12 +57,33 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     return roots;
   }
 
-  public String getBeanPackage() {
-    return beanPackage;
+  public long getTimeSinceLastMeasurement() {
+    if (lastMeasurement == null) {
+      lastMeasurement = System.currentTimeMillis();
+      return lastMeasurement - startTime;
+    }
+    else {
+      long now = System.currentTimeMillis();
+      long result = now - lastMeasurement;
+      lastMeasurement = now;
+      return result;
+    }
   }
 
-  public void setBeanPackage(String beanPackage) {
-    this.beanPackage = beanPackage;
+  protected void startTimeMeasurements() {
+    startTime = System.currentTimeMillis();
+  }
+
+  public long getTimeSinceStart() {
+    return System.currentTimeMillis() - startTime;
+  }
+
+  public String getContentBeanPackage() {
+    return contentBeanPackage;
+  }
+
+  public void setContentBeanPackage(String contentBeanPackage) {
+    this.contentBeanPackage = contentBeanPackage;
   }
 
   public MavenProject getProject() {

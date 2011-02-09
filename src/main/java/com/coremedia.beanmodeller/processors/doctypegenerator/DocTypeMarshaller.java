@@ -73,12 +73,12 @@ public class DocTypeMarshaller extends MavenProcessor {
   /**
    * Triggers Marshaller to write XML to output stream
    *
-   * @throws DocTypeMarshalerException if it cannot write the XML
+   * @throws DocTypeMarshallerException if it cannot write the XML
    */
-  public void marshallDoctype() throws DocTypeMarshalerException {
+  public void marshallDoctype() throws DocTypeMarshallerException {
     // there must be
     if (this.rootBeanInformations == null) {
-      throw new DocTypeMarshalerException(DocTypeMarshalerException.ERROR_MARSHALING);
+      throw new DocTypeMarshallerException(DocTypeMarshallerException.ERROR_MARSHALING);
     }
 
     getLog().info("Creating doctype XML");
@@ -167,10 +167,10 @@ public class DocTypeMarshaller extends MavenProcessor {
     return sortedRootBeansInformation;
   }
 
-  private void writeDocTypeModel(DocumentTypeModel documentTypeModel) throws DocTypeMarshalerException {
+  private void writeDocTypeModel(DocumentTypeModel documentTypeModel) throws DocTypeMarshallerException {
     // setup default output stream
     if (this.outputStream == null) {
-      throw new DocTypeMarshalerException("Writing doctype XML");
+      throw new DocTypeMarshallerException("Writing doctype XML");
     }
 
     // Write xml to output stream
@@ -181,7 +181,7 @@ public class DocTypeMarshaller extends MavenProcessor {
       m.marshal(documentTypeModel, this.outputStream);
     }
     catch (JAXBException e) {
-      throw new DocTypeMarshalerException("unable to write the doctypes xml", e);
+      throw new DocTypeMarshallerException("unable to write the doctypes xml", e);
     }
     finally {
       try {
@@ -189,7 +189,7 @@ public class DocTypeMarshaller extends MavenProcessor {
         this.outputStream.close();
       }
       catch (IOException e) {
-        throw new DocTypeMarshalerException("unable to write the doctypes xml", e);
+        throw new DocTypeMarshallerException("unable to write the doctypes xml", e);
       }
     }
   }

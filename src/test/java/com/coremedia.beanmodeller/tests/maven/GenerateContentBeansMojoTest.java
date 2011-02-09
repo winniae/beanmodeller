@@ -1,6 +1,6 @@
 package com.coremedia.beanmodeller.tests.maven;
 
-import com.coremedia.beanmodeller.maven.GenerateContentBeansMojo;
+import com.coremedia.beanmodeller.maven.GenerateAccessorizorBeansMojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
@@ -32,7 +32,7 @@ public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
     assertNotNull(pom);
     assertTrue(pom.exists());
 
-    GenerateContentBeansMojo generateDoctypesMojo = (GenerateContentBeansMojo) lookupMojo("generate-contentbeans", pom);
+    GenerateAccessorizorBeansMojo generateDoctypesMojo = (GenerateAccessorizorBeansMojo) lookupMojo("generate-contentbeans", pom);
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
 

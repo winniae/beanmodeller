@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -27,10 +27,10 @@
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
-          <beanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</beanPackage>
-          <targetPackage>com.coremedia.test</targetPackage>
-          <targetPath>target/test-content-beans</targetPath>
-          <targetSpringConfigFileName>target/test-content-beans/spring/contentbeans.xml</targetSpringConfigFileName>
+          <contentBeanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</contentBeanPackage>
+          <accessorizorBeansTargetPackage>com.coremedia.test</accessorizorBeansTargetPackage>
+          <accessorizorBeansTargetPath>target/test-content-beans</accessorizorBeansTargetPath>
+          <springConfigTargetFileName>target/test-content-beans/spring/contentbeans.xml</springConfigTargetFileName>
         </configuration>
       </plugin>
     </plugins>

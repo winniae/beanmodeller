@@ -83,7 +83,7 @@ Generating Content Access Implementations
             </goals>
             <phase>generate-sources</phase>
             <configuration>
-              <beanPackage>where.are.your.beans</beanPackage>
+              <contentBeanPackage>where.are.your.beans</contentBeanPackage>
               <targetPackage>where.should.the.implementations.go</targetPackage>
             </configuration>
           </execution>
@@ -95,7 +95,7 @@ Generating Content Access Implementations
 
 *Mandatory Configuration
 
-  The parameter <<beanPackage>> specifies the package in which the content beans can be found. This ca of course
+  The parameter <<contentBeanPackage>> specifies the package in which the content beans can be found. This ca of course
   be the parent package.
 
   The parameter <<targetPackage>> defines the package name of the generated beans. It is not very important to pick a

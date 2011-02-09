@@ -26,10 +26,11 @@
         <groupId>com.coremedia.maven</groupId>
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <configuration>
-          <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
+          <contentBeanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</contentBeanPackage>
           <!-- The wrong filename parameter-->
           <docTypeTargetFileName>dta/g-doctypes.xml</docTypeTargetFileName>
           <docTypeTargetPath>target/doctypes/</docTypeTargetPath>
+          <xsdTargetPath>target/xsd</xsdTargetPath>
         </configuration>
       </plugin>
     </plugins>

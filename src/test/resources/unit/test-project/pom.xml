@@ -27,10 +27,10 @@
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
-          <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
+          <contentBeanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</contentBeanPackage>
           <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
           <docTypeTargetPath>target/testdoctypes/</docTypeTargetPath>
-          <xsdTargetDir>target/xsd</xsdTargetDir>
+          <xsdTargetPath>target/xsd</xsdTargetPath>
         </configuration>
       </plugin>
     </plugins>
