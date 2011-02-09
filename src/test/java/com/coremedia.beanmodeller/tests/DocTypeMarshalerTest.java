@@ -62,12 +62,14 @@ public class DocTypeMarshalerTest {
     }
 
     String expectedXML = "<DocumentTypeModel Title=\"telekom-document-type\">\n" +
+        "    <XmlGrammar Name=\"simple.xsd\"/>\n" +
         "    <DocType Name=\"CBGContent\">\n" +
-        "        <StringProperty Name=\"Description\" Length=\"20\"/>\n" +
+        "        <StringProperty Length=\"20\" Name=\"Description\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAppointment\" Parent=\"CBGContent\">\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"Attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
         "        <DateProperty Name=\"BeginDate\"/>\n" +
+        "        <XmlProperty Grammar=\"simple.xsd\" Name=\"CustomXML\"/>\n" +
         "        <DateProperty Name=\"EndDate\"/>\n" +
         "        <IntProperty Name=\"NumberOfAttendees\"/>\n" +
         "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"Text\"/>\n" +

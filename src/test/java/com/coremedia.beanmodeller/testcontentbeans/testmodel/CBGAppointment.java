@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.testcontentbeans.testmodel;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
+import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.xml.Markup;
 
 import java.util.Calendar;
@@ -35,6 +36,14 @@ public abstract class CBGAppointment extends CBGContent {
    * @return Date when the Appointment ends..
    */
   abstract Calendar getEndDate();
+
+  /**
+   * A simple XML property to ensure that a custom xsd is used.
+   *
+   * @return the custom XML
+   */
+  @ContentProperty(propertyXmlGrammar = "simple.xsd")
+  abstract Markup getCustomXML();
 
 
   /**

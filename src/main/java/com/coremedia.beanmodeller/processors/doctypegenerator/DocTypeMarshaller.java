@@ -94,9 +94,23 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     getProperties(sortedRootBeansInformation);
 
-    writeDocTypeModel(documentTypeModel);
+    addGrammars(documentTypeModel);
 
-    //copyGrammars();
+    writeDocTypeModel(documentTypeModel);
+  }
+
+  private void addGrammars(DocumentTypeModel documentTypeModel) {
+    List<Object> elements = documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType();
+    SortedSet<String> grammarNames = new TreeSet<String>();
+    grammarNames.addAll(foundMarkupSchemaDefinitions.keySet());
+    List<XmlGrammar> grammars = new LinkedList<XmlGrammar>();
+    for (String grammarName : grammarNames) {
+      XmlGrammar grammar = new XmlGrammar();
+      grammar.setName(grammarName);
+      //TODO we should als support public IDs via real internet URLS
+      grammars.add(grammar);
+    }
+    elements.addAll(0, grammars);
   }
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
