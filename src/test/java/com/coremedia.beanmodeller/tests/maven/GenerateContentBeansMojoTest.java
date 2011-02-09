@@ -28,16 +28,11 @@ public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
   protected void setUp() throws Exception {
     // required
     super.setUp();
-    File pom = getTestFile("src/test/resources/unit-test/project/pom-generate-contentbeans.xml");
+    File pom = getTestFile("src/test/resources/unit/test-project/pom-generate-contentbeans.xml");
     assertNotNull(pom);
     assertTrue(pom.exists());
 
-    //TODO use test pom "pom-generate-contentbeans.xml" to set parameters instead of setters
     GenerateContentBeansMojo generateDoctypesMojo = (GenerateContentBeansMojo) lookupMojo("generate-contentbeans", pom);
-    generateDoctypesMojo.setBeanPackage("com.coremedia.beanmodeller.testcontentbeans.testmodel");
-    generateDoctypesMojo.setTargetPackage("com.coremedia.test");
-    generateDoctypesMojo.setTargetPath("target/test-content-beans");
-    generateDoctypesMojo.setTargetSpringConfigFileName(CONTENTBEANS_XML_PATH);
     assertNotNull(generateDoctypesMojo);
     generateDoctypesMojo.execute();
 

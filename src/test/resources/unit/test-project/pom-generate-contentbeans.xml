@@ -27,9 +27,10 @@
         <artifactId>beanmodeller-maven-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
-          <abstractBeanPath>com.coremedia.beanmodeller.testcontentbeans.testmodel</abstractBeanPath>
-          <docTypeTargetFileName>dtag-doctypes.xml</docTypeTargetFileName>
-          <docTypeTargetPath>target/testdoctypes/</docTypeTargetPath>
+          <beanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</beanPackage>
+          <targetPackage>com.coremedia.test</targetPackage>
+          <targetPath>target/test-content-beans</targetPath>
+          <targetSpringConfigFileName>target/test-content-beans/spring/contentbeans.xml</targetSpringConfigFileName>
         </configuration>
       </plugin>
     </plugins>

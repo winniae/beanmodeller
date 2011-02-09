@@ -157,30 +157,6 @@ public class GenerateContentBeansMojo extends AbstractBeanModellerMojo {
     return result;
   }
 
-  public String getTargetPackage() {
-    return targetPackage;
-  }
-
-  public void setTargetPackage(String targetPackage) {
-    this.targetPackage = targetPackage;
-  }
-
-  public String getTargetPath() {
-    return targetPath;
-  }
-
-  public void setTargetPath(String targetPath) {
-    this.targetPath = targetPath;
-  }
-
-  public String getTargetSpringConfigFileName() {
-    return targetSpringConfigFileName;
-  }
-
-  public void setTargetSpringConfigFileName(String targetSpringConfigFileName) {
-    this.targetSpringConfigFileName = targetSpringConfigFileName;
-  }
-
   public File getTargetSpringConfigFile() throws PluginException, IOException {
     File result = new File(targetSpringConfigFileName);
     if (!result.exists()) {
