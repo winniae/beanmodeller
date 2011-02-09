@@ -9,6 +9,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,16 +46,27 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
       analyzer.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
-      throw new MojoFailureException("Unable to analyze the content beans", e);
+      throw new MojoFailureException("Unable to analyze the content beans:" + formatErrors(e), e);
     }
     Set<ContentBeanInformation> roots;
     try {
       roots = analyzer.getContentBeanRoots();
     }
     catch (ContentBeanAnalyzerException e) {
-      throw new MojoExecutionException("This should have never happened", e);
+      throw new MojoExecutionException("This should have never happened: ", e);
     }
     return roots;
+  }
+
+  private String formatErrors(ContentBeanAnalyzationException e) {
+    List<ContentBeanAnalyzationException.ContentBeanAnalyzationError> errors = e.getErrors();
+    StringBuffer message = new StringBuffer();
+    for (ContentBeanAnalyzationException.ContentBeanAnalyzationError error : errors) {
+      message.append("\n\t");
+      message.append(e.toString());
+    }
+    message.append("\n");
+    return message.toString();
   }
 
   public long getTimeSinceLastMeasurement() {
