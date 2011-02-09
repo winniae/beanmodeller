@@ -5,6 +5,7 @@ import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshalerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
+import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -65,6 +66,13 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    */
   private Integer propertyDefaultLinkListMax;
 
+  /**
+   * Where should the custom XML Schema definitions copied.
+   *
+   * @parameter default-value="${project.build.directory}/contentserver/lib/xml", required=true, description="Where should the xml schemas be copied"
+   */
+  private String xsdTargetDir;
+
   public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
   public static final String ERROR_CREATING_TARGET_FILE = "Error creating file! ";
   public static final String ERROR_GENERATING_DOCTYPES = "Error while running generate-doctypes! ";
@@ -100,11 +108,21 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       }
       catch (FileNotFoundException e) {
         getLog().error("Error createting File Output stream! ", e);
-        throw new MojoFailureException("Error createting File Output stream! ", e);
+        throw new MojoFailureException("Error creating File Output stream! ", e);
       }
       catch (DocTypeMarshalerException e) {
         getLog().error("Error marshalling document model! ", e);
-        throw new MojoFailureException("Error marshalling document model! ", e);
+        throw new MojoFailureException("Error marshaling document model! ", e);
+      }
+
+      //copy the xsd
+      XSDCopyier copyier = new XSDCopyier(xsdTargetDir);
+      copyier.setLog(getLog());
+      try {
+        copyier.copyXSD(marshaller.getFoundMarkupSchemaDefinitions());
+      }
+      catch (DocTypeMarshalerException e) {
+        throw new MojoFailureException("Unable to copy the XSD", e);
       }
     }
   }
