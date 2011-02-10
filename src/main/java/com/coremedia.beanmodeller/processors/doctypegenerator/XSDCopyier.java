@@ -37,7 +37,7 @@ public class XSDCopyier extends MavenProcessor {
       targetDir = BeanModellerHelper.getSanitizedDirectory(xsdPath);
     }
     catch (PluginException e) {
-      throw new DocTypeMarshallerException("Unable to get target directory",e);
+      throw new DocTypeMarshallerException("Unable to get target directory", e);
     }
     getLog().info("Copying " + schemas.size() + " schemas to " + xsdPath);
     for (String schemaName : schemas.keySet()) {
@@ -45,13 +45,19 @@ public class XSDCopyier extends MavenProcessor {
       if (schemaUrl != null && "file".equals(schemaUrl.getProtocol())) {
         getLog().info("Copying " + schemaName + " from " + schemaUrl);
         File sourceFile = new File(schemaUrl.getPath());
-        File targetFile = new File(targetDir, sourceFile.getName());
         try {
+          File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, sourceFile.getName());
           FileUtils.copyFile(sourceFile, targetFile);
         }
         catch (IOException e) {
           throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir, e);
         }
+        catch (PluginException e) {
+          throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir, e);
+        }
+      }
+      else {
+        getLog().warn("Unable to copy " + schemaUrl + " since I do not know how!");
       }
     }
   }
