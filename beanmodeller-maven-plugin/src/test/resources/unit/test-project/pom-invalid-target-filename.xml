@@ -28,7 +28,7 @@
         <configuration>
           <contentBeanPackage>com.coremedia.beanmodeller.testcontentbeans.testmodel</contentBeanPackage>
           <!-- The wrong filename parameter-->
-          <docTypeTargetFileName>dta/g-doctypes.xml</docTypeTargetFileName>
+          <docTypeTargetFileName>target/dta/g-doctypes.xml</docTypeTargetFileName>
           <docTypeTargetPath>target/doctypes/</docTypeTargetPath>
           <xsdTargetPath>target/xsd</xsdTargetPath>
         </configuration>
