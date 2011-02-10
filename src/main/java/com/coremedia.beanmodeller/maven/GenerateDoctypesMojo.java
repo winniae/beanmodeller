@@ -121,7 +121,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       destFile = BeanModellerHelper.getSanitizedFile(this.docTypeTargetPath, this.docTypeTargetFileName);
     }
     catch (PluginException e) {
-      throw new MojoFailureException("Unable to get target file",e);
+      throw new MojoFailureException("Unable to get target file", e);
     }
     if (!destFile.exists()) {
       try {
@@ -129,7 +129,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
       }
       catch (IOException e) {
         getLog().error(ERROR_CREATING_TARGET_FILE + ": " + this.docTypeTargetFileName, e);
-        throw new MojoFailureException(ERROR_CREATING_TARGET_FILE, e);
+        throw new MojoFailureException(ERROR_CREATING_TARGET_FILE + e.getMessage(), e);
       }
     }
 

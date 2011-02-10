@@ -42,12 +42,17 @@ public class XSDCopyier extends MavenProcessor {
     getLog().info("Copying " + schemas.size() + " schemas to " + xsdPath);
     for (String schemaName : schemas.keySet()) {
       URL schemaUrl = schemas.get(schemaName);
-      if (schemaUrl != null && "file".equals(schemaUrl.getProtocol())) {
+      if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
         getLog().info("Copying " + schemaName + " from " + schemaUrl);
         File sourceFile = new File(schemaUrl.getPath());
         try {
           File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, sourceFile.getName());
-          FileUtils.copyFile(sourceFile, targetFile);
+          if ("file".equals(schemaUrl)) {
+            FileUtils.copyFile(sourceFile, targetFile);
+          }
+          //TODO there is no way to copy the file from the jar
+          //TODO find out how the XSD are handled in CM6
+          //TODO update this whole f* block
         }
         catch (IOException e) {
           throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir, e);
@@ -57,7 +62,12 @@ public class XSDCopyier extends MavenProcessor {
         }
       }
       else {
-        getLog().warn("Unable to copy " + schemaUrl + " since I do not know how!");
+        if (schemaUrl == null) {
+          getLog().warn("Unable to copy " + schemaUrl + " since I the URL is null!");
+        }
+        else {
+          getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
+        }
       }
     }
   }
