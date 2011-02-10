@@ -8,6 +8,7 @@ import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.schemabeans.DocType;
 import com.coremedia.schemabeans.DocumentTypeModel;
+import com.coremedia.schemabeans.Import;
 import com.coremedia.schemabeans.IndexablePropertyDescriptor;
 import com.coremedia.schemabeans.LinkListProperty;
 import com.coremedia.schemabeans.ObjectFactory;
@@ -115,6 +116,10 @@ public class DocTypeMarshaller extends MavenProcessor {
       grammars.add(grammar);
     }
     elements.addAll(0, grammars);
+    //adding the coremedia richtext grammar
+    Import importElement = objectFactory.createImport();
+    importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
+    elements.add(0,objectFactory.createImportGrammar(importElement));
   }
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
