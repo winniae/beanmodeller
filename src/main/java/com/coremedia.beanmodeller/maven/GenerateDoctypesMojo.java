@@ -4,6 +4,7 @@ import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;
+import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -25,7 +26,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   /**
    * Target path for doctype xml
    *
-   * @parameter default-value="${project.build.directory}/contentserver/config/contentserver/doctypes"
+   * @parameter default-value="${project.build.directory}/${project.build.finalName}/config/contentserver/doctypes"
    */
   private String docTypeTargetPath;
 
@@ -64,7 +65,6 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    */
   private String xsdTargetPath;
 
-  public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
   public static final String ERROR_CREATING_TARGET_FILE = "Error creating file ";
   public static final String ERROR_GENERATING_DOCTYPES = "Error while running generate-doctypes! ";
 
@@ -116,14 +116,13 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    * @return
    */
   private File getDestinationFile() throws MojoFailureException {
-    File destDir = new File(this.docTypeTargetPath);
-    if (!destDir.exists() && !destDir.mkdirs()) {
-      // target directory does not exist and could not be created
-      getLog().error(ERROR_CREATING_TARGET_DIRECTORY + ": " + this.docTypeTargetPath);
-      throw new MojoFailureException(ERROR_CREATING_TARGET_DIRECTORY, new RuntimeException(ERROR_CREATING_TARGET_DIRECTORY));
+    File destFile = null;
+    try {
+      destFile = BeanModellerHelper.getSanitizedFile(this.docTypeTargetPath, this.docTypeTargetFileName);
     }
-
-    File destFile = new File(destDir, this.docTypeTargetFileName);
+    catch (PluginException e) {
+      throw new MojoFailureException("Unable to get target file",e);
+    }
     if (!destFile.exists()) {
       try {
         destFile.createNewFile();

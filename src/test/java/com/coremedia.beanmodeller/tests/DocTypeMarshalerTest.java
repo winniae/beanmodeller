@@ -72,6 +72,7 @@ public class DocTypeMarshalerTest {
         "        <XmlProperty Grammar=\"simple.xsd\" Name=\"CustomXML\"/>\n" +
         "        <DateProperty Name=\"EndDate\"/>\n" +
         "        <IntProperty Name=\"NumberOfAttendees\"/>\n" +
+        "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"Organizer\" Max=\"1\" Min=\"0\"/>\n" +
         "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"Text\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAttendee\" Parent=\"CBGContent\"/>\n" +
