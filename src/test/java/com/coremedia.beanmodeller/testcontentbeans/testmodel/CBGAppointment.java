@@ -69,4 +69,13 @@ public abstract class CBGAppointment extends CBGContent {
    * @return always a Markup object containing some or no text.
    */
   abstract Markup getText();
+
+  /**
+   * The organizer organizes the appointment. He is still of type Attendee, though.
+   * <p/>
+   * Single LinkList item.
+   *
+   * @return One attendee object from Content
+   */
+  abstract CBGAttendee getOrganizer();
 }
