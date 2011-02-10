@@ -47,7 +47,7 @@ public class XSDCopyier extends MavenProcessor {
         File sourceFile = new File(schemaUrl.getPath());
         try {
           File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, sourceFile.getName());
-          if ("file".equals(schemaUrl)) {
+          if ("file".equals(schemaUrl.getProtocol())) {
             FileUtils.copyFile(sourceFile, targetFile);
           }
           //TODO there is no way to copy the file from the jar
