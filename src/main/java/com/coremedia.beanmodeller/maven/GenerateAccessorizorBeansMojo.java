@@ -2,6 +2,7 @@ package com.coremedia.beanmodeller.maven;
 
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
+import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
@@ -148,7 +149,13 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
   }
 
   public File getTargetDirectory() throws PluginException {
-    File result = new File(accessorizorBeansTargetPath);
+    File result = null;
+    try {
+      result = BeanModellerHelper.getSanitizedDirectory(accessorizorBeansTargetPath);
+    }
+    catch (PluginException e) {
+      throw new PluginException("Cannot create target directory",e);
+    }
     if (!result.exists()) {
       if (!result.mkdirs()) {
         throw new PluginException("The target path \'" + accessorizorBeansTargetPath + "\' for the generated beans does not exist and cannot be generated");

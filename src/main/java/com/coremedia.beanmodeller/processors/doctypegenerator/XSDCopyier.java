@@ -1,6 +1,8 @@
 package com.coremedia.beanmodeller.processors.doctypegenerator;
 
+import com.coremedia.beanmodeller.maven.PluginException;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
+import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -30,9 +32,12 @@ public class XSDCopyier extends MavenProcessor {
     if (schemas == null) {
       throw new DocTypeMarshallerException("You must provide schemas to copy!");
     }
-    File targetDir = new File(xsdPath);
-    if (!targetDir.exists()) {
-      targetDir.mkdirs();
+    File targetDir = null;
+    try {
+      targetDir = BeanModellerHelper.getSanitizedDirectory(xsdPath);
+    }
+    catch (PluginException e) {
+      throw new DocTypeMarshallerException("Unable to get target directory",e);
     }
     getLog().info("Copying " + schemas.size() + " schemas to " + xsdPath);
     for (String schemaName : schemas.keySet()) {
