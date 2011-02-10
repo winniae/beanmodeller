@@ -8,6 +8,7 @@ import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.schemabeans.DocType;
 import com.coremedia.schemabeans.DocumentTypeModel;
+import com.coremedia.schemabeans.IndexablePropertyDescriptor;
 import com.coremedia.schemabeans.LinkListProperty;
 import com.coremedia.schemabeans.ObjectFactory;
 import com.coremedia.schemabeans.Propertydescriptor;
@@ -16,8 +17,10 @@ import com.coremedia.schemabeans.XmlGrammar;
 import com.coremedia.schemabeans.XmlProperty;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -84,6 +87,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     getLog().info("Creating doctype XML");
 
     DocumentTypeModel documentTypeModel = objectFactory.createDocumentTypeModel();
+    //TODO this should be a parameter or something
     documentTypeModel.setTitle("telekom-document-type");
 
     SortedSet<ContentBeanInformation> sortedRootBeansInformation = getSortedRootBeanInformation();
@@ -100,7 +104,7 @@ public class DocTypeMarshaller extends MavenProcessor {
   }
 
   private void addGrammars(DocumentTypeModel documentTypeModel) {
-    List<Object> elements = documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType();
+    List<Object> elements = documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType();
     SortedSet<String> grammarNames = new TreeSet<String>();
     grammarNames.addAll(foundMarkupSchemaDefinitions.keySet());
     List<XmlGrammar> grammars = new LinkedList<XmlGrammar>();
@@ -151,7 +155,7 @@ public class DocTypeMarshaller extends MavenProcessor {
   private void getChildDocTypes(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
     for (ContentBeanInformation contentBeanInformation : sortedRootBeansInformation) {
       // get doctypes that inherit from this root content bean
-      documentTypeModel.getXmlGrammarOrXmlSchemaOrDocType().addAll(extractChildDocTypes(contentBeanInformation, null));
+      documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType().addAll(extractChildDocTypes(contentBeanInformation, null));
     }
   }
 
@@ -254,11 +258,25 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     for (PropertyInformation propertyInformation : propertyInformationsSorted) {
       // XML property descriptor to create
-      Propertydescriptor propertydescriptor = createPropertyDescriptionFromPropertyInformation(propertyInformation);
+      Object element = createPropertyDescriptionFromPropertyInformation(propertyInformation);
 
-      if (propertydescriptor != null) {
-        propertydescriptor.setName(propertyInformation.getDocumentTypePropertyName());
-        currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(propertydescriptor);
+      if (element != null) {
+        if (element instanceof  Propertydescriptor) {
+          Propertydescriptor propertydescriptor = (Propertydescriptor) element;
+          propertydescriptor.setName(propertyInformation.getDocumentTypePropertyName());
+         } else if (element instanceof JAXBElement) {
+          JAXBElement jaxbElement = (JAXBElement) element;
+          Object value = jaxbElement.getValue();
+          if (value instanceof Propertydescriptor) {
+            Propertydescriptor indexablePropertyDescriptor = (Propertydescriptor) value;
+            indexablePropertyDescriptor.setName(propertyInformation.getDocumentTypePropertyName());
+          } else {
+            throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing "+value.getClass());
+          }
+        } else {
+          throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing "+element.getClass());
+        }
+        currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
       }
     }
 
@@ -268,7 +286,8 @@ public class DocTypeMarshaller extends MavenProcessor {
     }
   }
 
-  private Propertydescriptor createPropertyDescriptionFromPropertyInformation(PropertyInformation propertyInformation) {
+  private Object createPropertyDescriptionFromPropertyInformation(PropertyInformation propertyInformation) {
+    IndexablePropertyDescriptor descriptor = objectFactory.createIndexablePropertyDescriptor();
     switch (propertyInformation.getType()) {
       case STRING:
         final StringProperty stringProperty = objectFactory.createStringProperty();
@@ -276,7 +295,7 @@ public class DocTypeMarshaller extends MavenProcessor {
         return stringProperty;
 
       case INTEGER:
-        return objectFactory.createIntProperty();
+        return objectFactory.createIntProperty(descriptor);
 
       case LINK:
         final LinkListProperty listProperty = objectFactory.createLinkListProperty();
@@ -287,7 +306,7 @@ public class DocTypeMarshaller extends MavenProcessor {
         return listProperty;
 
       case DATE:
-        return objectFactory.createDateProperty();
+        return objectFactory.createDateProperty(descriptor);
 
       case MARKUP:
         final XmlProperty xmlProperty = objectFactory.createXmlProperty();

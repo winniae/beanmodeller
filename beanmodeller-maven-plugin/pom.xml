@@ -110,6 +110,9 @@
               <extension>true</extension>
               <schemaDirectory>src/main/resources/schema/</schemaDirectory>
               <verbose>true</verbose>
+              <args>
+                <param>-npa</param>
+              </args>
             </configuration>
           </execution>
         </executions>

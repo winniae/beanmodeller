@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--
 
-     coremedia-doctypes.xsd 1.2 05/08/08
+     coremedia-doctypes-2007.xsd
 
-     Copyright (c) 1998-2005 CoreMedia AG, Hamburg. All rights reserved.
+     Copyright (c) 1998-2007 CoreMedia AG, Hamburg. All rights reserved.
 
      This XML Schema defines the structure of contents describing
      content types for the CoreMeda Content Application Platform.
 
+     The 2007 revision of the .xsd includes a target namespace and an Extension element
+     and the Import elements supporting multiple doctype files.
+
+     The 2008 revision introduces the DocTypeAspect element.
 -->
 
 <xs:schema
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.coremedia.com/2009/documenttypes"
+  xmlns="http://www.coremedia.com/2009/documenttypes"
   elementFormDefault="qualified">
 
   <xs:element name="DocumentTypeModel">
@@ -28,9 +34,12 @@
       <xs:sequence>
 	<xs:choice minOccurs="1" maxOccurs="unbounded">
 	  <xs:element ref="XmlGrammar"/>
-      <xs:element ref="XmlSchema"/>
-      <xs:element ref="DocType"/>
-	</xs:choice>
+          <xs:element ref="XmlSchema"/>
+          <xs:element ref="ImportDocType"/>
+          <xs:element ref="ImportGrammar"/>
+          <xs:element ref="DocType"/>
+          <xs:element ref="DocTypeAspect"/>
+        </xs:choice>
       </xs:sequence>
 
       <xs:attribute name="Title" type="xs:string" use="optional">
@@ -67,6 +76,17 @@
 
 	  </xs:documentation>
 	</xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="Name" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+
+            The name for this content type definition, to be used when importing
+            document types into a different module.
+
+          </xs:documentation>
+        </xs:annotation>
       </xs:attribute>
     </xs:complexType>
   </xs:element>
@@ -215,6 +235,91 @@
     </xs:complexType>
   </xs:element>
 
+  <xs:element name="Extension">
+    <xs:annotation>
+      <xs:documentation>
+
+        A document type definition or property descriptor may be extended by custom elements from other namespaces,
+        which can be accessed and evaluated on the client-side.
+
+      </xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:sequence>
+        <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Import">
+    <xs:attribute name="Name" type="xs:ID" use="required">
+    </xs:attribute>
+    <xs:attribute name="From" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          The From attribute corresponds to the Name attribute of the DocumentTypeModel that contains the imported
+          document type.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:element name="ImportDocType" type="Import">
+    <xs:annotation>
+      <xs:documentation>
+
+        A document type that is defined in a different file may be referenced using an ImportDocType element.
+        This allows the document type name to be used as the Parent of a DocType, or as the Target of a LinkListProperty.
+
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="ImportGrammar" type="Import">
+    <xs:annotation>
+      <xs:documentation>
+
+        A grammar (DTD or Schema) that is defined in a different file may be referenced using an ImportGrammar element.
+
+        This allows the grammar name to be used as the Grammar of an XmlProperty, or as the Parent of an XmlSchema or
+        XmlGrammar.
+
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+
+  <xs:element name="DocTypeAspect">
+    <xs:annotation>
+      <xs:documentation>
+        A DocTypeAspect offers the possibility to inject properties into doctypes defined in a different XML file.
+        To use this mechanism the ImportDocType element has to be specified pointing to the DocType to be extended.
+
+        The DocType parser identifies the properties defined in an aspect and attach them to the declared targettype
+        before the generation of the contenttype classes takes place. This leads to some restrictions in
+        defining aspects:
+            - aspects are not allowed to define properties that already exist in the targettype, even if an override
+            attribute is set.
+            - aspects are not allowed to define properties that are already inherited by the targettype from its
+            supertype
+            - aspects have to define an index attribute for every property they want to be indexed. Aspects can not rely
+            on the default index attribute value from the targettype.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:group ref="propertydescriptors"/>
+        </xs:choice>
+        <xs:element ref="Extension" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+
+      <xs:attribute name="TargetType" type="xs:IDREF" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+
   <xs:element name="DocType">
     <xs:annotation>
       <xs:documentation>
@@ -232,9 +337,12 @@
     </xs:annotation>
 
     <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:group ref="propertydescriptors"/>
-      </xs:choice>
+      <xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:group ref="propertydescriptors"/>
+        </xs:choice>
+        <xs:element ref="Extension" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
 
       <xs:attribute name="Name" type="xs:ID" use="required">
 	<xs:annotation>
@@ -402,6 +510,10 @@
   </xs:group>
 
   <xs:complexType name="propertydescriptor">
+    <xs:sequence>
+      <xs:element ref="Extension" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+
     <xs:attribute name="Name" type="xs:string" use="required">
       <xs:annotation>
 	<xs:documentation>
@@ -495,7 +607,41 @@
   </xs:element>
 
 
-  <xs:element name="DateProperty">
+  <xs:complexType name="indexablePropertyDescriptor">
+    <xs:complexContent>
+      <xs:extension base="propertydescriptor">
+
+        <xs:attribute name="Index" type="xs:boolean" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+
+              A boolean flag, which, when set to "true", determines that
+              a database index should be created for the property.
+
+              The default is the value of the document type's Index attribute.
+
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+
+        <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
+          <xs:annotation>
+            <xs:documentation>
+
+              The name of the tablespace in which the index for this
+              property should be created, if Index is set to true on this
+              property or on the document type.
+
+              The default is the document type's index tablespace.
+
+            </xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="DateProperty" type="indexablePropertyDescriptor">
     <xs:annotation>
       <xs:documentation>
 
@@ -503,44 +649,10 @@
 
       </xs:documentation>
     </xs:annotation>
-
-    <xs:complexType>
-      <xs:complexContent>
-	<xs:extension base="propertydescriptor">
-
-	  <xs:attribute name="Index" type="xs:boolean" use="optional">
-	    <xs:annotation>
-	      <xs:documentation>
-
-                A boolean flag, which, when set to "true", determines that
-                a database index should be created for the property.
-
-		The default is the value of the document type's Index attribute.
-
-	      </xs:documentation>
-	    </xs:annotation>
-	  </xs:attribute>
-
-          <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
-            <xs:annotation>
-              <xs:documentation>
-
-                The name of the tablespace in which the index for this
-                property should be created, if Index is set to true on this
-                property or on the document type.
-
-                The default is the document type's index tablespace.
-
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
-	</xs:extension>
-      </xs:complexContent>
-    </xs:complexType>
   </xs:element>
 
 
-  <xs:element name="IntProperty">
+  <xs:element name="IntProperty" type="indexablePropertyDescriptor">
     <xs:annotation>
       <xs:documentation>
 
@@ -548,39 +660,6 @@
 
       </xs:documentation>
     </xs:annotation>
-
-    <xs:complexType>
-      <xs:complexContent>
-	<xs:extension base="propertydescriptor">
-	  <xs:attribute name="Index" type="xs:boolean" use="optional">
-	    <xs:annotation>
-	      <xs:documentation>
-
-  	        A boolean flag, which, when set to "true", determines that
-	        a database index should be created for the property.
-
-                The default is the value of the document type's Index attribute.
-
-	      </xs:documentation>
-	    </xs:annotation>
-	  </xs:attribute>
-
-          <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
-            <xs:annotation>
-              <xs:documentation>
-
-                The name of the tablespace in which the index for this
-                property should be created, if Index is set to true on this
-                property or on the document type.
-
-                The default is the document type's index tablespace.
-
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
-	</xs:extension>
-      </xs:complexContent>
-    </xs:complexType>
   </xs:element>
 
 
@@ -597,11 +676,11 @@
       <xs:complexContent>
 	<xs:extension base="propertydescriptor">
 
-	  <xs:attribute name="LinkType" type="xs:IDREF" use="required">
+	  <xs:attribute name="LinkType" type="xs:IDREF" use="optional">
 	    <xs:annotation>
 	      <xs:documentation>
 
-                Links must be typed, thus the attribute must contain a valid
+                For typed links this attribute must contain a valid
                 content type name.
 
 	      </xs:documentation>
@@ -648,7 +727,7 @@
 
     <xs:complexType>
       <xs:complexContent>
-	<xs:extension base="propertydescriptor">
+	<xs:extension base="indexablePropertyDescriptor">
 
 	  <xs:attribute name="Length" type="xs:integer" use="required">
 	    <xs:annotation>
@@ -674,33 +753,6 @@
 	      </xs:documentation>
 	    </xs:annotation>
 	  </xs:attribute>
-
-	  <xs:attribute name="Index" type="xs:boolean" use="optional">
-	    <xs:annotation>
-	      <xs:documentation>
-
-                A boolean flag, which, when set to "true", determines that
-                a database index should be created for the property.
-
-                The default is the value of the document type's Index attribute.
-
-	      </xs:documentation>
-	    </xs:annotation>
-	  </xs:attribute>
-
-          <xs:attribute name="IndexTablespace" type="xs:string" use="optional">
-            <xs:annotation>
-              <xs:documentation>
-
-                The name of the tablespace in which the index for this
-                property should be created, if Index is set to true on this
-                property or on the document type.
-
-                The default is the document type's index tablespace.
-
-              </xs:documentation>
-            </xs:annotation>
-          </xs:attribute>
 	</xs:extension>
       </xs:complexContent>
     </xs:complexType>
