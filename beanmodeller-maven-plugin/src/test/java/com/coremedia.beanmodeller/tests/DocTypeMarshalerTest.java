@@ -61,7 +61,8 @@ public class DocTypeMarshalerTest {
       fail();
     }
 
-    String expectedXML = "<DocumentTypeModel Title=\"telekom-document-type\">\n" +
+    String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
+        "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n"+
         "    <XmlGrammar Name=\"simple.xsd\"/>\n" +
         "    <DocType Name=\"CBGContent\">\n" +
         "        <StringProperty Length=\"20\" Name=\"Description\"/>\n" +

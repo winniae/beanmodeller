@@ -46,5 +46,4 @@ public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
     assertTrue(expectedGrammarFile.exists());
 
   }
-
 }
