@@ -47,9 +47,16 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
   private String accessorizorBeansTargetPath;
 
   /**
+   * Where should the generated spring configuration be saved (base path)
+   *
+   * @parameter default-value="${project.build.directory}/generated-resources/
+   */
+  private String springConfigBasePath;
+
+  /**
    * Where the generated bean configuration should be saved
    *
-   * @parameter default-value="${project.build.directory}/generated-resources/beanconfig/contentbeans.xml"
+   * @parameter default-value="beanconfig/contentbeans.xml"
    */
   private String springConfigTargetFileName;
 
@@ -96,8 +103,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
       writer.flush();
       writer.close();
       Resource resource = new Resource();
-      //TODO this is a bit 'hemdsärmelig' - has to become better
-      resource.setDirectory(output.getParentFile().getParentFile().getAbsolutePath());
+      resource.setDirectory(springConfigBasePath);
       resource.addInclude("*/**");
       MavenProject project = getProject();
       if (project != null) {
@@ -163,7 +169,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
       result = BeanModellerHelper.getSanitizedDirectory(accessorizorBeansTargetPath);
     }
     catch (PluginException e) {
-      throw new PluginException("Cannot create target directory",e);
+      throw new PluginException("Cannot create target directory", e);
     }
     if (!result.exists()) {
       if (!result.mkdirs()) {
@@ -180,7 +186,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
   }
 
   public File getTargetSpringConfigFile() throws PluginException, IOException {
-    File result = new File(springConfigTargetFileName);
+    File result = new File(springConfigBasePath, springConfigTargetFileName);
     if (!result.exists()) {
       final File parentFile = result.getParentFile();
 
