@@ -8,6 +8,7 @@
   <artifactId>beanmodeller</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>CoreMedia Bean Modeller</name>
+  <url>https://h1844669.stratoserver.net/jenkins/job/BeanModeller/</url>
 
   <packaging>pom</packaging>
 
@@ -33,7 +34,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>2.1.1</version>
+        <version>3.0-beta-3</version>
         <configuration>
           <inputEncoding>UTF-8</inputEncoding>
           <outputEncoding>UTF-8</outputEncoding>
