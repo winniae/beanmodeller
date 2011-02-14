@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.processors.analyzator;
 import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.beanmodeller.processors.AbstractPropertyInformation;
+import com.coremedia.beanmodeller.processors.BlobPropertyInformation;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzer;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
@@ -15,6 +16,7 @@ import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.UnknownPropertyInformation;
+import com.coremedia.cap.common.Blob;
 import com.coremedia.objectserver.beans.AbstractContentBean;
 import com.coremedia.xml.Markup;
 
@@ -402,11 +404,9 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
     else if (returnType.equals(Markup.class)) {
       return getMarkupPropertyInformation(method);
-
     }
     else if (returnType.equals(String.class)) {
       return getStringPropertyInformation(method);
-
     }
     else if (returnType.equals(List.class)) {
       return getLinkListPropertyInformation(method);
@@ -414,10 +414,19 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     else if (allFoundContentBeanInformation.containsKey(returnType)) {
       return getLinkListPropertyInformationSingle(method, allFoundContentBeanInformation.get(returnType));
     }
+    else if (returnType.equals(Blob.class)) {
+      return getBlobPropertyInformation(method);
+    }
     else {
       // default
       return new UnknownPropertyInformation(method);
     }
+  }
+
+  private AbstractPropertyInformation getBlobPropertyInformation(Method method) {
+    BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
+    //TODO implement me!
+    return blobPropertyInformation;
   }
 
   /**

@@ -6,6 +6,7 @@ import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -28,7 +29,7 @@ import java.util.TreeSet;
  */
 public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
-  private static final String SPRING_BEAN_CONFIG_DEFAULT_ROOT_PARENT = "abstractContentBean";
+  private static final String SPRING_BEAN_CONFIG_DEFAULT_ROOT_PARENT = "";
   private static final String SPRING_BEAN_NAME_PREFIX = "contentBeanFactory:";
 
   /**
@@ -46,9 +47,16 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
   private String accessorizorBeansTargetPath;
 
   /**
+   * Where should the generated spring configuration be saved (base path)
+   *
+   * @parameter default-value="${project.build.directory}/generated-resources/
+   */
+  private String springConfigBasePath;
+
+  /**
    * Where the generated bean configuration should be saved
    *
-   * @parameter default-value="${project.build.directory}/webapp/WEB-INF/spring/contentbeans.xml"
+   * @parameter default-value="beanconfig/contentbeans.xml"
    */
   private String springConfigTargetFileName;
 
@@ -94,6 +102,13 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
       writer.flush();
       writer.close();
+      Resource resource = new Resource();
+      resource.setDirectory(springConfigBasePath);
+      resource.addInclude("*/**");
+      MavenProject project = getProject();
+      if (project != null) {
+        project.addResource(resource);
+      }
     }
     catch (PluginException e) {
       throw new MojoFailureException("There was a problem with the target file " + springConfigTargetFileName, e);
@@ -154,7 +169,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
       result = BeanModellerHelper.getSanitizedDirectory(accessorizorBeansTargetPath);
     }
     catch (PluginException e) {
-      throw new PluginException("Cannot create target directory",e);
+      throw new PluginException("Cannot create target directory", e);
     }
     if (!result.exists()) {
       if (!result.mkdirs()) {
@@ -171,7 +186,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
   }
 
   public File getTargetSpringConfigFile() throws PluginException, IOException {
-    File result = new File(springConfigTargetFileName);
+    File result = new File(springConfigBasePath, springConfigTargetFileName);
     if (!result.exists()) {
       final File parentFile = result.getParentFile();
 
