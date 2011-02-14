@@ -522,8 +522,9 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       grammarRoot = methodAnnotation.propertyXmlRoot();
       if (grammarURL == null) {
         throw new Exception(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is expected to reside in folder " + SCHEMA_DEFINITION_LOCATION);
-      } else if (ContentProperty.MARKUP_PROPERTY_NO_ROOT_SET.equals(grammarRoot)) {
-        throw new Exception(ContentBeanAnalyzationException.SCHEMA_NO_XML_ROOT_SET_MESSAGE+" "+grammarName);
+      }
+      else if (ContentProperty.MARKUP_PROPERTY_NO_ROOT_SET.equals(grammarRoot)) {
+        throw new Exception(ContentBeanAnalyzationException.SCHEMA_NO_XML_ROOT_SET_MESSAGE + " " + grammarName);
       }
     }
 
