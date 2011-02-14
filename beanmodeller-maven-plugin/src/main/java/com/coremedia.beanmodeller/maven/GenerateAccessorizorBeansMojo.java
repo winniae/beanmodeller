@@ -29,7 +29,7 @@ import java.util.TreeSet;
  */
 public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
-  private static final String SPRING_BEAN_CONFIG_DEFAULT_ROOT_PARENT = "abstractContentBean";
+  private static final String SPRING_BEAN_CONFIG_DEFAULT_ROOT_PARENT = "";
   private static final String SPRING_BEAN_NAME_PREFIX = "contentBeanFactory:";
 
   /**
@@ -208,8 +208,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     StringBuilder stringBuilder = new StringBuilder();
 
     stringBuilder.append("\t<bean name=\"").append(getBeanName(contentBeanInformation)).append("\"\n");
-    //no parent anymore
-    //stringBuilder.append("\t\tparent=\"").append(getBeanName(contentBeanInformation.getParent())).append("\"\n");
+    stringBuilder.append("\t\tparent=\"").append(getBeanName(contentBeanInformation.getParent())).append("\"\n");
     stringBuilder.append("\t\tscope=\"prototype\"\n");
     stringBuilder.append("\t\tclass=\"").append(generator.getCanonicalGeneratedClassName(contentBeanInformation)).append("\"");
     stringBuilder.append("/>\n");
