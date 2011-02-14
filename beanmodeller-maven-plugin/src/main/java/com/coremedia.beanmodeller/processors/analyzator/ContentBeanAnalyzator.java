@@ -39,7 +39,6 @@ import java.util.Set;
 public class ContentBeanAnalyzator extends MavenProcessor implements ContentBeanAnalyzer {
   private List<Class> beansToAnalyze = new LinkedList<Class>();
   private Set<ContentBeanInformation> rootBeanInformation = null;
-  private ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
 
   public static final int MAX_CONTENT_TYPE_LENGTH = 16;
   public static final int MAX_PROPERTY_LENGTH = 32;
@@ -175,35 +174,39 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       }
       //first of all note that we visited the class
       visitedClasses.add(currentClass);
-      Method[] methods = currentClass.getDeclaredMethods();
-      //it is a content bean if there is an annotation - we do not really care about details here
-      boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
-      for (Method method : methods) {
-        Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
-        if (methodAnnotation != null) {
-          //bean properties must be abstract
-          if (!isValidPropertyMethod(method)) {
-            potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
-                "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid");
-          }
-          // methods must have specific return types
-          if (!hasValidReturnType(method)) {
-            potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
-          }
-        }
-        else {
-          // no annotation
-          // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
-          if (isValidPropertyMethod(method) && !hasValidReturnType(method)) {
-            potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
-          }
-        }
+      analyzeMethods(potentialException, contentBean, currentClass);
+    }
+  }
 
-        //bean properties only in content beans
-        if (!isContentBean) {
-          potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
-              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class");
+  private void analyzeMethods(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass) {
+    Method[] methods = currentClass.getDeclaredMethods();
+    //it is a content bean if there is an annotation - we do not really care about details here
+    boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
+    for (Method method : methods) {
+      Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
+      if (methodAnnotation != null) {
+        //bean properties must be abstract
+        if (!isValidPropertyMethod(method)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
+              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid");
         }
+        // methods must have specific return types
+        if (!hasValidReturnType(method)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        }
+      }
+      else {
+        // no annotation
+        // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
+        if (isValidPropertyMethod(method) && !hasValidReturnType(method)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        }
+      }
+
+      //bean properties only in content beans
+      if (!isContentBean) {
+        potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
+            "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class");
       }
     }
   }
