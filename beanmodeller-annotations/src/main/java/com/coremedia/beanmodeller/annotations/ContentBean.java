@@ -16,6 +16,7 @@ public @interface ContentBean {
   /**
    * The document type name to use in the doctype.xml. This is normally the class name but if it is longer than
    * 18 characters you will get problems, so add a custom name here.
+   *
    * @return the name of the document type for the doctypes.xml
    */
   String doctypeName() default DOC_TYPE_NAME_USE_CLASS_NAME;
