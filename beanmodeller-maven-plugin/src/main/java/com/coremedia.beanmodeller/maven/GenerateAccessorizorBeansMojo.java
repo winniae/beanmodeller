@@ -6,6 +6,7 @@ import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -214,7 +215,10 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     StringBuilder stringBuilder = new StringBuilder();
 
     stringBuilder.append("\t<bean name=\"").append(getBeanName(contentBeanInformation)).append("\"\n");
-    stringBuilder.append("\t\tparent=\"").append(getBeanName(contentBeanInformation.getParent())).append("\"\n");
+    String beanName = getBeanName(contentBeanInformation.getParent());
+    if (!StringUtils.isEmpty(beanName)) {
+      stringBuilder.append("\t\tparent=\"").append(beanName).append("\"\n");
+    }
     stringBuilder.append("\t\tscope=\"prototype\"\n");
     stringBuilder.append("\t\tclass=\"").append(generator.getCanonicalGeneratedClassName(contentBeanInformation)).append("\"");
     stringBuilder.append("/>\n");
