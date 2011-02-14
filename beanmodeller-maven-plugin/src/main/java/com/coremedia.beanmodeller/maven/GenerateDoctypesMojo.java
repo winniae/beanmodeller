@@ -38,27 +38,6 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   private String docTypeTargetFileName;
 
   /**
-   * Default length for string properties
-   *
-   * @parameter default-value="32"
-   */
-  private Integer stringPropertyDefaultLength;
-
-  /**
-   * Minimal number of items in LinkList
-   *
-   * @parameter default-value="0"
-   */
-  private Integer linkListPropertyDefaultMin;
-
-  /**
-   * Maximum number of items in LinkList
-   *
-   * @parameter
-   */
-  private Integer linkListPropertyDefaultMax = Integer.MAX_VALUE;
-
-  /**
    * Where should the custom XML Schema definitions copied.
    *
    * @parameter default-value="${project.build.directory}/contentserver/lib/xml"
@@ -66,7 +45,6 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   private String xsdTargetPath;
 
   public static final String ERROR_CREATING_TARGET_FILE = "Error creating file ";
-  public static final String ERROR_GENERATING_DOCTYPES = "Error while running generate-doctypes! ";
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     startTimeMeasurements();
