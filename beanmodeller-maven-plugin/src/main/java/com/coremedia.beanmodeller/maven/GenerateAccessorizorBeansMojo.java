@@ -6,6 +6,7 @@ import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.FileCodeWriter;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -48,7 +49,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
   /**
    * Where the generated bean configuration should be saved
    *
-   * @parameter default-value="${project.build.directory}/webapp/WEB-INF/spring/contentbeans.xml"
+   * @parameter default-value="${project.build.directory}/generated-resources/beanconfig/contentbeans.xml"
    */
   private String springConfigTargetFileName;
 
@@ -94,6 +95,14 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
       writer.flush();
       writer.close();
+      Resource resource = new Resource();
+      //TODO this is a bit 'hemdsärmelig' - has to become better
+      resource.setDirectory(output.getParentFile().getParentFile().getAbsolutePath());
+      resource.addInclude("*/**");
+      MavenProject project = getProject();
+      if (project != null) {
+        project.addResource(resource);
+      }
     }
     catch (PluginException e) {
       throw new MojoFailureException("There was a problem with the target file " + springConfigTargetFileName, e);
