@@ -208,7 +208,8 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     StringBuilder stringBuilder = new StringBuilder();
 
     stringBuilder.append("\t<bean name=\"").append(getBeanName(contentBeanInformation)).append("\"\n");
-    stringBuilder.append("\t\tparent=\"").append(getBeanName(contentBeanInformation.getParent())).append("\"\n");
+    //no parent anymore
+    //stringBuilder.append("\t\tparent=\"").append(getBeanName(contentBeanInformation.getParent())).append("\"\n");
     stringBuilder.append("\t\tscope=\"prototype\"\n");
     stringBuilder.append("\t\tclass=\"").append(generator.getCanonicalGeneratedClassName(contentBeanInformation)).append("\"");
     stringBuilder.append("/>\n");
