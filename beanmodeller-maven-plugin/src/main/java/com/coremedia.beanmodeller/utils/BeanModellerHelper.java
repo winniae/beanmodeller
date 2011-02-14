@@ -17,8 +17,7 @@ public class BeanModellerHelper {
 
   public static File getSanitizedFile(String directory, String fileName) throws PluginException {
     File destDir = getSanitizedDirectory(directory);
-    File targetFile = getSanitizedFile(destDir, fileName);
-    return targetFile;
+    return getSanitizedFile(destDir, fileName);
   }
 
   public static File getSanitizedFile(File destDir, String fileName) throws PluginException {
