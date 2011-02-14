@@ -42,7 +42,7 @@ public abstract class CBGAppointment extends CBGContent {
    *
    * @return the custom XML
    */
-  @ContentProperty(propertyXmlGrammar = "simple.xsd")
+  @ContentProperty(propertyXmlGrammar = "simple.xsd", propertyXmlRoot = "simple")
   abstract Markup getCustomXML();
 
 

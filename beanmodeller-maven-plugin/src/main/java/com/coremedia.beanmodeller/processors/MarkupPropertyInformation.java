@@ -17,6 +17,7 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
   private String grammarName = COREMEDIA_RICHTEXT_GRAMMAR_NAME;
   private URL grammarURL = null;
+  private String grammarRoot;
 
   public MarkupPropertyInformation(Method method) {
     super(method);
@@ -41,5 +42,13 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
   public void setGrammarURL(URL grammarURL) {
     this.grammarURL = grammarURL;
+  }
+
+  public String getGrammarRoot() {
+    return grammarRoot;
+  }
+
+  public void setGrammarRoot(String grammarRoot) {
+    this.grammarRoot = grammarRoot;
   }
 }

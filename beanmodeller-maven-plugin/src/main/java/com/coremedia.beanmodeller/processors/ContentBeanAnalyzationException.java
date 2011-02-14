@@ -25,6 +25,7 @@ public class ContentBeanAnalyzationException extends ContentBeanAnalyzerExceptio
   public static final String LINKED_DOCTYPE_UNKNOWN = "A referenced document type is not part of the defined ContentBeans: ";
 
   private List<ContentBeanAnalyzationError> errors = new LinkedList<ContentBeanAnalyzationError>();
+  public static final String SCHEMA_NO_XML_ROOT_SET_MESSAGE = "There is no XML root defined for the grammar ";
 
   /**
    * Content bean exceptions can contain more than one error - so it can live without an message
