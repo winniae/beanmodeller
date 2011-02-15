@@ -14,4 +14,8 @@
         parent="contentBeanFactory:CBGContent"
         scope="prototype"
         class="com.coremedia.test.CBGAttendeeBeanAccessorizor"/>
+  <bean name="contentBeanFactory:CBGImage"
+        parent="contentBeanFactory:CBGContent"
+        scope="prototype"
+        class="com.coremedia.test.CBGImageBeanAccessorizor"/>
 </beans>

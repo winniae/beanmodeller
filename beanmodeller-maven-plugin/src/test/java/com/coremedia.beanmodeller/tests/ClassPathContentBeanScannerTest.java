@@ -28,17 +28,6 @@ public class ClassPathContentBeanScannerTest extends MavenProcessor {
   public void testPackageSearch() {
     Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses("com.coremedia.beanmodeller.testcontentbeans.testmodel", getLog());
     // make sure it finds all three annotated beans in folder
-    assertEquals(3, candidateCBs.size());
-  }
-
-  /**
-   * Test the following:
-   * - if scanner is able to find beans in subpackage
-   * - if it ignores non-annotated classes
-   */
-  public void nonExistantComponentSearch() {
-    Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses("com.coremedia.beanmodeller.testcontentbeans", getLog());
-    // make sure it finds all three annotated beans in folder and in subfolder
-    assertEquals(17, candidateCBs.size());
+    assertEquals(4, candidateCBs.size());
   }
 }
