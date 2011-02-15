@@ -1,10 +1,17 @@
 package com.coremedia.beanmodeller.processors.codegenerator;
 
+import com.coremedia.beanmodeller.processors.BlobPropertyInformation;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.DatePropertyInformation;
+import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
+import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.PropertyInformation;
+import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JDocComment;
 import com.sun.codemodel.JExpr;
@@ -13,10 +20,15 @@ import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JType;
+import com.sun.codemodel.JVar;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -64,7 +76,9 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     //TODO this comment has to be better
     //add some javadoc
     JDocComment javaDoc = beanClass.javadoc();
-    javaDoc.add("Content Accessor for " + bean);
+    javaDoc.add("Content Accessor for " + bean + "\n");
+    javaDoc.add("You can safely ignore this implementation, since it just fills your abstract getter Methods with content access implementtions\n");
+    javaDoc.add("<b>Do never, ever use this class directly in your code - or even change it</b>, please.");
 
     //create a new Set of the accumulated properties of this class
     Set<PropertyInformation> allMyProperties = new HashSet<PropertyInformation>(propertiesInTheHierarchySoFar);
@@ -85,7 +99,10 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
   }
 
   private void generatePropertyMethod(JDefinedClass beanClass, PropertyInformation propertyInformation, JCodeModel codeModel) {
+    //we will use this quite often
     Method method = propertyInformation.getMethod();
+    Class<?> methodReturnType = method.getReturnType();
+
     if (getLog().isDebugEnabled()) {
       getLog().debug("Generating method for " + method.toString());
     }
@@ -105,19 +122,73 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     //make it final - don't know if it is good for anything
     modifiers |= JMod.FINAL;
     //create the method
-    JMethod propertyMethod = beanClass.method(modifiers, method.getReturnType(), method.getName());
+    JMethod propertyMethod = beanClass.method(modifiers, methodReturnType, method.getName());
     //TODO this comment has to be better
     //generate some java doc for the method
     JDocComment javadoc = propertyMethod.javadoc();
     javadoc.add("Getter for " + propertyInformation);
     //create the call to the content object returning th neccessary information
-    //TODO Calendar/Date is a tad more complicated
-    //TODO Collection generics get lost - is that important?
+    String code = null;
+    //we need the basic getter call anyway
     JInvocation getterCall = JExpr.invoke("getContent").invoke("get").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
-    //the return type is the same return type as specifid by the abstract method
-    JType returnType = codeModel.ref(propertyInformation.getMethod().getReturnType());
-    //and let the method return the value
-    propertyMethod.body()._return(JExpr.cast(returnType, getterCall));
+    //and we will have to return the correct type anyway
+    JType returnType = codeModel.ref(methodReturnType);
+    if ((propertyInformation instanceof StringPropertyInformation)
+        || (propertyInformation instanceof IntegerPropertyInformation)
+        || (propertyInformation instanceof MarkupPropertyInformation)
+        || (propertyInformation instanceof BlobPropertyInformation)) {
+      //we directly return the property, casted to target type
+      propertyMethod.body()._return(JExpr.cast(returnType, getterCall));
+    }
+    else if ((propertyInformation instanceof LinkListPropertyInformation)) {
+      //get the content as a list
+      JVar contentList = propertyMethod.body().decl(codeModel.ref(List.class), "contentList", JExpr.cast(codeModel.ref(List.class), getterCall));
+      if (Collection.class.isAssignableFrom(methodReturnType)) {
+        //convert the content to beans
+        JInvocation beanConversion = JExpr.invoke("getContentBeanFactory()").invoke("createBeansFor").arg(contentList);
+        propertyMethod.body()._return(JExpr.cast(returnType, getterCall));
+        /* it goes like this:
+        code = "List content = getContent().get(\"" + propertyInformation.getDocumentTypePropertyName() + "\");"
+            + "List result = getContentBeanFactory.createBeansFor(content);"
+            + " return result;";
+        */
+      }
+      else {
+        //if the list is empty return null
+        JConditional listEmptyCondition = propertyMethod.body()._if(contentList.invoke("size").eq(JExpr.lit(0)));
+        listEmptyCondition._then()._return(JExpr._null());
+        //else get the first content element
+        JInvocation firstElement = contentList.invoke("get").arg(JExpr.lit(0));
+        listEmptyCondition._else()._return(JExpr.cast(returnType, firstElement));
+        /* it goes like this:
+        code = "List content = getContent().get(\"" + propertyInformation.getDocumentTypePropertyName() + "\");"
+            + "if (content.size==0) {"
+            + "return null;"
+            + "} else {"//TODO do we need a warning log for size>1?
+            + "return getContentBeanFactory.createBeanFor(content.get(0));";
+        */
+      }
+    }
+    else if (propertyInformation instanceof DatePropertyInformation) {
+      if (Calendar.class.isAssignableFrom(methodReturnType)) {
+        //we directly return the property, casted to target type
+        propertyMethod.body()._return(JExpr.cast(returnType, getterCall));
+      }
+      else if (Date.class.isAssignableFrom(methodReturnType)) {
+        // get the calendar
+        JVar calendarObject = propertyMethod.body().decl(codeModel.ref(Calendar.class), "calendar", getterCall);
+        JInvocation returnObject = calendarObject.invoke("getTimer");
+        propertyMethod.body()._return(returnObject);
+        /*
+        code = "Calendar cal = getContent().get(\"" + propertyInformation.getDocumentTypePropertyName() + "\");"+
+            "return cal.getTime();";
+        */
+      }
+      else {
+        //TODO Exception?
+      }
+    }
+    //get the return type of the method
   }
 
   public String getPackageName() {
