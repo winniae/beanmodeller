@@ -185,7 +185,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
         */
       }
       else {
-        //TODO Exception?
+        throw new IllegalStateException("End of implementation reached");
       }
     }
     //get the return type of the method
