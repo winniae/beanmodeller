@@ -9,6 +9,7 @@ import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
+import com.coremedia.cap.content.Content;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JConditional;
@@ -159,7 +160,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
         listEmptyCondition._then()._return(JExpr._null());
         //else get the first content element
         JInvocation firstElement = contentList.invoke("get").arg(JExpr.lit(0));
-        JInvocation createBean = JExpr.invoke("getContentBeanFactory").invoke("createBeanFor").arg(firstElement);
+        JInvocation createBean = JExpr.invoke("getContentBeanFactory").invoke("createBeanFor").arg(JExpr.cast(codeModel.ref(Content.class),firstElement));
         listEmptyCondition._else()._return(JExpr.cast(returnType, createBean));
         /* it goes like this:
         code = "List content = getContent().get(\"" + propertyInformation.getDocumentTypePropertyName() + "\");"
