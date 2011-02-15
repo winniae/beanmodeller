@@ -50,6 +50,7 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
     // this filter will take care that only "ContentBean" annotated classes will be found
     this.addIncludeFilter(new AnnotationTypeFilter(ContentBean.class));
 
+    log.info("Searching for content beans in packages below " + packageName);
     // delegate to find candidate components, which may be candidate beans
     Set<BeanDefinition> candidateComponents = this.findCandidateComponents(packageName);
 
@@ -60,7 +61,8 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
         candidateBeanClasses.add(beanClass);
       }
       catch (ClassNotFoundException e) {
-        // ignore 
+        log.error("Found A class as content bean which I did not find", e);
+        throw new IllegalStateException("Did not found a bean class for a found bean - this does not make sense", e);
       }
     }
 

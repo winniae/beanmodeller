@@ -72,6 +72,13 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
 
+  /**
+   * <p>Finds all candidate content beans that reside in a "packageName". Call this method
+   * before calling analyzeContentBeanInformation() method, if you want Analyzer to search annotated
+   * candidate content bean classes automatically. </p>
+   *
+   * @param packageName package name to search for candidate content bean classes, e.g., "com.coremedia"
+   */
   public void findContentBeans(String packageName) {
     if (getLog().isDebugEnabled()) {
       getLog().debug("Searching for content beans in package " + packageName);
@@ -139,21 +146,6 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       throw potentialException;
     }
     getLog().info("Content bean analyzation successfully performed");
-  }
-
-  /**
-   * <p>Finds all candidate content beans that reside in a "packageName". Call this method
-   * before calling analyzeContentBeanInformation() method, if you want Analyzer to search annotated
-   * candidate content bean classes automatically. </p>
-   *
-   * @param packageName package name to search for candidate content bean classes, e.g., "com.coremedia"
-   */
-  public void findContentBeanClassesInPackage(String packageName) {
-    ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
-    Set<Class> classes = scanner.findCandidateContentBeanClasses(packageName, this.getLog());
-    for (Class cls : classes) {
-      this.addContentBean(cls);
-    }
   }
 
   private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException) {
