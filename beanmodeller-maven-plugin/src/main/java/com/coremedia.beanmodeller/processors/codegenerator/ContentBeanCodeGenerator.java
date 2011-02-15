@@ -145,8 +145,8 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       JVar contentList = propertyMethod.body().decl(codeModel.ref(List.class), "contentList", JExpr.cast(codeModel.ref(List.class), getterCall));
       if (Collection.class.isAssignableFrom(methodReturnType)) {
         //convert the content to beans
-        JInvocation beanConversion = JExpr.invoke("getContentBeanFactory()").invoke("createBeansFor").arg(contentList);
-        propertyMethod.body()._return(JExpr.cast(returnType, getterCall));
+        JInvocation beanConversion = JExpr.invoke("getContentBeanFactory").invoke("createBeansFor").arg(contentList);
+        propertyMethod.body()._return(beanConversion);
         /* it goes like this:
         code = "List content = getContent().get(\"" + propertyInformation.getDocumentTypePropertyName() + "\");"
             + "List result = getContentBeanFactory.createBeansFor(content);"
@@ -159,7 +159,8 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
         listEmptyCondition._then()._return(JExpr._null());
         //else get the first content element
         JInvocation firstElement = contentList.invoke("get").arg(JExpr.lit(0));
-        listEmptyCondition._else()._return(JExpr.cast(returnType, firstElement));
+        JInvocation createBean = JExpr.invoke("getContentBeanFactory").invoke("createBeanFor").arg(firstElement);
+        listEmptyCondition._else()._return(JExpr.cast(returnType, createBean));
         /* it goes like this:
         code = "List content = getContent().get(\"" + propertyInformation.getDocumentTypePropertyName() + "\");"
             + "if (content.size==0) {"
