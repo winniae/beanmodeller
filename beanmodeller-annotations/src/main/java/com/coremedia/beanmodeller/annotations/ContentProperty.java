@@ -17,7 +17,7 @@ public @interface ContentProperty {
   int STRING_PROPERTY_DEFAULT_LENGTH = -1;
   String MARKUP_PROPERTY_DEFAULT_GRAMMAR = "[useDefaultGrammar]";
   String MARKUP_PROPERTY_NO_ROOT_SET = "[noRootSet]";
-  String BLOB_PROPERTY_MIME_TYPE = "*/*";
+  String BLOB_PROPERTY_DEFAULT_MIME_TYPE = "*/*";
 
   /**
    * The name of the content property. Extremely useful if you method name is longer than 18 characters.
@@ -49,7 +49,8 @@ public @interface ContentProperty {
 
   /**
    * The mime type to use for a Blob Property. By default '*\/*' - anything is allowed.
+   *
    * @return
    */
-  String propertyBlobMimeType() default BLOB_PROPERTY_MIME_TYPE;
+  String propertyBlobMimeType() default BLOB_PROPERTY_DEFAULT_MIME_TYPE;
 }

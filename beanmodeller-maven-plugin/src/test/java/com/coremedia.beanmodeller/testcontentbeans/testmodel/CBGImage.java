@@ -15,8 +15,11 @@ public abstract class CBGImage extends CBGContent {
 
   /**
    * An arbitrary Image
+   *
    * @return an arbitrary image
    */
-  @ContentProperty (propertyBlobMimeType = "image/*")
+  @ContentProperty(propertyBlobMimeType = "image/*")
   public abstract Blob getImage();
+
+  public abstract Blob getGenericBlob();
 }

@@ -20,6 +20,8 @@ import com.coremedia.cap.common.Blob;
 import com.coremedia.objectserver.beans.AbstractContentBean;
 import com.coremedia.xml.Markup;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -62,6 +64,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     VALID_METHOD_RETURN_TYPES.add(List.class);
     VALID_METHOD_RETURN_TYPES.add(String.class);
     VALID_METHOD_RETURN_TYPES.add(Markup.class);
+    VALID_METHOD_RETURN_TYPES.add(Blob.class);
   }
 
   /**
@@ -415,7 +418,16 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
   }
 
-  private AbstractPropertyInformation getBlobPropertyInformation(Method method) {
+  private AbstractPropertyInformation getBlobPropertyInformation(Method method) throws ContentBeanAnalyzerException {
+    ContentProperty annotation = method.getAnnotation(ContentProperty.class);
+    String mimeTypeName = (annotation != null) ? annotation.propertyBlobMimeType() : ContentProperty.BLOB_PROPERTY_DEFAULT_MIME_TYPE;
+    try {
+      MimeType mimetype = new MimeType(mimeTypeName);
+    }
+    catch (MimeTypeParseException e) {
+      throw new ContentBeanAnalyzerException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y");
+    }
+
     BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
     //TODO implement me!
     return blobPropertyInformation;
@@ -569,8 +581,8 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     final Class<?> returnType = method.getReturnType();
 
     return !returnType.isPrimitive()
-        || VALID_METHOD_RETURN_TYPES.contains(returnType)
-        || allFoundContentBeanInformation.containsKey(returnType);
+        && (VALID_METHOD_RETURN_TYPES.contains(returnType)
+        || allFoundContentBeanInformation.containsKey(returnType));
   }
 
 

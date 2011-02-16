@@ -8,6 +8,7 @@ import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenera
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.SingleStreamCodeWriter;
@@ -39,14 +40,15 @@ public class CodeGenerationTest {
     analyzator.addContentBean(CBGAppointment.class);
     analyzator.addContentBean(CBGAttendee.class);
     analyzator.addContentBean(CBGContent.class);
+    analyzator.addContentBean(CBGImage.class);
     analyzator.analyzeContentBeanInformation();
 
     codegenerator = new ContentBeanCodeGenerator();
     codegenerator.setPackageName(TEST_PACKAGE_NAME);
   }
 
-//  @Test doesn't succeed in Idea, but hangs in Status "terminated" and prevents further test execution.
-
+  //doesn't succeed in Idea, but hangs in Status "terminated" and prevents further test execution.
+  //@Test
   public void printGeneratedCode() throws ContentBeanAnalyzerException, IOException {
     Set<ContentBeanInformation> roots = analyzator.getContentBeanRoots();
     assertNotNull(roots);
