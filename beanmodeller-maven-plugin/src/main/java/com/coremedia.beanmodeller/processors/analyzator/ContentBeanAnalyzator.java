@@ -429,7 +429,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
 
     BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
-    //TODO implement me!
+    blobPropertyInformation.setAllowedMimeTypes(mimeTypeName);
     return blobPropertyInformation;
   }
 

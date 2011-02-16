@@ -6,6 +6,7 @@ import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
@@ -34,6 +35,7 @@ public class DocTypeMarshalerTest {
     analyzator.addContentBean(CBGContent.class);
     analyzator.addContentBean(CBGAttendee.class);
     analyzator.addContentBean(CBGAppointment.class);
+    analyzator.addContentBean(CBGImage.class);
 
     try {
       analyzator.analyzeContentBeanInformation();
@@ -62,7 +64,7 @@ public class DocTypeMarshalerTest {
     }
 
     String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
-        "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n"+
+        "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlGrammar Name=\"simple.xsd\"/>\n" +
         "    <DocType Name=\"CBGContent\">\n" +
         "        <StringProperty Length=\"20\" Name=\"Description\"/>\n" +
@@ -77,6 +79,10 @@ public class DocTypeMarshalerTest {
         "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"Text\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAttendee\" Parent=\"CBGContent\"/>\n" +
+        "    <DocType Name=\"CBGImage\" Parent=\"CBGContent\">\n" +
+        "        <BlobProperty MimeType=\"*/*\" Name=\"GenericBlob\" />\n" +
+        "        <BlobProperty MimeType=\"image/*\" Name=\"Image\" />\n" +
+        "    </DocType>\n" +
         "</DocumentTypeModel>";
 
     try {

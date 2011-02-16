@@ -1,11 +1,13 @@
 package com.coremedia.beanmodeller.processors.doctypegenerator;
 
+import com.coremedia.beanmodeller.processors.BlobPropertyInformation;
 import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.processors.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.StringPropertyInformation;
+import com.coremedia.schemabeans.BlobProperty;
 import com.coremedia.schemabeans.DocType;
 import com.coremedia.schemabeans.DocumentTypeModel;
 import com.coremedia.schemabeans.Import;
@@ -21,7 +23,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -119,7 +120,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     //adding the coremedia richtext grammar
     Import importElement = objectFactory.createImport();
     importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
-    elements.add(0,objectFactory.createImportGrammar(importElement));
+    elements.add(0, objectFactory.createImportGrammar(importElement));
   }
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
@@ -266,20 +267,23 @@ public class DocTypeMarshaller extends MavenProcessor {
       Object element = createPropertyDescriptionFromPropertyInformation(propertyInformation);
 
       if (element != null) {
-        if (element instanceof  Propertydescriptor) {
+        if (element instanceof Propertydescriptor) {
           Propertydescriptor propertydescriptor = (Propertydescriptor) element;
           propertydescriptor.setName(propertyInformation.getDocumentTypePropertyName());
-         } else if (element instanceof JAXBElement) {
+        }
+        else if (element instanceof JAXBElement) {
           JAXBElement jaxbElement = (JAXBElement) element;
           Object value = jaxbElement.getValue();
           if (value instanceof Propertydescriptor) {
             Propertydescriptor indexablePropertyDescriptor = (Propertydescriptor) value;
             indexablePropertyDescriptor.setName(propertyInformation.getDocumentTypePropertyName());
-          } else {
-            throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing "+value.getClass());
           }
-        } else {
-          throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing "+element.getClass());
+          else {
+            throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing " + value.getClass());
+          }
+        }
+        else {
+          throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing " + element.getClass());
         }
         currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
       }
@@ -322,6 +326,16 @@ public class DocTypeMarshaller extends MavenProcessor {
         grammarProperty.setRoot(grammarName);
         xmlProperty.setGrammar(grammarProperty);
         return xmlProperty;
+
+      case BLOB:
+        final BlobProperty blobProperty = objectFactory.createBlobProperty();
+        BlobPropertyInformation blobPropertyInformation = (BlobPropertyInformation) propertyInformation;
+        blobProperty.setName(blobPropertyInformation.getDocumentTypePropertyName());
+        blobProperty.setMimeType(blobPropertyInformation.getAllowedMimeTypes());
+        //this is possible too
+        //blobProperty.setExtension();
+        //blobProperty.setOverride();
+        return blobProperty;
 
       default:
         return null;
