@@ -12,6 +12,27 @@
 
   <packaging>pom</packaging>
 
+  <organization>
+    <name>Deutsche Telekom AG</name>
+    <url>http://telekom.com</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:https://h1844669.stratoserver.net/git/telekom.com/</connection>
+    <developerConnection>scm:git:https://h1844669.stratoserver.net/git/telekom.com/</developerConnection>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>releases</id>
+      <url>https://h1844669.stratoserver.net/nexus/content/repositories/releases/</url>
+    </snapshotRepository>
+    <repository>
+      <id>snapshots</id>
+      <url>https://h1844669.stratoserver.net/nexus/content/repositories/snapshots/</url>
+    </repository>
+  </distributionManagement>
+
   <modules>
     <module>beanmodeller-maven-plugin</module>
     <module>beanmodeller-annotations</module>

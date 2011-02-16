@@ -110,6 +110,8 @@ Which property types are supported?
 
     * Markup
 
+    * Blob
+
     The type is defined by the return-type of an abstract method in a ContentBean. Primitive Java types are not
     allowed.
 
@@ -141,9 +143,17 @@ public abstract class CBGAppointment extends CBGContent {
     Use the Annotation to define your custom XML-Grammar.
 
 +----------------------------------+
-@ContentProperty(stringXmlGrammar = "some-richtext")
+@ContentProperty(propertyXmlGrammar = "some-richtext")
   protected abstract Markup getDescription();
 +----------------------------------+
 
   The XML schema definition for the markup is automatically read and deployed in the content server. Therefore it
   must be present in resources/xml_schema_definitions.
+
+
+*Blob Property
+
++----------------------------------+
+@ContentProperty (propertyBlobMimeType = "image/*")
+  public abstract com.coremedia.cap.common.Blob getImage();
++----------------------------------+
