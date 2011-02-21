@@ -324,6 +324,15 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
           if (getLog().isDebugEnabled()) {
             getLog().debug("Found property for " + classToAnalyze.getCanonicalName() + ": " + method.getName());
           }
+        } else {
+          if (getLog().isDebugEnabled()) {
+            if (!isValidPropertyMethod(method)) {
+              getLog().debug("Ignoring method "+ classToAnalyze.getCanonicalName() + ", " + method.getName()+" since it is no real property method");
+            }
+            if (!hasValidReturnType(method)) {
+              getLog().debug("Ignoring method "+ classToAnalyze.getCanonicalName() + ", " + method.getName()+" since it has not the correct return type");
+             }
+          }
         }
         // don't raise an error for filtered methods, as this is handled earlier already
       }
