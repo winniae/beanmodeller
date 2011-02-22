@@ -185,7 +185,9 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
         //bean properties must be abstract
         if (!isValidPropertyMethod(method)) {
           potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
-              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid");
+              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid." +
+              ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
+          );
         }
         // methods must have specific return types
         if (!hasValidReturnType(method)) {
@@ -195,6 +197,10 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       else {
         // no annotation
         // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
+        if (!isValidPropertyMethod(method)) {
+          getLog().info("Method " + method + " has been ignored since it is no valid property method" +
+              ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
+        }
         if (isValidPropertyMethod(method) && !hasValidReturnType(method)) {
           potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
         }
@@ -324,14 +330,15 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
           if (getLog().isDebugEnabled()) {
             getLog().debug("Found property for " + classToAnalyze.getCanonicalName() + ": " + method.getName());
           }
-        } else {
+        }
+        else {
           if (getLog().isDebugEnabled()) {
             if (!isValidPropertyMethod(method)) {
-              getLog().debug("Ignoring method "+ classToAnalyze.getCanonicalName() + ", " + method.getName()+" since it is no real property method");
+              getLog().debug("Ignoring method " + classToAnalyze.getCanonicalName() + ", " + method.getName() + " since it is no real property method");
             }
             if (!hasValidReturnType(method)) {
-              getLog().debug("Ignoring method "+ classToAnalyze.getCanonicalName() + ", " + method.getName()+" since it has not the correct return type");
-             }
+              getLog().debug("Ignoring method " + classToAnalyze.getCanonicalName() + ", " + method.getName() + " since it has not the correct return type");
+            }
           }
         }
         // don't raise an error for filtered methods, as this is handled earlier already
@@ -570,9 +577,13 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   private boolean isValidPropertyMethod(Method method) {
 // methods must be:
     // - abstract
+    // - public or protected
     // - start with "get" or "is"
     // - have no parameters
     if (!Modifier.isAbstract(method.getModifiers())) {
+      return false;
+    }
+    if (!Modifier.isProtected(method.getModifiers()) && !Modifier.isPublic(method.getModifiers())) {
       return false;
     }
     boolean isBoolean = Boolean.class.isAssignableFrom(method.getReturnType());

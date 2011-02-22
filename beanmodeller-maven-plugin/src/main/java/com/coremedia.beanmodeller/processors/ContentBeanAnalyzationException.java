@@ -23,6 +23,7 @@ public class ContentBeanAnalyzationException extends ContentBeanAnalyzerExceptio
   public static final String SCHEMA_DEFINITION_NOT_FOUND_MESSAGE = "The schema definition could not be found: ";
   //TODO rename to _MESSAGE
   public static final String LINKED_DOCTYPE_UNKNOWN = "A referenced document type is not part of the defined ContentBeans: ";
+  public static final String VALID_METHOD_HINTS_MESSAGE = "\nKeep in mind it has to be abstract, without parameters and either public or protected.";
 
   private List<ContentBeanAnalyzationError> errors = new LinkedList<ContentBeanAnalyzationError>();
   public static final String SCHEMA_NO_XML_ROOT_SET_MESSAGE = "There is no XML root defined for the grammar ";

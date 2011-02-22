@@ -29,7 +29,7 @@ public abstract class CBGLongMthdFailD extends CBGContent {
    * @return random number, not interesting
    */
   @ContentProperty(propertyName = "LongJane")
-  abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated();
+  public abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated();
 
   /**
    * Abstract Method. Will be implemented by Beangenerator.
@@ -42,6 +42,6 @@ public abstract class CBGLongMthdFailD extends CBGContent {
    * @return random number, not interesting
    */
   @ContentProperty(propertyName = "LongJane")
-  abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated2();
+  public abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated2();
 
 }

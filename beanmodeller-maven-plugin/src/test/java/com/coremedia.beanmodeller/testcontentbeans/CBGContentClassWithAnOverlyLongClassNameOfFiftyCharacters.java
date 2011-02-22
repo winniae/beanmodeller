@@ -23,6 +23,6 @@ public abstract class CBGContentClassWithAnOverlyLongClassNameOfFiftyCharacters 
    *
    * @return random number, not interesting
    */
-  abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharacters();
+  public abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharacters();
 
 }

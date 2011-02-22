@@ -21,21 +21,21 @@ public abstract class CBGAppointment extends CBGContent {
    *
    * @return Number of Attendees from Content.
    */
-  abstract Integer getNumberOfAttendees();
+  public abstract Integer getNumberOfAttendees();
 
   /**
    * Get Begin and End Dates from Content.
    *
    * @return Date when the Appointment begins.
    */
-  abstract Calendar getBeginDate();
+  public abstract Calendar getBeginDate();
 
   /**
    * Get Begin and End Dates from Content.
    *
    * @return Date when the Appointment ends..
    */
-  abstract Calendar getEndDate();
+  public abstract Calendar getEndDate();
 
   /**
    * A simple XML property to ensure that a custom xsd is used.
@@ -43,7 +43,7 @@ public abstract class CBGAppointment extends CBGContent {
    * @return the custom XML
    */
   @ContentProperty(propertyXmlGrammar = "simple.xsd", propertyXmlRoot = "simple")
-  abstract Markup getCustomXML();
+  public abstract Markup getCustomXML();
 
 
   /**
@@ -61,14 +61,14 @@ public abstract class CBGAppointment extends CBGContent {
    *
    * @return List of all Attendees.
    */
-  abstract List<CBGAttendee> getAttendees();
+  public abstract List<CBGAttendee> getAttendees();
 
   /**
    * get CoreMedia Markup from Content.
    *
    * @return always a Markup object containing some or no text.
    */
-  abstract Markup getText();
+  public abstract Markup getText();
 
   /**
    * The organizer organizes the appointment. He is still of type Attendee, though.
@@ -77,5 +77,5 @@ public abstract class CBGAppointment extends CBGContent {
    *
    * @return One attendee object from Content
    */
-  abstract CBGAttendee getOrganizer();
+  public abstract CBGAttendee getOrganizer();
 }

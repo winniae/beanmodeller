@@ -30,6 +30,6 @@ public abstract class CBGLongMthdAnno extends CBGContent {
    * @return random number, not interesting
    */
   @ContentProperty(propertyName = "LongJane")
-  abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersButCorrectlyAnnotated();
+  public abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersButCorrectlyAnnotated();
 
 }
