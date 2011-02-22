@@ -22,12 +22,12 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>releases</id>
-      <url>https://h1844669.stratoserver.net/nexus/content/repositories/releases/</url>
-    </snapshotRepository>
-    <repository>
       <id>snapshots</id>
       <url>https://h1844669.stratoserver.net/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>releases</id>
+      <url>https://h1844669.stratoserver.net/nexus/content/repositories/releases/</url>
     </repository>
   </distributionManagement>
 
