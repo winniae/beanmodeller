@@ -18,10 +18,8 @@
   </organization>
 
   <scm>
-    <!--<connection>scm:git:https://h1844669.stratoserver.net/git/telekom_com/beanmodeller/</connection>
-    <developerConnection>scm:git:https://h1844669.stratoserver.net/git/telekom_com/beanmodeller/</developerConnection>-->
     <connection>scm:git:https://h1844669.stratoserver.net/git/telekom_com/beanmodeller/</connection>
-    <developerConnection>scm:git:file://srv/git/telekom_com/beanmodeller</developerConnection>
+    <developerConnection>scm:git:https://h1844669.stratoserver.net/git/telekom_com/beanmodeller/</developerConnection>
   </scm>
 
   <distributionManagement>
