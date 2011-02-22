@@ -29,6 +29,6 @@ public abstract class CBGLongMthdFailA extends CBGContent {
    * @return random number, not interesting
    */
   @ContentProperty(propertyName = "MethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated")
-  abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated();
+  public abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharactersAndWrongAnnotated();
 
 }

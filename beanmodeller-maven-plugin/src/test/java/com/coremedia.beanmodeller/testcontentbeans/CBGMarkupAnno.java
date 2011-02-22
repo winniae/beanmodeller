@@ -12,10 +12,10 @@ import com.coremedia.xml.Markup;
 @ContentBean
 public abstract class CBGMarkupAnno extends CBGContent {
 
-  abstract Markup getText();
+  public abstract Markup getText();
 
   @ContentProperty(propertyName = "another")
-  abstract Markup getAnotherText();
+  public abstract Markup getAnotherText();
 
   /**
    * Markup with Annotation for custom-grammar.
@@ -23,5 +23,5 @@ public abstract class CBGMarkupAnno extends CBGContent {
    * @return .
    */
   @ContentProperty(propertyXmlGrammar = "simple.xsd", propertyXmlRoot = "simple")
-  abstract Markup getOtherGrammar();
+  public abstract Markup getOtherGrammar();
 }

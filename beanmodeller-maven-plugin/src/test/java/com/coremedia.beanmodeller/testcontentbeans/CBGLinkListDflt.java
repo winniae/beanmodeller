@@ -17,5 +17,5 @@ public abstract class CBGLinkListDflt extends CBGContent {
    *
    * @return List of all Attendees.
    */
-  abstract List getAttendees();
+  public abstract List getAttendees();
 }

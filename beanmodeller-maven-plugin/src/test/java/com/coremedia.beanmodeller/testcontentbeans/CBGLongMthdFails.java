@@ -27,7 +27,7 @@ public abstract class CBGLongMthdFails extends CBGContent {
    *
    * @return random number, not interesting
    */
-  abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharacters();
+  public abstract Integer getMethodWithAnOverlyLongMethodNameOfFiftyCharacters();
 
 
 }

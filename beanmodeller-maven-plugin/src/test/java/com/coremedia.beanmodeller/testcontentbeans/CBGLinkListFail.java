@@ -17,5 +17,5 @@ public abstract class CBGLinkListFail extends CBGContent {
    *
    * @return List of all Attendees.
    */
-  abstract List<NotCBGContentBean> getAttendees();
+  public abstract List<NotCBGContentBean> getAttendees();
 }

@@ -20,6 +20,6 @@ public abstract class CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCha
    *
    * @return random number, not interesting
    */
-  abstract Integer getSomeInt();
+  public abstract Integer getSomeInt();
 
 }

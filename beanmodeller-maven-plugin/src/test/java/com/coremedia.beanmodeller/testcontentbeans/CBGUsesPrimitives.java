@@ -13,9 +13,9 @@ import com.coremedia.objectserver.beans.AbstractContentBean;
 @ContentBean(doctypeName = "primitives")
 public abstract class CBGUsesPrimitives extends AbstractContentBean {
 
-  abstract int getSomeNumber();
+  public abstract int getSomeNumber();
 
-  abstract long getSomeOtherNumber();
+  public abstract long getSomeOtherNumber();
 
   @ContentProperty
   abstract boolean isDecision();
