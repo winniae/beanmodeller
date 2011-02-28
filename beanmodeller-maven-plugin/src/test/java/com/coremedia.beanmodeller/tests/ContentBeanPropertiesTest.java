@@ -21,7 +21,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +33,6 @@ import static org.junit.Assert.fail;
  */
 public class ContentBeanPropertiesTest {
 
-  private static final String METHOD_PREFIX = "get";
   ContentBeanAnalyzator contentBeanAnalyzator;
   IntegerPropertyInformation integerProperty;
   StringPropertyInformation stringProperty;
@@ -53,19 +52,24 @@ public class ContentBeanPropertiesTest {
 
     Class<CBGAppointment> cbgAppointmentClass = CBGAppointment.class;
 
-    String numberOfAttendeesName = "NumberOfAttendees";
-    String beginDateName = "BeginDate";
-    String endDateName = "EndDate";
-    String descriptionName = "Description";
-    String attendeesName = "Attendees";
-    String textName = "Text";
+    String numberOfAttendeesName = "numberOfAttendees";
+    Method numberOfAttendeesMethod = cbgAppointmentClass.getDeclaredMethod("getNumberOfAttendees");
 
-    Method numberOfAttendeesMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + numberOfAttendeesName);
-    Method beginDateMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + beginDateName);
-    Method endDateMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + endDateName);
-    Method descriptionMethod = CBGContent.class.getDeclaredMethod(METHOD_PREFIX + descriptionName);
-    Method attendeesMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + attendeesName);
-    Method textMethod = cbgAppointmentClass.getDeclaredMethod(METHOD_PREFIX + textName);
+    String beginDateName = "beginDate";
+    Method beginDateMethod = cbgAppointmentClass.getDeclaredMethod("getBeginDate");
+
+    String endDateName = "endDate";
+    Method endDateMethod = cbgAppointmentClass.getDeclaredMethod("getEndDate");
+
+    String descriptionName = "description";
+    Method descriptionMethod = CBGContent.class.getDeclaredMethod("getDescription");
+
+    String attendeesName = "attendees";
+    Method attendeesMethod = cbgAppointmentClass.getDeclaredMethod("getAttendees");
+
+    String textName = "text";
+    Method textMethod = cbgAppointmentClass.getDeclaredMethod("getText");
+
 
     integerProperty = new IntegerPropertyInformation(numberOfAttendeesMethod);
     integerProperty.setDocumentTypePropertyName(numberOfAttendeesName);

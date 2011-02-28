@@ -14,7 +14,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -28,15 +28,14 @@ public class ContentBeanLinkListPropertiesTest {
   LinkListPropertyInformation linkListPropertyInformation;
 
   private Class<CBGLinkListDflt> linkListPropertyBeanClass = CBGLinkListDflt.class;
-  private static final String METHOD_PREFIX = "get";
 
   @Before
   public void setup() throws NoSuchMethodException {
 
     contentBeanAnalyzator = new ContentBeanAnalyzator();
 
-    String attendeesName = "Attendees";
-    Method attendeesMethod = linkListPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + attendeesName);
+    String attendeesName = "attendees";
+    Method attendeesMethod = linkListPropertyBeanClass.getDeclaredMethod("getAttendees");
 
     linkListPropertyInformation = new LinkListPropertyInformation(attendeesMethod);
     linkListPropertyInformation.setDocumentTypePropertyName(attendeesName);

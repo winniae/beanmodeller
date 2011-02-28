@@ -67,21 +67,21 @@ public class DocTypeMarshalerTest {
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlGrammar Name=\"simple.xsd\"/>\n" +
         "    <DocType Name=\"CBGContent\">\n" +
-        "        <StringProperty Length=\"20\" Name=\"Description\"/>\n" +
+        "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAppointment\" Parent=\"CBGContent\">\n" +
-        "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"Attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
-        "        <DateProperty Name=\"BeginDate\"/>\n" +
-        "        <XmlProperty Grammar=\"simple.xsd\" Name=\"CustomXML\"/>\n" +
-        "        <DateProperty Name=\"EndDate\"/>\n" +
-        "        <IntProperty Name=\"NumberOfAttendees\"/>\n" +
-        "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"Organizer\" Max=\"1\" Min=\"0\"/>\n" +
-        "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"Text\"/>\n" +
+        "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
+        "        <DateProperty Name=\"beginDate\"/>\n" +
+        "        <XmlProperty Grammar=\"simple.xsd\" Name=\"customXML\"/>\n" +
+        "        <DateProperty Name=\"endDate\"/>\n" +
+        "        <IntProperty Name=\"numberOfAttendees\"/>\n" +
+        "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"organizer\" Max=\"1\" Min=\"0\"/>\n" +
+        "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"text\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAttendee\" Parent=\"CBGContent\"/>\n" +
         "    <DocType Name=\"CBGImage\" Parent=\"CBGContent\">\n" +
-        "        <BlobProperty MimeType=\"*/*\" Name=\"GenericBlob\" />\n" +
-        "        <BlobProperty MimeType=\"image/*\" Name=\"Image\" />\n" +
+        "        <BlobProperty MimeType=\"*/*\" Name=\"genericBlob\" />\n" +
+        "        <BlobProperty MimeType=\"image/*\" Name=\"image\" />\n" +
         "    </DocType>\n" +
         "</DocumentTypeModel>";
 

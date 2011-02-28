@@ -15,7 +15,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -30,7 +30,6 @@ public class ContentBeanStringPropertiesTest {
 
   public static final int DEFAULT_STRING_PROPERTY_LENGTH = 34;
   private Class<CBGStringPrpNoA> stringPropertyBeanClass = CBGStringPrpNoA.class;
-  private static final String METHOD_PREFIX = "get";
 
   @Before
   public void setup() throws NoSuchMethodException {
@@ -39,8 +38,8 @@ public class ContentBeanStringPropertiesTest {
 
     contentBeanAnalyzator.setPropertyDefaultStringLength(DEFAULT_STRING_PROPERTY_LENGTH);
 
-    String descriptionName = "Description";
-    Method descriptionMethod = stringPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + descriptionName);
+    String descriptionName = "description";
+    Method descriptionMethod = stringPropertyBeanClass.getDeclaredMethod("getDescription");
 
     stringProperty = new StringPropertyInformation(descriptionMethod);
     stringProperty.setDocumentTypePropertyName(descriptionName);
@@ -77,8 +76,8 @@ public class ContentBeanStringPropertiesTest {
   @Test
   public void testAnnotationButNoLength() throws NoSuchMethodException {
 
-    String descriptionName = "Description";
-    Method descriptionMethod = CBGStringPrpANoL.class.getDeclaredMethod(METHOD_PREFIX + descriptionName);
+    String descriptionName = "description";
+    Method descriptionMethod = CBGStringPrpANoL.class.getDeclaredMethod("getDescription");
     StringPropertyInformation myStringProperty = new StringPropertyInformation(descriptionMethod);
     myStringProperty.setDocumentTypePropertyName(descriptionName);
     myStringProperty.setLength(20);

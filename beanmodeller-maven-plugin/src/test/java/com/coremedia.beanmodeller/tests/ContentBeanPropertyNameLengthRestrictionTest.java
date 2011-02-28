@@ -20,7 +20,7 @@ import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyza
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
 
 /**
  * A test case to test if the names of objects and methods are correctly checked.
@@ -29,18 +29,16 @@ public class ContentBeanPropertyNameLengthRestrictionTest {
   ContentBeanAnalyzator analyzator;
   private PropertyInformation integerProperty;
   private Class<CBGLongMthdFails> tooLongClass = CBGLongMthdFails.class;
-  private static final String METHOD_PREFIX = "get";
 
   @Before
   public void setup() throws NoSuchMethodException {
     analyzator = new ContentBeanAnalyzator();
 
     String longJaneName = "MethodWithAnOverlyLongMethodNameOfFiftyCharacters";
-
-    Method longJameMethod = tooLongClass.getDeclaredMethod(METHOD_PREFIX + longJaneName);
+    Method longJameMethod = tooLongClass.getDeclaredMethod("getMethodWithAnOverlyLongMethodNameOfFiftyCharacters");
 
     integerProperty = new IntegerPropertyInformation(longJameMethod);
-    ((IntegerPropertyInformation) integerProperty).setDocumentTypePropertyName("LongJane");
+    ((IntegerPropertyInformation) integerProperty).setDocumentTypePropertyName("longJane");
   }
 
   @Test
@@ -61,7 +59,7 @@ public class ContentBeanPropertyNameLengthRestrictionTest {
   public void testTooLongButCorrectlyAnnotatedClassName() throws NoSuchMethodException {
     String longJaneName = "MethodWithAnOverlyLongMethodNameOfFiftyCharactersButCorrectlyAnnotated";
 
-    Method longJameMethod = CBGLongMthdAnno.class.getDeclaredMethod(METHOD_PREFIX + longJaneName);
+    Method longJameMethod = CBGLongMthdAnno.class.getDeclaredMethod("getMethodWithAnOverlyLongMethodNameOfFiftyCharactersButCorrectlyAnnotated");
 
     IntegerPropertyInformation myIntegerProperty = new IntegerPropertyInformation(longJameMethod);
     ((IntegerPropertyInformation) myIntegerProperty).setDocumentTypePropertyName("LongJane");

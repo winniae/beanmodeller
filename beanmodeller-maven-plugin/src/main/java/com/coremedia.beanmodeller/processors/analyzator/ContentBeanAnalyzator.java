@@ -561,11 +561,15 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
     String documentTypePropertyName = method.getName().startsWith("is") ? method.getName().substring(2) : method.getName().substring(3);
 
+    //ensure that the first letter of the name is lower case
+    documentTypePropertyName = documentTypePropertyName.substring(0, 1).toLowerCase() + documentTypePropertyName.substring(1);
+
     // get method name from Annotation if available.
     if (methodAnnotation != null && !methodAnnotation.propertyName().equals(ContentProperty.PROPERTY_NAME_USE_METHOD_NAME)) {
       // if annotation is not set to default (extract from method name), then set property name from annotation
       documentTypePropertyName = methodAnnotation.propertyName();
     }
+
     return documentTypePropertyName;
   }
 

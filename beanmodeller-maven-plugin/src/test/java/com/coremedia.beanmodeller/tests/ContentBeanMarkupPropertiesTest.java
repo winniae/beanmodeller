@@ -29,8 +29,6 @@ public class ContentBeanMarkupPropertiesTest {
   public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "coremedia-richtext-1.0";
   public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "simple.xsd";
 
-  private static final String METHOD_PREFIX = "get";
-
   private Class<CBGMarkupAnno> markupPropertyBeanClass = CBGMarkupAnno.class;
   private MarkupPropertyInformation anotherTextProperty;
   private MarkupPropertyInformation otherGrammarProperty;
@@ -43,8 +41,8 @@ public class ContentBeanMarkupPropertiesTest {
     contentBeanAnalyzator.setPropertyDefaultMarkupGrammar(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
 
-    String textName = "Text";
-    Method textMethod = markupPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + textName);
+    String textName = "text";
+    Method textMethod = markupPropertyBeanClass.getDeclaredMethod("getText");
     markupProperty = new MarkupPropertyInformation(textMethod);
     markupProperty.setDocumentTypePropertyName(textName);
     markupProperty.setGrammarName(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
@@ -55,8 +53,8 @@ public class ContentBeanMarkupPropertiesTest {
     anotherTextProperty.setDocumentTypePropertyName(anotherTextName);
     anotherTextProperty.setGrammarName(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
-    String otherGrammarName = "OtherGrammar";
-    Method otherGrammarMethod = markupPropertyBeanClass.getDeclaredMethod(METHOD_PREFIX + otherGrammarName);
+    String otherGrammarName = "otherGrammar";
+    Method otherGrammarMethod = markupPropertyBeanClass.getDeclaredMethod("getOtherGrammar");
     otherGrammarProperty = new MarkupPropertyInformation(otherGrammarMethod);
     otherGrammarProperty.setDocumentTypePropertyName(otherGrammarName);
     otherGrammarProperty.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR);

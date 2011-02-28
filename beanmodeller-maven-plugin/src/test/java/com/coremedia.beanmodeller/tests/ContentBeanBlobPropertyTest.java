@@ -47,7 +47,7 @@ public class ContentBeanBlobPropertyTest {
       fail();
     }
     nonExplicitPropertyInformation.setAllowedMimeTypes("*/*");
-    nonExplicitPropertyInformation.setDocumentTypePropertyName("GenericBlob");
+    nonExplicitPropertyInformation.setDocumentTypePropertyName("genericBlob");
 
     contentBeanAnalyzator.addContentBean(CBGImage.class);
     try {
@@ -81,7 +81,7 @@ public class ContentBeanBlobPropertyTest {
       fail();
     }
     explicitPropertyInformation.setAllowedMimeTypes("image/*");
-    explicitPropertyInformation.setDocumentTypePropertyName("Image");
+    explicitPropertyInformation.setDocumentTypePropertyName("image");
 
     contentBeanAnalyzator.addContentBean(CBGImage.class);
     try {
