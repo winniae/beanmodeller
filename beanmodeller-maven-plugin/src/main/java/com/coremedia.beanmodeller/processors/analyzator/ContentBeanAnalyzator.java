@@ -181,35 +181,44 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
     for (Method method : methods) {
       Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
+      boolean isValidPropertyMethod = isValidPropertyMethod(method);
+      boolean hasValidReturnType = hasValidReturnType(method);
       if (methodAnnotation != null) {
         //bean properties must be abstract
-        if (!isValidPropertyMethod(method)) {
+        if (!isValidPropertyMethod) {
           potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
               "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid." +
               ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
           );
         }
         // methods must have specific return types
-        if (!hasValidReturnType(method)) {
+        if (!hasValidReturnType) {
           potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
         }
+        //bean properties only in content beans
+        if (!isContentBean) {
+          potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
+              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class");
+        }
+        //TODO in the end we should notice somehow that we analyzed it & that it was marked positive
       }
       else {
-        // no annotation
-        // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
-        if (!isValidPropertyMethod(method)) {
-          getLog().info("Method " + method + " has been ignored since it is no valid property method" +
-              ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
+        //we want to look at abstract methods only
+        if (Modifier.isAbstract(method.getModifiers())) {
+          // no annotation
+          // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
+          if (!isValidPropertyMethod) {
+            getLog().info("Method " + method + " has been ignored since it is no valid property method" +
+                ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
+          }
+          if (isValidPropertyMethod && !hasValidReturnType) {
+            potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+          }
         }
-        if (isValidPropertyMethod(method) && !hasValidReturnType(method)) {
-          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        else {
+          getLog().debug("Method " + method.getName() + " has been ignored since only abstract methods are considered.");
         }
-      }
-
-      //bean properties only in content beans
-      if (!isContentBean) {
-        potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
-            "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class");
+        //TODO in the end we should notice somehow that we analyzed it & that it was marked positive
       }
     }
   }
@@ -310,7 +319,6 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   private void extractDocProperties(ContentBeanAnalyzationException potentialException) {
     Set<Class> classesToAnalyze = allFoundContentBeanInformation.keySet();
 
-
     //we simply go through all classes and check & update all bean info
     for (Class classToAnalyze : classesToAnalyze) {
       AnalyzatorContentBeanInformation beanInformation = allFoundContentBeanInformation.get(classToAnalyze);
@@ -324,6 +332,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
 
       // fill filteredMethods with all abstract methods for this class complying to the rules
       Set<Method> filteredMethods = new HashSet<Method>();
+      //TODO sollten wir uns eigentlich nicht nur auf schon analysierte Methoden beschränken
       for (Method method : classToAnalyze.getDeclaredMethods()) {
         if (isValidPropertyMethod(method) && hasValidReturnType(method)) {
           filteredMethods.add(method);
