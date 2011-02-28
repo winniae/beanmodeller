@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGMarkupAnno;
@@ -68,8 +69,9 @@ public class ContentBeanMarkupPropertiesTest {
 
     contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -77,7 +79,7 @@ public class ContentBeanMarkupPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGMarkupAnno");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();
@@ -90,8 +92,9 @@ public class ContentBeanMarkupPropertiesTest {
   public void testAnnotationButNoGrammar() throws NoSuchMethodException {
     contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -99,7 +102,7 @@ public class ContentBeanMarkupPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGMarkupAnno");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();
@@ -112,8 +115,9 @@ public class ContentBeanMarkupPropertiesTest {
   public void testNonStandardGrammar() {
     contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -121,7 +125,7 @@ public class ContentBeanMarkupPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGMarkupAnno");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();

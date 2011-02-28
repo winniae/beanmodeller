@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLinkListDflt;
@@ -51,8 +52,9 @@ public class ContentBeanLinkListPropertiesTest {
 
     contentBeanAnalyzator.addContentBean(linkListPropertyBeanClass);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -60,7 +62,7 @@ public class ContentBeanLinkListPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGLinkListDflt");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGLinkListDflt");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();

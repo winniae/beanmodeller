@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.maven;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -42,19 +42,15 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     //set the logging
     analyzer.setLog(getLog());
     analyzer.findContentBeans(contentBeanPackage);
+    ContentBeanHierarchy hierarchy = null;
     try {
-      analyzer.analyzeContentBeanInformation();
+      hierarchy = analyzer.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       throw new MojoFailureException("Unable to analyze the content beans:" + formatErrors(e), e);
     }
     Set<ContentBeanInformation> roots;
-    try {
-      roots = analyzer.getContentBeanRoots();
-    }
-    catch (ContentBeanAnalyzatorInternalException e) {
-      throw new MojoExecutionException("This should have never happened: ", e);
-    }
+    roots = hierarchy.getRootBeanInformation();
     return roots;
   }
 

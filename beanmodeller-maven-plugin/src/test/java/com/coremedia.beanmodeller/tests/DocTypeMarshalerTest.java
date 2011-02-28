@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
@@ -37,9 +38,9 @@ public class DocTypeMarshalerTest {
     analyzator.addContentBean(CBGImage.class);
 
     try {
-      analyzator.analyzeContentBeanInformation();
+      ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
       //not ok, but ok here to use null as output stream
-      marshaller = new DocTypeMarshaller(analyzator.getContentBeanRoots(), null);
+      marshaller = new DocTypeMarshaller(hierarchy.getRootBeanInformation(), null);
     }
     catch (Exception e) {
       fail();

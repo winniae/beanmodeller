@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.DatePropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.IntegerPropertyInformation;
@@ -90,21 +91,22 @@ public class ContentBeanPropertiesTest {
     contentBeanAnalyzator.addContentBean(cbgAppointmentClass);
     contentBeanAnalyzator.addContentBean(CBGAttendee.class);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
     }
 
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGContent");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGContent");
       assertTrue(cbgContent.getContentBean().equals(CBGContent.class));
 
-      cbgAppointment = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGAppointment");
+      cbgAppointment = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGAppointment");
       assertTrue(cbgAppointment.getContentBean().equals(cbgAppointmentClass));
 
-      cbgAttendee = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGAttendee");
+      cbgAttendee = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGAttendee");
       assertTrue(cbgAttendee.getContentBean().equals(CBGAttendee.class));
     }
     catch (ContentBeanAnalyzatorInternalException e) {

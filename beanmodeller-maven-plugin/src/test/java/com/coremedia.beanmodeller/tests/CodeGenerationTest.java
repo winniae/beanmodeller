@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
@@ -33,6 +34,8 @@ public class CodeGenerationTest {
   private static final String TEST_PACKAGE_NAME = "test.code";
   private ContentBeanAnalyzator analyzator;
   private ContentBeanCodeGenerator codegenerator;
+  private Set<ContentBeanInformation> roots;
+  private ContentBeanHierarchy hierarchy;
 
   @Before
   public void setup() throws ContentBeanAnalyzationException {
@@ -41,7 +44,9 @@ public class CodeGenerationTest {
     analyzator.addContentBean(CBGAttendee.class);
     analyzator.addContentBean(CBGContent.class);
     analyzator.addContentBean(CBGImage.class);
-    analyzator.analyzeContentBeanInformation();
+    hierarchy = analyzator.analyzeContentBeanInformation();
+
+    roots = hierarchy.getRootBeanInformation();
 
     codegenerator = new ContentBeanCodeGenerator();
     codegenerator.setPackageName(TEST_PACKAGE_NAME);
@@ -50,7 +55,6 @@ public class CodeGenerationTest {
   //doesn't succeed in Idea, but hangs in Status "terminated" and prevents further test execution.
   //@Test
   public void printGeneratedCode() throws ContentBeanAnalyzatorInternalException, IOException {
-    Set<ContentBeanInformation> roots = analyzator.getContentBeanRoots();
     assertNotNull(roots);
     assertFalse(roots.isEmpty());
     JCodeModel code = codegenerator.generateCode(roots);
@@ -64,7 +68,6 @@ public class CodeGenerationTest {
 
   @Test
   public void testClassnameGeneration() throws ContentBeanAnalyzatorInternalException {
-    Set<ContentBeanInformation> roots = analyzator.getContentBeanRoots();
     assertNotNull(roots);
     assertFalse(roots.isEmpty());
     //root should have a element for CBGContent

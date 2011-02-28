@@ -6,6 +6,7 @@ import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.beaninformation.AbstractPropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.AnalyzatorContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.DatePropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.EmptyContentBeanInformation;
@@ -40,7 +41,6 @@ import java.util.Set;
  */
 public class ContentBeanAnalyzator extends MavenProcessor {
   private List<Class> beansToAnalyze = new LinkedList<Class>();
-  private Set<ContentBeanInformation> rootBeanInformation = null;
 
   public static final int MAX_CONTENT_TYPE_LENGTH = 16;
   public static final int MAX_PROPERTY_LENGTH = 32;
@@ -48,10 +48,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
   private static final ContentBeanInformation PROPERTY_DEFAULT_LINKLIST_TYPE = EmptyContentBeanInformation.getInstance();
 
-  // this hash map is used to have a fast lookup if we already got a bean info for a certain class
-  // or to access the found information fastly
-  // ONLY to be used during analyzation
-  private Map<Class, AnalyzatorContentBeanInformation> allFoundContentBeanInformation;
   // this map is used during analyzation to track methods to consider as content bean properties, which is used later
   private Set<Method> foundContentBeanProperties = new HashSet<Method>();
 
@@ -104,62 +100,50 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     beansToAnalyze.add(bean);
   }
 
-  public Set<ContentBeanInformation> getContentBeanRoots() throws ContentBeanAnalyzatorInternalException {
-    if (rootBeanInformation == null) {
-      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LIFECYCLE_VIOLATION);
-    }
-    return rootBeanInformation;
-  }
-
   /**
    * writes to rootBeanInformation.
    */
-  public void analyzeContentBeanInformation() throws ContentBeanAnalyzationException {
+  public ContentBeanHierarchy analyzeContentBeanInformation() throws ContentBeanAnalyzationException {
+    ContentBeanHierarchy hierarchy = new ContentBeanHierarchy();
     //to mark that we have analyzed the beans we create the root bean information object
-    rootBeanInformation = new HashSet<ContentBeanInformation>();
 
     getLog().debug("Starting content bean analyzation");
 
     //we first create an exception - perhaps we add errors later
     ContentBeanAnalyzationException potentialException = new ContentBeanAnalyzationException();
 
-    // this hash map is used to have a fast lookup if we already got a bean info for a certain class
-    // or to access the found information fastly
-    // GLOBAL VARIABLE
-    allFoundContentBeanInformation = new HashMap<Class, AnalyzatorContentBeanInformation>();
+    extractBeanClassHierarchy(potentialException, hierarchy);
 
-    extractBeanClassHierarchy(potentialException);
-
-    getLog().info("Found " + allFoundContentBeanInformation.keySet().size() + " content beans");
+    getLog().info("Found " + hierarchy.getAllFoundContentBeans().size() + " content beans");
 
     //from this point on we can assume that all content beans are found and rootContentBeans &
     // allFoundContentBeanInformation are properly filled.
     //so first of all let's see if there is a problem in the hierarchy
-    checkBeanClassHierarchy(potentialException);
+    checkBeanClassHierarchy(potentialException, hierarchy);
 
-    extractDocTypeNames(potentialException);
+    extractDocTypeNames(potentialException, hierarchy);
 
-    extractDocProperties(potentialException);
+    extractDocProperties(potentialException, hierarchy);
 
     //have there been errors in the analyzation?
     if (potentialException.hasErrors()) {
-      //delete any analyzation result
-      rootBeanInformation = null;
       //and throw the prepared exception
       throw potentialException;
     }
     getLog().info("Content bean analyzation successfully performed");
+    //and return the results
+    return hierarchy;
   }
 
-  private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException) {
+  private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
     getLog().info("checking bean class hierarchy");
-    Set<Class> visitedClasses = new HashSet<Class>(allFoundContentBeanInformation.size());
-    for (ContentBeanInformation bean : allFoundContentBeanInformation.values()) {
-      checkBeanClassHierarchy(potentialException, bean, visitedClasses);
+    Set<Class> visitedClasses = new HashSet<Class>(hierarchy.getAllFoundContentBeans().size());
+    for (ContentBeanInformation bean : hierarchy.getAllContentBeanInformation()) {
+      checkBeanClassHierarchy(potentialException, bean, visitedClasses, hierarchy);
     }
   }
 
-  private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanInformation bean, Set<Class> visitedClasses) {
+  private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanInformation bean, Set<Class> visitedClasses, ContentBeanHierarchy hierarchy) {
     if (getLog().isDebugEnabled()) {
       getLog().debug("checking bean class hierarchy for " + bean);
     }
@@ -169,11 +153,11 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       getLog().info("checking class in hierarchy: " + currentClass);
       //first of all note that we visited the class
       visitedClasses.add(currentClass);
-      analyzeMethods(potentialException, contentBean, currentClass);
+      analyzeMethods(potentialException, contentBean, currentClass, hierarchy);
     }
   }
 
-  private void analyzeMethods(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass) {
+  private void analyzeMethods(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, ContentBeanHierarchy hierarchy) {
     Method[] methods = currentClass.getDeclaredMethods();
     //it is a content bean if there is an annotation - we do not really care about details here
     boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
@@ -182,7 +166,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     for (Method method : methods) {
       Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
-      boolean hasValidReturnType = hasValidReturnType(method);
+      boolean hasValidReturnType = hasValidReturnType(method, hierarchy);
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
         methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType);
@@ -272,7 +256,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return false;
   }
 
-  private void extractBeanClassHierarchy(ContentBeanAnalyzationException potentialException) {
+  private void extractBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
     getLog().info("Extracting bean hierarchy");
     for (Class bean : beansToAnalyze) {
       //all content bean must extend AbstractContentBean – if not we must mark is as an error
@@ -291,13 +275,13 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         ContentBean beanAnnotation = (ContentBean) currentClass.getAnnotation(ContentBean.class);
         if (beanAnnotation != null) {
           //have we already seen it?
-          AnalyzatorContentBeanInformation contentBeanInformation = allFoundContentBeanInformation.get(currentClass);
+          AnalyzatorContentBeanInformation contentBeanInformation = (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(currentClass);
           // if we have not seen the class create a content bean information
           if (contentBeanInformation == null) {
             getLog().info("Found content bean " + currentClass.toString());
             contentBeanInformation = new AnalyzatorContentBeanInformation(currentClass);
             //and we save the information that we have a bean infor for that class
-            allFoundContentBeanInformation.put(currentClass, contentBeanInformation);
+            hierarchy.addContentBeanInformation(currentClass, contentBeanInformation);
           }
           //if it is in a hierarchy we have to model the hierarchy in the bean information
           if (lastBeanInformation != null) {
@@ -308,19 +292,19 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         }
       }
       if (lastBeanInformation != null) {
-        rootBeanInformation.add(lastBeanInformation);
+        hierarchy.getRootBeanInformation().add(lastBeanInformation);
       }
     }
 
   }
 
-  private void extractDocTypeNames(ContentBeanAnalyzationException potentialException) {
-    Set<Class> classesToAnalyze = allFoundContentBeanInformation.keySet();
+  private void extractDocTypeNames(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
+    Set<Class> classesToAnalyze = hierarchy.getAllFoundContentBeans();
     Map<String, Class> foundDocTypeNames = new HashMap<String, Class>();
 
     //we simply go through all classes and check & update all bean info
     for (Class classToAnalyze : classesToAnalyze) {
-      AnalyzatorContentBeanInformation beanInformation = allFoundContentBeanInformation.get(classToAnalyze);
+      AnalyzatorContentBeanInformation beanInformation = (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(classToAnalyze);
 
       //get our content bean annotation
       ContentBean beanAnnotation = (ContentBean) classToAnalyze.getAnnotation(ContentBean.class);
@@ -365,12 +349,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     }
   }
 
-  private void extractDocProperties(ContentBeanAnalyzationException potentialException) {
-    Set<Class> classesToAnalyze = allFoundContentBeanInformation.keySet();
+  private void extractDocProperties(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
+    Set<Class> classesToAnalyze = hierarchy.getAllFoundContentBeans();
 
     //we simply go through all classes and check & update all bean info
     for (Class classToAnalyze : classesToAnalyze) {
-      AnalyzatorContentBeanInformation beanInformation = allFoundContentBeanInformation.get(classToAnalyze);
+      AnalyzatorContentBeanInformation beanInformation = (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(classToAnalyze);
 
       if (getLog().isDebugEnabled()) {
         getLog().debug("Analyzing methods for " + classToAnalyze.getCanonicalName());
@@ -386,7 +370,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
           String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
 
           try {
-            propertyInformation = getPropertyInformationForMethod(method);
+            propertyInformation = getPropertyInformationForMethod(method, hierarchy);
           }
           catch (ContentBeanAnalyzatorInternalException e) {
             potentialException.addError(classToAnalyze, documentTypePropertyName, e.getMessage());
@@ -420,7 +404,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
    * @throws ContentBeanAnalyzatorInternalException
    *          analyzation error occurred. Exception message should be included to "potentialException" list.
    */
-  private AbstractPropertyInformation getPropertyInformationForMethod(Method method) throws ContentBeanAnalyzatorInternalException {
+  private AbstractPropertyInformation getPropertyInformationForMethod(Method method, ContentBeanHierarchy hierarchy) throws ContentBeanAnalyzatorInternalException {
     // SWITCH FOR EACH RETURN TYPE
     final Class<?> returnType = method.getReturnType();
     if (returnType.equals(Integer.class)) {
@@ -436,10 +420,10 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       return getStringPropertyInformation(method);
     }
     else if (returnType.equals(List.class)) {
-      return getLinkListPropertyInformation(method);
+      return getLinkListPropertyInformation(method, hierarchy);
     }
-    else if (allFoundContentBeanInformation.containsKey(returnType)) {
-      return getLinkListPropertyInformationSingle(method, allFoundContentBeanInformation.get(returnType));
+    else if (hierarchy.getAllFoundContentBeans().contains(returnType)) {
+      return getLinkListPropertyInformationSingle(method, (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(returnType));
     }
     else if (returnType.equals(Blob.class)) {
       return getBlobPropertyInformation(method);
@@ -483,7 +467,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return linkListPropertyInformation;
   }
 
-  private AbstractPropertyInformation getLinkListPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
+  private AbstractPropertyInformation getLinkListPropertyInformation(Method method, ContentBeanHierarchy hierarchy) throws ContentBeanAnalyzatorInternalException {
     LinkListPropertyInformation linkListPropertyInformation = new LinkListPropertyInformation(method);
 
     // todo read from annotation
@@ -499,7 +483,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       Class returnTypeLinkType = (Class) ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
 
       // find the ContentBeanInformation that represents this LinkType
-      ContentBeanInformation contentBeanInformationLinkType = allFoundContentBeanInformation.get(returnTypeLinkType);
+      ContentBeanInformation contentBeanInformationLinkType = hierarchy.getContentBeanInformation(returnTypeLinkType);
 
       // ## validate
       if (contentBeanInformationLinkType == null) {
@@ -617,12 +601,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return true;
   }
 
-  private boolean hasValidReturnType(Method method) {
+  private boolean hasValidReturnType(Method method, ContentBeanHierarchy hierarchy) {
     final Class<?> returnType = method.getReturnType();
 
     return !returnType.isPrimitive()
         && (VALID_METHOD_RETURN_TYPES.contains(returnType)
-        || allFoundContentBeanInformation.containsKey(returnType));
+        || hierarchy.getAllFoundContentBeans().contains(returnType));
   }
 
 

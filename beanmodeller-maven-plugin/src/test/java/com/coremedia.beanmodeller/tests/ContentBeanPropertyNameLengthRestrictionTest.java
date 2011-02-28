@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
@@ -65,8 +66,9 @@ public class ContentBeanPropertyNameLengthRestrictionTest {
     ((IntegerPropertyInformation) myIntegerProperty).setDocumentTypePropertyName("LongJane");
 
     analyzator.addContentBean(CBGLongMthdAnno.class);
+    ContentBeanHierarchy hierarchy = null;
     try {
-      analyzator.analyzeContentBeanInformation();
+      hierarchy = analyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -74,7 +76,7 @@ public class ContentBeanPropertyNameLengthRestrictionTest {
 
     ContentBeanInformation information = null;
     try {
-      information = BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots()).get("CBGLongMthdAnno");
+      information = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGLongMthdAnno");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();

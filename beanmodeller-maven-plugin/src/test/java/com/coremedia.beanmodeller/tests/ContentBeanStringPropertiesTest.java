@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpANeg;
@@ -54,8 +55,9 @@ public class ContentBeanStringPropertiesTest {
 
     contentBeanAnalyzator.addContentBean(stringPropertyBeanClass);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -63,7 +65,7 @@ public class ContentBeanStringPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGStringPrpNoA");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGStringPrpNoA");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();
@@ -84,8 +86,9 @@ public class ContentBeanStringPropertiesTest {
 
     contentBeanAnalyzator.addContentBean(CBGStringPrpANoL.class);
 
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -93,7 +96,7 @@ public class ContentBeanStringPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGStringPrpANoL");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGStringPrpANoL");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();

@@ -4,6 +4,7 @@ import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationEx
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGRubbishBlobContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
@@ -50,8 +51,9 @@ public class ContentBeanBlobPropertyTest {
     nonExplicitPropertyInformation.setDocumentTypePropertyName("genericBlob");
 
     contentBeanAnalyzator.addContentBean(CBGImage.class);
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail(e.getMessage());
@@ -59,7 +61,7 @@ public class ContentBeanBlobPropertyTest {
 
     ContentBeanInformation cbgImageInformation = null;
     try {
-      cbgImageInformation = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGImage");
+      cbgImageInformation = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGImage");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();
@@ -84,8 +86,9 @@ public class ContentBeanBlobPropertyTest {
     explicitPropertyInformation.setDocumentTypePropertyName("image");
 
     contentBeanAnalyzator.addContentBean(CBGImage.class);
+    ContentBeanHierarchy hierarchy = null;
     try {
-      contentBeanAnalyzator.analyzeContentBeanInformation();
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail(e.getMessage());
@@ -93,7 +96,7 @@ public class ContentBeanBlobPropertyTest {
 
     ContentBeanInformation cbgImageInformation = null;
     try {
-      cbgImageInformation = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGImage");
+      cbgImageInformation = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGImage");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();

@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGBeanPretendingBeeingCBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentNotExtendingAbstractContentBean;
@@ -19,7 +20,6 @@ import java.util.Set;
 
 import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyzationErrorContainsMessage;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -37,34 +37,6 @@ public class ContentBeanAnalyzatorTest {
   }
 
   @Test
-  public void testLifecycle() {
-    boolean exceptionThrown = false;
-    try {
-      analyzator.getContentBeanRoots();
-    }
-    catch (ContentBeanAnalyzatorInternalException e) {
-      exceptionThrown = true;
-      assertThat(e.getMessage(), containsString(ContentBeanAnalyzatorInternalException.LIFECYCLE_VIOLATION));
-    }
-
-    assertThat(exceptionThrown, is(true));
-  }
-
-  @Test
-  public void testLifecycle2() {
-    boolean exceptionThrown = false;
-    try {
-      BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots());
-    }
-    catch (ContentBeanAnalyzatorInternalException e) {
-      exceptionThrown = true;
-      assertThat(e.getMessage(), containsString(ContentBeanAnalyzatorInternalException.LIFECYCLE_VIOLATION));
-    }
-
-    assertThat(exceptionThrown, is(true));
-  }
-
-  @Test
   public void testInheritedBeans() {
     assertNotNull(analyzator);
     //we do not inject this - it should be found automatically
@@ -74,8 +46,8 @@ public class ContentBeanAnalyzatorTest {
     analyzator.addContentBean(NotCBGContentBean.class);
 
     try {
-      analyzator.analyzeContentBeanInformation();
-      Set<ContentBeanInformation> contentBeanRoots = analyzator.getContentBeanRoots();
+      ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
+      Set<ContentBeanInformation> contentBeanRoots = hierarchy.getRootBeanInformation();
       assertNotNull(contentBeanRoots);
       assertEquals(2, contentBeanRoots.size());
     }
@@ -124,8 +96,8 @@ public class ContentBeanAnalyzatorTest {
     analyzator.addContentBean(CBGAttendee.class);
 
     try {
-      analyzator.analyzeContentBeanInformation();
-      Map<String, ContentBeanInformation> contentBeans = BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots());
+      ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
+      Map<String, ContentBeanInformation> contentBeans = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation());
       assertNotNull(contentBeans);
       assertThat(contentBeans.size(), is(3));
       assertThat(contentBeans.keySet(), hasItem("CBGAppointment"));

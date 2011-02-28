@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentClassWithAnOverlyLongClassNameOfFiftyCharacters;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCharactersAndWrongAnnotated;
@@ -45,8 +46,9 @@ public class ContentBeanNameLengthRestrictionTest {
   @Test
   public void testTooLongButCorrectlyAnnotatedClassName() {
     analyzator.addContentBean(CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCharactersButCorrectlyAnnotated.class);
+    ContentBeanHierarchy hierarchy = null;
     try {
-      analyzator.analyzeContentBeanInformation();
+      hierarchy = analyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
       fail();
@@ -56,7 +58,7 @@ public class ContentBeanNameLengthRestrictionTest {
     try {
       // CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCharactersButCorrectlyAnnotated
       // is named "LongJohn"
-      information = BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots()).get("LongJohn");
+      information = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("LongJohn");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();
