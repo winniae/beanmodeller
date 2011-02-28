@@ -2,8 +2,8 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGBeanPretendingBeeingCBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentNotExtendingAbstractContentBean;
 import com.coremedia.beanmodeller.testcontentbeans.NotCBGContentBean;
@@ -19,7 +19,9 @@ import java.util.Set;
 
 import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyzationErrorContainsMessage;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

@@ -1,10 +1,10 @@
 package com.coremedia.beanmodeller.tests;
 
-import com.coremedia.beanmodeller.processors.BlobPropertyInformation;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGRubbishBlobContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;

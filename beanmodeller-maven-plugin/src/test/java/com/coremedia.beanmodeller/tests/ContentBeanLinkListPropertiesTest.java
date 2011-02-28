@@ -2,9 +2,9 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLinkListDflt;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLinkListFail;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;

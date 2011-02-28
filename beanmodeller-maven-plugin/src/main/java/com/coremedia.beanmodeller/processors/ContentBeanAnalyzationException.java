@@ -1,5 +1,6 @@
 package com.coremedia.beanmodeller.processors;
 
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.LinkedList;

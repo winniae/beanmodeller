@@ -2,8 +2,8 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentClassWithAnOverlyLongClassNameOfFiftyCharacters;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCharactersAndWrongAnnotated;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCharactersButCorrectlyAnnotated;
@@ -15,7 +15,7 @@ import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyza
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
  * A test case to test if the names of objects and methods are correctly checked.

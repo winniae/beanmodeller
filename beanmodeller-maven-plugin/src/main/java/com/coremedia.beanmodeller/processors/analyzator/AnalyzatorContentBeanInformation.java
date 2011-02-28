@@ -1,7 +1,7 @@
 package com.coremedia.beanmodeller.processors.analyzator;
 
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.PropertyInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
 
 import java.util.HashSet;
 import java.util.Set;

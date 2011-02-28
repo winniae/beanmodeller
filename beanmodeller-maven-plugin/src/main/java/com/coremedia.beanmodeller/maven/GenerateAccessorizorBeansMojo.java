@@ -1,6 +1,6 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import com.sun.codemodel.CodeWriter;

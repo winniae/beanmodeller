@@ -2,10 +2,10 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.IntegerPropertyInformation;
-import com.coremedia.beanmodeller.processors.PropertyInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.IntegerPropertyInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdAnno;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFailA;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFailD;

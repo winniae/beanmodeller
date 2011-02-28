@@ -1,4 +1,4 @@
-package com.coremedia.beanmodeller.processors;
+package com.coremedia.beanmodeller.processors.beaninformation;
 
 import java.lang.reflect.Method;
 

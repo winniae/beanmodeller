@@ -2,9 +2,9 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
-import com.coremedia.beanmodeller.processors.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpANeg;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpANoL;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpNoA;
