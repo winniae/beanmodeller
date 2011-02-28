@@ -188,68 +188,89 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       boolean hasValidReturnType = hasValidReturnType(method);
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
-        //bean properties only in content beans
-        if (!isContentBean) {
-          potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
-              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class is no content bean");
-          //bean properties must be abstract
-        }
-        else if (!isValidPropertyMethod) {
-          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
-              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid." +
-              ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
-          );
-          // methods must have specific return types
-        }
-        else if (!hasValidReturnType) {
-          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
-        }
-        else {
-          methodIsContentBeanMethod = true;
-        }
+        methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType, methodIsContentBeanMethod);
+
       }
       else {
-        //we want to look at abstract methods only
-        if (Modifier.isAbstract(method.getModifiers())) {
-          // no annotation
-          // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
-          if (!isValidPropertyMethod) {
-            getLog().info("Method " + method + " has been ignored since it is no valid property method" +
-                ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
-          }
-          else if (!hasValidReturnType) {
-            potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
-          }
-          else {
-            methodIsContentBeanMethod = true;
-          }
-        }
-        else {
-          getLog().debug("Method " + method.getName() + " has been ignored since only abstract methods are considered.");
-        }
+        methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType, methodIsContentBeanMethod);
+      }
+      {
+
       }
       //if the analyzation was successfull we note it for later property generation
       if (methodIsContentBeanMethod) {
-        String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
-        // VALIDATE
-        //check if the property name name is too long
-        if (documentTypePropertyName.length() > MAX_PROPERTY_LENGTH) {
-          potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " + MAX_PROPERTY_LENGTH);
-          //we ignore this method
+        if (checkMethod(potentialException, currentClass, foundPropertyNames, method)) {
           break;
         }
-        //check if we have seen this property name before
-        if (foundPropertyNames.contains(documentTypePropertyName)) {
-          potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.DUPLICATE_PROPERTY_NAMES_MESSAGES);
-          //and ignore this method
-          break;
-        }
-        getLog().info("Found property for " + currentClass.getCanonicalName() + ": " + documentTypePropertyName + "(" + method.getName() + ")");
-        foundContentBeanProperties.add(method);
-        // save property name for validation of duplicate entries in next iteration for each class
-        foundPropertyNames.add(documentTypePropertyName);
       }
     }
+  }
+
+  private boolean analyzeNotAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType, boolean methodIsContentBeanMethod) {
+    //we want to look at abstract methods only
+    if (Modifier.isAbstract(method.getModifiers())) {
+      // no annotation
+      // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
+      if (!validPropertyMethod) {
+        getLog().info("Method " + method + " has been ignored since it is no valid property method" +
+            ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
+      }
+      else if (!hasValidReturnType) {
+        potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+      }
+      else {
+        methodIsContentBeanMethod = true;
+      }
+    }
+    else {
+      getLog().debug("Method " + method.getName() + " has been ignored since only abstract methods are considered.");
+    }
+    return methodIsContentBeanMethod;
+  }
+
+  private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType, boolean methodIsContentBeanMethod) {
+    //bean properties only in content beans
+    if (!isContentBean) {
+      potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
+          "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class is no content bean");
+      //bean properties must be abstract
+    }
+    else if (!validPropertyMethod) {
+      potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
+          "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid." +
+          ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
+      );
+      // methods must have specific return types
+    }
+    else if (!hasValidReturnType) {
+      potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+    }
+    else {
+      methodIsContentBeanMethod = true;
+    }
+    return methodIsContentBeanMethod;
+  }
+
+  private boolean checkMethod(ContentBeanAnalyzationException potentialException, Class currentClass, Set<String> foundPropertyNames, Method method) {
+    String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
+    // VALIDATE
+    //check if the property name name is too long
+    if (documentTypePropertyName.length() > MAX_PROPERTY_LENGTH) {
+      potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " + MAX_PROPERTY_LENGTH);
+      //we ignore this method
+      return true;
+    }
+    //check if we have seen this property name before
+    if (foundPropertyNames.contains(documentTypePropertyName)) {
+      potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.DUPLICATE_PROPERTY_NAMES_MESSAGES);
+      //and ignore this method
+      return true;
+    }
+    getLog().info("Found property for " + currentClass.getCanonicalName() + ": " + documentTypePropertyName + "(" + method.getName() + ")");
+    foundContentBeanProperties.add(method);
+    // save property name for validation of duplicate entries in next iteration for each class
+    foundPropertyNames.add(documentTypePropertyName);
+    return false;
   }
 
   private void extractBeanClassHierarchy(ContentBeanAnalyzationException potentialException) {

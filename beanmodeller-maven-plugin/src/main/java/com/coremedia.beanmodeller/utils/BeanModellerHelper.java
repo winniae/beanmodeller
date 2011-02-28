@@ -15,6 +15,11 @@ import java.io.File;
 public class BeanModellerHelper {
   public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
 
+  //hiding the constructor
+  private BeanModellerHelper() {
+    //nothing happens here
+  }
+
   public static File getSanitizedFile(String directory, String fileName) throws PluginException {
     File destDir = getSanitizedDirectory(directory);
     return getSanitizedFile(destDir, fileName);
