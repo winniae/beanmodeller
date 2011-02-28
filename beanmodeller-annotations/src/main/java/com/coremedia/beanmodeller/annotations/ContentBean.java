@@ -20,4 +20,11 @@ public @interface ContentBean {
    * @return the name of the document type for the doctypes.xml
    */
   String doctypeName() default DOC_TYPE_NAME_USE_CLASS_NAME;
+
+  /**
+   * Is this Content meant to be abstract - by default false.
+   *
+   * @return if this content bean is meant to be an abstract document type
+   */
+  boolean isAbstract() default false;
 }
