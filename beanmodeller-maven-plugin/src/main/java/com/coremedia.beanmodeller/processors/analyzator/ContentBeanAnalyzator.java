@@ -54,10 +54,13 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   // or to access the found information fastly
   // ONLY to be used during analyzation
   private Map<Class, AnalyzatorContentBeanInformation> allFoundContentBeanInformation;
+  // this map is used during analyzation to track methods to consider as content bean properties, which is used later
+  private Set<Method> foundContentBeanProperties = new HashSet<Method>();
 
+  //the method return types we accept as content bean property methods
   private static final Set<Class> VALID_METHOD_RETURN_TYPES = new HashSet<Class>();
 
-  {
+  static {
     VALID_METHOD_RETURN_TYPES.add(Integer.class);
     VALID_METHOD_RETURN_TYPES.add(Date.class);
     VALID_METHOD_RETURN_TYPES.add(Calendar.class);
@@ -165,10 +168,8 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
     //first look if there is no problem in the hierarchy between bean and parent
     Class contentBean = bean.getContentBean();
-    for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(bean.getClass()); currentClass = currentClass.getSuperclass()) {
-      if (getLog().isDebugEnabled()) {
-        getLog().debug("checking class in hierarchy: " + currentClass);
-      }
+    for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass = currentClass.getSuperclass()) {
+      getLog().info("checking class in hierarchy: " + currentClass);
       //first of all note that we visited the class
       visitedClasses.add(currentClass);
       analyzeMethods(potentialException, contentBean, currentClass);
@@ -179,28 +180,33 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     Method[] methods = currentClass.getDeclaredMethods();
     //it is a content bean if there is an annotation - we do not really care about details here
     boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
+    // stores propertyNames for each class to prevent double property declarations
+    Set<String> foundPropertyNames = new HashSet<String>();
     for (Method method : methods) {
       Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
       boolean hasValidReturnType = hasValidReturnType(method);
+      boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
-        //bean properties must be abstract
-        if (!isValidPropertyMethod) {
+        //bean properties only in content beans
+        if (!isContentBean) {
+          potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
+              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class is no content bean");
+          //bean properties must be abstract
+        }
+        else if (!isValidPropertyMethod) {
           potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
               "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid." +
               ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
           );
+          // methods must have specific return types
         }
-        // methods must have specific return types
-        if (!hasValidReturnType) {
+        else if (!hasValidReturnType) {
           potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
         }
-        //bean properties only in content beans
-        if (!isContentBean) {
-          potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
-              "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class");
+        else {
+          methodIsContentBeanMethod = true;
         }
-        //TODO in the end we should notice somehow that we analyzed it & that it was marked positive
       }
       else {
         //we want to look at abstract methods only
@@ -211,14 +217,37 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
             getLog().info("Method " + method + " has been ignored since it is no valid property method" +
                 ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
           }
-          if (isValidPropertyMethod && !hasValidReturnType) {
+          else if (!hasValidReturnType) {
             potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+          }
+          else {
+            methodIsContentBeanMethod = true;
           }
         }
         else {
           getLog().debug("Method " + method.getName() + " has been ignored since only abstract methods are considered.");
         }
-        //TODO in the end we should notice somehow that we analyzed it & that it was marked positive
+      }
+      //if the analyzation was successfull we note it for later property generation
+      if (methodIsContentBeanMethod) {
+        String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
+        // VALIDATE
+        //check if the property name name is too long
+        if (documentTypePropertyName.length() > MAX_PROPERTY_LENGTH) {
+          potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " + MAX_PROPERTY_LENGTH);
+          //we ignore this method
+          break;
+        }
+        //check if we have seen this property name before
+        if (foundPropertyNames.contains(documentTypePropertyName)) {
+          potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.DUPLICATE_PROPERTY_NAMES_MESSAGES);
+          //and ignore this method
+          break;
+        }
+        getLog().info("Found property for " + currentClass.getCanonicalName() + ": " + documentTypePropertyName + "(" + method.getName() + ")");
+        foundContentBeanProperties.add(method);
+        // save property name for validation of duplicate entries in next iteration for each class
+        foundPropertyNames.add(documentTypePropertyName);
       }
     }
   }
@@ -327,80 +356,38 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
         getLog().debug("Analyzing methods for " + classToAnalyze.getCanonicalName());
       }
 
-      // stores propertyNames for each class to prevent double property declarations
-      Set<String> foundPropertyNames = new HashSet<String>();
-
-      // fill filteredMethods with all abstract methods for this class complying to the rules
-      Set<Method> filteredMethods = new HashSet<Method>();
-      //TODO sollten wir uns eigentlich nicht nur auf schon analysierte Methoden beschränken
-      for (Method method : classToAnalyze.getDeclaredMethods()) {
-        if (isValidPropertyMethod(method) && hasValidReturnType(method)) {
-          filteredMethods.add(method);
-          if (getLog().isDebugEnabled()) {
-            getLog().debug("Found property for " + classToAnalyze.getCanonicalName() + ": " + method.getName());
-          }
-        }
-        else {
-          if (getLog().isDebugEnabled()) {
-            if (!isValidPropertyMethod(method)) {
-              getLog().debug("Ignoring method " + classToAnalyze.getCanonicalName() + ", " + method.getName() + " since it is no real property method");
-            }
-            if (!hasValidReturnType(method)) {
-              getLog().debug("Ignoring method " + classToAnalyze.getCanonicalName() + ", " + method.getName() + " since it has not the correct return type");
-            }
-          }
-        }
-        // don't raise an error for filtered methods, as this is handled earlier already
-      }
-
       // create property information for each abstract method
-      for (Method method : filteredMethods) {
-        // property information
-        AbstractPropertyInformation propertyInformation;
+      for (Method method : classToAnalyze.getDeclaredMethods()) {
+        //we only have to consider methods which have been checked earlier
+        if (foundContentBeanProperties.contains(method)) {
+          // property information
+          AbstractPropertyInformation propertyInformation;
 
-        String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
+          String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
 
-        // VALIDATE
-        //check if the property name name is too long
-        if (documentTypePropertyName.length() > MAX_PROPERTY_LENGTH) {
-          potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " + MAX_PROPERTY_LENGTH);
-          //we ignore this method
-          break;
+          try {
+            propertyInformation = getPropertyInformationForMethod(method);
+          }
+          catch (Exception e) {
+            potentialException.addError(classToAnalyze, documentTypePropertyName, e.getMessage());
+
+            // don't include this method in result
+            break;
+          }
+
+          // POST CHECK
+          if (propertyInformation instanceof UnknownPropertyInformation) {
+            potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE + method.getReturnType());
+
+            // don't include this method in result
+            break;
+          }
+
+          propertyInformation.setDocumentTypePropertyName(documentTypePropertyName);
+
+          // add propertyInformation to contentBeanInformation
+          beanInformation.addProperty(propertyInformation);
         }
-        //check if we have seen this property name before
-        if (foundPropertyNames.contains(documentTypePropertyName)) {
-          potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.DUPLICATE_PROPERTY_NAMES_MESSAGES);
-          //and ignore this method
-          break;
-        }
-
-        // SWITCH FOR EACH RETURN TYPE
-
-        try {
-          propertyInformation = getPropertyInformationForMethod(method);
-        }
-        catch (Exception e) {
-          potentialException.addError(classToAnalyze, documentTypePropertyName, e.getMessage());
-
-          // don't include this method in result
-          break;
-        }
-
-        // POST CHECK
-        if (propertyInformation instanceof UnknownPropertyInformation) {
-          potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE + method.getReturnType());
-
-          // don't include this method in result
-          break;
-        }
-
-        propertyInformation.setDocumentTypePropertyName(documentTypePropertyName);
-
-        // save property name for validation of duplicate entries in next iteration for each class
-        foundPropertyNames.add(propertyInformation.getDocumentTypePropertyName());
-
-        // add propertyInformation to contentBeanInformation
-        beanInformation.addProperty(propertyInformation);
       }
     }
   }
@@ -413,9 +400,8 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
    * @throws Exception analyzation error occurred. Exception message should be included to "potentialException" list.
    */
   private AbstractPropertyInformation getPropertyInformationForMethod(Method method) throws Exception {
-    // switch over return type
+    // SWITCH FOR EACH RETURN TYPE
     final Class<?> returnType = method.getReturnType();
-
     if (returnType.equals(Integer.class)) {
       return new IntegerPropertyInformation(method);
     }
