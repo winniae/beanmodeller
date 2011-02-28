@@ -48,7 +48,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
   public static final int MAX_PROPERTY_LENGTH = 32;
   public static final String SCHEMA_DEFINITION_LOCATION = "/xml_schema_definitions/";
 
-  private static final ContentBeanInformation propertyDefaultLinkListType = EmptyContentBeanInformation.getInstance();
+  private static final ContentBeanInformation PROPERTY_DEFAULT_LINKLIST_TYPE = EmptyContentBeanInformation.getInstance();
 
   // this hash map is used to have a fast lookup if we already got a bean info for a certain class
   // or to access the found information fastly
@@ -188,11 +188,11 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
       boolean hasValidReturnType = hasValidReturnType(method);
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
-        methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType, methodIsContentBeanMethod);
+        methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType);
 
       }
       else {
-        methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType, methodIsContentBeanMethod);
+        methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType);
       }
       {
 
@@ -206,7 +206,8 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
   }
 
-  private boolean analyzeNotAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType, boolean methodIsContentBeanMethod) {
+  private boolean analyzeNotAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType) {
+    boolean methodIsContentBeanMethod = false;
     //we want to look at abstract methods only
     if (Modifier.isAbstract(method.getModifiers())) {
       // no annotation
@@ -228,7 +229,8 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     return methodIsContentBeanMethod;
   }
 
-  private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType, boolean methodIsContentBeanMethod) {
+  private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType) {
+    boolean methodIsContentBeanMethod = false;
     //bean properties only in content beans
     if (!isContentBean) {
       potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
@@ -510,7 +512,7 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
     else {
       // no explicit type for linktype given -> use the default
-      linkListPropertyInformation.setLinkType(propertyDefaultLinkListType);
+      linkListPropertyInformation.setLinkType(PROPERTY_DEFAULT_LINKLIST_TYPE);
     }
 
     return linkListPropertyInformation;
