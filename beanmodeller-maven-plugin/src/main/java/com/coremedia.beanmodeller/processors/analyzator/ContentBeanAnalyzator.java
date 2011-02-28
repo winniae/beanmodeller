@@ -2,9 +2,6 @@ package com.coremedia.beanmodeller.processors.analyzator;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.annotations.ContentProperty;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzer;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.beaninformation.AbstractPropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
@@ -40,7 +37,7 @@ import java.util.Set;
 /**
  * The implementation for the content bean analyzer
  */
-public class ContentBeanAnalyzator extends MavenProcessor implements ContentBeanAnalyzer {
+public class ContentBeanAnalyzator extends MavenProcessor {
   private List<Class> beansToAnalyze = new LinkedList<Class>();
   private Set<ContentBeanInformation> rootBeanInformation = null;
 
@@ -99,7 +96,6 @@ public class ContentBeanAnalyzator extends MavenProcessor implements ContentBean
     }
   }
 
-  @Override
   public void addContentBean(Class bean) {
     if (getLog().isDebugEnabled()) {
       getLog().debug("Adding class " + bean.getCanonicalName() + " to the analysation list");

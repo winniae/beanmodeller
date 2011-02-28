@@ -1,8 +1,8 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;

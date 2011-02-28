@@ -1,4 +1,4 @@
-package com.coremedia.beanmodeller.processors;
+package com.coremedia.beanmodeller.processors.analyzator;
 
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import org.apache.commons.lang.StringUtils;

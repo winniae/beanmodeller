@@ -1,4 +1,4 @@
-package com.coremedia.beanmodeller.processors;
+package com.coremedia.beanmodeller.processors.analyzator;
 
 /**
  * A general Exception that can occur during analyzation. DO NOT USE IT FOR ERRORS IN THE ANALYZATION PROCESS. Use ContentBeanAnalyzationException.

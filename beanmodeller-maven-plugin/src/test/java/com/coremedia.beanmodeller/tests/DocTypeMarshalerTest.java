@@ -1,6 +1,5 @@
 package com.coremedia.beanmodeller.tests;
 
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzer;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
@@ -31,7 +30,7 @@ public class DocTypeMarshalerTest {
 
   @Before
   public void setup() {
-    ContentBeanAnalyzer analyzator = new ContentBeanAnalyzator();
+    ContentBeanAnalyzator analyzator = new ContentBeanAnalyzator();
     analyzator.addContentBean(CBGContent.class);
     analyzator.addContentBean(CBGAttendee.class);
     analyzator.addContentBean(CBGAppointment.class);

@@ -1,8 +1,8 @@
 package com.coremedia.beanmodeller.tests;
 
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzationException;
-import com.coremedia.beanmodeller.processors.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGMarkupAnno;
