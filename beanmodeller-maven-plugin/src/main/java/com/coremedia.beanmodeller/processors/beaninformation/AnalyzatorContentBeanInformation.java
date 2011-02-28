@@ -14,7 +14,7 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
   private Set<PropertyInformation> properties = new HashSet<PropertyInformation>();
   private String name;
 
-  AnalyzatorContentBeanInformation(Class beanClass) {
+  public AnalyzatorContentBeanInformation(Class beanClass) {
     this.contentBean = beanClass;
     name = contentBean.getSimpleName();
   }
