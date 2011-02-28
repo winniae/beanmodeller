@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
@@ -49,7 +49,7 @@ public class CodeGenerationTest {
 
   //doesn't succeed in Idea, but hangs in Status "terminated" and prevents further test execution.
   //@Test
-  public void printGeneratedCode() throws ContentBeanAnalyzerException, IOException {
+  public void printGeneratedCode() throws ContentBeanAnalyzatorInternalException, IOException {
     Set<ContentBeanInformation> roots = analyzator.getContentBeanRoots();
     assertNotNull(roots);
     assertFalse(roots.isEmpty());
@@ -63,7 +63,7 @@ public class CodeGenerationTest {
   }
 
   @Test
-  public void testClassnameGeneration() throws ContentBeanAnalyzerException {
+  public void testClassnameGeneration() throws ContentBeanAnalyzatorInternalException {
     Set<ContentBeanInformation> roots = analyzator.getContentBeanRoots();
     assertNotNull(roots);
     assertFalse(roots.isEmpty());

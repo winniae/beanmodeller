@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGBeanPretendingBeeingCBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentNotExtendingAbstractContentBean;
@@ -42,9 +42,9 @@ public class ContentBeanAnalyzatorTest {
     try {
       analyzator.getContentBeanRoots();
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       exceptionThrown = true;
-      assertThat(e.getMessage(), containsString(ContentBeanAnalyzerException.LIFECYCLE_VIOLATION));
+      assertThat(e.getMessage(), containsString(ContentBeanAnalyzatorInternalException.LIFECYCLE_VIOLATION));
     }
 
     assertThat(exceptionThrown, is(true));
@@ -56,9 +56,9 @@ public class ContentBeanAnalyzatorTest {
     try {
       BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots());
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       exceptionThrown = true;
-      assertThat(e.getMessage(), containsString(ContentBeanAnalyzerException.LIFECYCLE_VIOLATION));
+      assertThat(e.getMessage(), containsString(ContentBeanAnalyzatorInternalException.LIFECYCLE_VIOLATION));
     }
 
     assertThat(exceptionThrown, is(true));
@@ -79,7 +79,7 @@ public class ContentBeanAnalyzatorTest {
       assertNotNull(contentBeanRoots);
       assertEquals(2, contentBeanRoots.size());
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       //no exception should be thrown
       fail();
     }
@@ -131,7 +131,7 @@ public class ContentBeanAnalyzatorTest {
       assertThat(contentBeans.keySet(), hasItem("CBGAppointment"));
       assertThat(contentBeans.keySet(), hasItem("CBGContent"));
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       //no exception should be thrown
       fail();
     }

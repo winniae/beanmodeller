@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * This class contains all information that occured during the analyzation of content beans.
  */
-public class ContentBeanAnalyzationException extends ContentBeanAnalyzerException {
+public class ContentBeanAnalyzationException extends ContentBeanAnalyzatorInternalException {
   public static final String NOT_INHERITING_ABSTRACT_CONTENT_BEAN_MESSAGE = "This bean does not inherit ";
   public static final String CLASSNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE = "The class name is to long for ";
   public static final String METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE = "The method name is to long for ";

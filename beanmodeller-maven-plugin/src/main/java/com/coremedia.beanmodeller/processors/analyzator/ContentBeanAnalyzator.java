@@ -103,9 +103,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     beansToAnalyze.add(bean);
   }
 
-  public Set<ContentBeanInformation> getContentBeanRoots() throws ContentBeanAnalyzerException {
+  public Set<ContentBeanInformation> getContentBeanRoots() throws ContentBeanAnalyzatorInternalException {
     if (rootBeanInformation == null) {
-      throw new ContentBeanAnalyzerException(ContentBeanAnalyzationException.LIFECYCLE_VIOLATION);
+      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LIFECYCLE_VIOLATION);
     }
     return rootBeanInformation;
   }
@@ -387,7 +387,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
           try {
             propertyInformation = getPropertyInformationForMethod(method);
           }
-          catch (Exception e) {
+          catch (ContentBeanAnalyzatorInternalException e) {
             potentialException.addError(classToAnalyze, documentTypePropertyName, e.getMessage());
 
             // don't include this method in result
@@ -416,9 +416,10 @@ public class ContentBeanAnalyzator extends MavenProcessor {
    *
    * @param method to analyze
    * @return PropertyInformation for this error.
-   * @throws Exception analyzation error occurred. Exception message should be included to "potentialException" list.
+   * @throws ContentBeanAnalyzatorInternalException
+   *          analyzation error occurred. Exception message should be included to "potentialException" list.
    */
-  private AbstractPropertyInformation getPropertyInformationForMethod(Method method) throws Exception {
+  private AbstractPropertyInformation getPropertyInformationForMethod(Method method) throws ContentBeanAnalyzatorInternalException {
     // SWITCH FOR EACH RETURN TYPE
     final Class<?> returnType = method.getReturnType();
     if (returnType.equals(Integer.class)) {
@@ -448,14 +449,14 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     }
   }
 
-  private AbstractPropertyInformation getBlobPropertyInformation(Method method) throws ContentBeanAnalyzerException {
+  private AbstractPropertyInformation getBlobPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
     ContentProperty annotation = method.getAnnotation(ContentProperty.class);
     String mimeTypeName = (annotation != null) ? annotation.propertyBlobMimeType() : ContentProperty.BLOB_PROPERTY_DEFAULT_MIME_TYPE;
     try {
       MimeType mimetype = new MimeType(mimeTypeName);
     }
     catch (MimeTypeParseException e) {
-      throw new ContentBeanAnalyzerException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y");
+      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y");
     }
 
     BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
@@ -481,7 +482,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return linkListPropertyInformation;
   }
 
-  private AbstractPropertyInformation getLinkListPropertyInformation(Method method) throws Exception {
+  private AbstractPropertyInformation getLinkListPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
     LinkListPropertyInformation linkListPropertyInformation = new LinkListPropertyInformation(method);
 
     // todo read from annotation
@@ -501,7 +502,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       // ## validate
       if (contentBeanInformationLinkType == null) {
-        throw new Exception(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + returnTypeLinkType);
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + returnTypeLinkType);
       }
 
       linkListPropertyInformation.setLinkType(contentBeanInformationLinkType);
@@ -514,7 +515,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return linkListPropertyInformation;
   }
 
-  private AbstractPropertyInformation getStringPropertyInformation(Method method) throws Exception {
+  private AbstractPropertyInformation getStringPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
 
@@ -531,7 +532,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
     // raise error if stringLength is negative
     if (stringLength < 0) {
-      throw new Exception(ContentBeanAnalyzationException.STRING_PROPERTY_TOO_SHORT_MESSAGE + stringLength);
+      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.STRING_PROPERTY_TOO_SHORT_MESSAGE + stringLength);
     }
 
     StringPropertyInformation stringPropertyInformation = new StringPropertyInformation(method);
@@ -540,7 +541,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return stringPropertyInformation;
   }
 
-  private AbstractPropertyInformation getMarkupPropertyInformation(Method method) throws Exception {
+  private AbstractPropertyInformation getMarkupPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
     String grammarName;
@@ -555,10 +556,10 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       grammarURL = getClass().getResource(SCHEMA_DEFINITION_LOCATION + grammarName);
       grammarRoot = methodAnnotation.propertyXmlRoot();
       if (grammarURL == null) {
-        throw new Exception(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is expected to reside in folder " + SCHEMA_DEFINITION_LOCATION);
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is expected to reside in folder " + SCHEMA_DEFINITION_LOCATION);
       }
       else if (ContentProperty.MARKUP_PROPERTY_NO_ROOT_SET.equals(grammarRoot)) {
-        throw new Exception(ContentBeanAnalyzationException.SCHEMA_NO_XML_ROOT_SET_MESSAGE + " " + grammarName);
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_NO_XML_ROOT_SET_MESSAGE + " " + grammarName);
       }
     }
 

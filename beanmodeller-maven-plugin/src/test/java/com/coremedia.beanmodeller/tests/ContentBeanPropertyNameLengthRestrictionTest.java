@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
@@ -76,7 +76,7 @@ public class ContentBeanPropertyNameLengthRestrictionTest {
     try {
       information = BeanModellerTestUtils.getContentBeans(analyzator.getContentBeanRoots()).get("CBGLongMthdAnno");
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       fail();
     }
     assertThat((Iterable<IntegerPropertyInformation>) information.getProperties(), hasItem(myIntegerProperty));

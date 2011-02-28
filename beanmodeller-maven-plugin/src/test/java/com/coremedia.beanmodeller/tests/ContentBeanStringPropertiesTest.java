@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpANeg;
@@ -65,7 +65,7 @@ public class ContentBeanStringPropertiesTest {
     try {
       cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGStringPrpNoA");
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       fail();
     }
 
@@ -95,7 +95,7 @@ public class ContentBeanStringPropertiesTest {
     try {
       cbgContent = BeanModellerTestUtils.getContentBeans(contentBeanAnalyzator.getContentBeanRoots()).get("CBGStringPrpANoL");
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       fail();
     }
 

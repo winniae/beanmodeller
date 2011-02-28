@@ -1,7 +1,7 @@
 package com.coremedia.beanmodeller.testutils;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 
 import java.util.HashMap;
@@ -30,11 +30,12 @@ public class BeanModellerTestUtils {
    * Returns all found content beans (or documents) as a Map with DocumentName of the resulting ContetnBean as the Key Value of the Map.
    *
    * @return All ContentBean-Informations as Map.
-   * @throws ContentBeanAnalyzerException when analyzation failed.
+   * @throws com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException
+   *          when analyzation failed.
    */
-  public static Map<String, ContentBeanInformation> getContentBeans(Set<ContentBeanInformation> rootBeanInformation) throws ContentBeanAnalyzerException {
+  public static Map<String, ContentBeanInformation> getContentBeans(Set<ContentBeanInformation> rootBeanInformation) throws ContentBeanAnalyzatorInternalException {
     if (rootBeanInformation == null) {
-      throw new ContentBeanAnalyzerException(ContentBeanAnalyzationException.LIFECYCLE_VIOLATION);
+      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LIFECYCLE_VIOLATION);
     }
     // flatten tree hierarchy
     return getContentBeansRecursive(rootBeanInformation);

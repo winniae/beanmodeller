@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentBeanInWreckedHierarchy;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
@@ -106,7 +106,7 @@ public class ContentBeanHierarchyTest {
       analyzator.analyzeContentBeanInformation();
       rootBeanInformationSet = analyzator.getContentBeanRoots();
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       // this should not run
       fail();
     }

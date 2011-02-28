@@ -2,7 +2,7 @@ package com.coremedia.beanmodeller.maven;
 
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
-import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzerException;
+import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -52,7 +52,7 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     try {
       roots = analyzer.getContentBeanRoots();
     }
-    catch (ContentBeanAnalyzerException e) {
+    catch (ContentBeanAnalyzatorInternalException e) {
       throw new MojoExecutionException("This should have never happened: ", e);
     }
     return roots;
