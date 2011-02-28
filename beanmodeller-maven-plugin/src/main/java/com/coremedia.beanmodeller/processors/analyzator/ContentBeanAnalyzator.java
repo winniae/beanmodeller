@@ -4,6 +4,7 @@ import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.beaninformation.AbstractPropertyInformation;
+import com.coremedia.beanmodeller.processors.beaninformation.AnalyzatorContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.beaninformation.DatePropertyInformation;
