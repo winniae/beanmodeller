@@ -13,6 +13,7 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
   private Class contentBean;
   private Set<PropertyInformation> properties = new HashSet<PropertyInformation>();
   private String name;
+  private boolean isAbstract = false;
 
   public AnalyzatorContentBeanInformation(Class beanClass) {
     this.contentBean = beanClass;
@@ -69,6 +70,14 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
 
   public void setContentBean(Class contentBean) {
     this.contentBean = contentBean;
+  }
+
+  public boolean isAbstract() {
+    return isAbstract;
+  }
+
+  public void setAbstract(boolean anAbstract) {
+    isAbstract = anAbstract;
   }
 
   public void addProperty(PropertyInformation propertyInformation) {

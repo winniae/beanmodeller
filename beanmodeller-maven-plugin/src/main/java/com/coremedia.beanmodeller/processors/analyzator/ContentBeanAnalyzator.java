@@ -121,7 +121,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     //so first of all let's see if there is a problem in the hierarchy
     checkBeanClassHierarchy(potentialException, hierarchy);
 
-    extractDocTypeNames(potentialException, hierarchy);
+    extractDocTypeBasicInformation(potentialException, hierarchy);
 
     extractDocProperties(potentialException, hierarchy);
 
@@ -298,7 +298,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
   }
 
-  private void extractDocTypeNames(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
+  private void extractDocTypeBasicInformation(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
     Set<Class> classesToAnalyze = hierarchy.getAllFoundContentBeans();
     Map<String, Class> foundDocTypeNames = new HashMap<String, Class>();
 
@@ -346,6 +346,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       foundDocTypeNames.put(docTypeName, classToAnalyze);
       //and set the bean information
       beanInformation.setDocumentName(docTypeName);
+
+      //check if it is an abstract doctype
+      beanInformation.setAbstract(beanAnnotation.isAbstract());
     }
   }
 
