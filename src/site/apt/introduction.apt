@@ -94,6 +94,17 @@ public abstract class CBGContentClassWithAnOverlyLongClassNameOfMoreThanFiftyCha
     The Bean Modeller checks the length of both and logs the occurrence as error during
     the analyzation phase. 
 
+How to handle abstract document types?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Simply mark your content bean with
+
++-------------------------------------------------------------------------------------------+
+  @ContentBean(isAbstract = true)
+  public abstract class CBGContent extends AbstractContentBean {
++-------------------------------------------------------------------------------------------+
+
+The corresponding document type will then be abstract. No accessorizer class will be generated.
 
 Which property types are supported?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
