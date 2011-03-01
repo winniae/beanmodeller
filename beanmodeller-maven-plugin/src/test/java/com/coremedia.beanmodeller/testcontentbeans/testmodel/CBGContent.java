@@ -10,7 +10,7 @@ import com.coremedia.objectserver.beans.AbstractContentBean;
  * Date: Jan 27, 2011
  * Time: 9:42:04 AM
  */
-@ContentBean
+@ContentBean(isAbstract = true)
 public abstract class CBGContent extends AbstractContentBean {
 
   /**

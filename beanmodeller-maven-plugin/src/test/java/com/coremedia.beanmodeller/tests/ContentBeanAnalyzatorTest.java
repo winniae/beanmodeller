@@ -11,6 +11,7 @@ import com.coremedia.beanmodeller.testcontentbeans.NotCBGContentBean;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -34,6 +36,29 @@ public class ContentBeanAnalyzatorTest {
   @Before
   public void setup() {
     analyzator = new ContentBeanAnalyzator();
+  }
+
+  @Test
+  public void testAbstractBeans() {
+    analyzator.addContentBean(CBGContent.class);
+    analyzator.addContentBean(CBGImage.class);
+    ContentBeanHierarchy hierarchy = null;
+    try {
+      hierarchy = analyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      e.printStackTrace();
+      fail();
+    }
+    Set<ContentBeanInformation> roots = hierarchy.getRootBeanInformation();
+    assertTrue(roots.size() == 1);
+    ContentBeanInformation content = roots.iterator().next();
+    assertTrue(content.isAbstract());
+    assertNotNull(content.getChilds());
+    assertTrue(content.getChilds().size() == 1);
+    ContentBeanInformation image = content.getChilds().iterator().next();
+    assertNotNull(image);
+    assertFalse(image.isAbstract());
   }
 
   @Test

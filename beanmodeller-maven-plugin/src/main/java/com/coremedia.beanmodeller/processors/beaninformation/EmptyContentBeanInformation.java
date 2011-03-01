@@ -62,4 +62,9 @@ public final class EmptyContentBeanInformation implements ContentBeanInformation
   public String toString() {
     return "EmptyContentBeanInformation";
   }
+
+  @Override
+  public boolean isAbstract() {
+    return false;
+  }
 }
