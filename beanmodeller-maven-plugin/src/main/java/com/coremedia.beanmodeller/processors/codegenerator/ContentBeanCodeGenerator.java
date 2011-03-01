@@ -64,39 +64,40 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
   }
 
   private void generateClass(JPackage beanPackage, ContentBeanInformation bean, JCodeModel codeModel, Set<PropertyInformation> propertiesInTheHierarchySoFar) throws JClassAlreadyExistsException {
+    //we only generate classes for non abstract content beans
+    if (!bean.isAbstract()) {
+      //the content accessor class is derrived from the bean class
+      Class parentClass = bean.getContentBean();
+      if (getLog().isDebugEnabled()) {
+        getLog().debug("Generating class for " + parentClass.getCanonicalName());
+      }
+      //generate the class
+      JDefinedClass beanClass = beanPackage._class(bean.getName() + IMPL_SUFFIX);
+      //no null check since extends(null) leas to java.lang.Object
+      beanClass._extends(parentClass);
+      //TODO this comment has to be better
+      //add some javadoc
+      JDocComment javaDoc = beanClass.javadoc();
+      javaDoc.add("Content Accessor for " + bean + "\n");
+      javaDoc.add("You can safely ignore this implementation, since it just fills your abstract getter Methods with content access implementtions\n");
+      javaDoc.add("<b>Do never, ever use this class directly in your code - or even change it</b>, please.");
 
-    //the content accessor class is derrived from the bean class
-    Class parentClass = bean.getContentBean();
-    if (getLog().isDebugEnabled()) {
-      getLog().debug("Generating class for " + parentClass.getCanonicalName());
-    }
-    //generate the class
-    JDefinedClass beanClass = beanPackage._class(bean.getName() + IMPL_SUFFIX);
-    //no null check since extends(null) leas to java.lang.Object
-    beanClass._extends(parentClass);
-    //TODO this comment has to be better
-    //add some javadoc
-    JDocComment javaDoc = beanClass.javadoc();
-    javaDoc.add("Content Accessor for " + bean + "\n");
-    javaDoc.add("You can safely ignore this implementation, since it just fills your abstract getter Methods with content access implementtions\n");
-    javaDoc.add("<b>Do never, ever use this class directly in your code - or even change it</b>, please.");
+      //create a new Set of the accumulated properties of this class
+      Set<PropertyInformation> allMyProperties = new HashSet<PropertyInformation>(propertiesInTheHierarchySoFar);
+      //collect the properties defined in this class
+      for (PropertyInformation property : bean.getProperties()) {
+        allMyProperties.add(property);
+      }
+      //generate getter for each property
+      for (PropertyInformation property : allMyProperties) {
+        generatePropertyMethod(beanClass, property, codeModel);
+      }
 
-    //create a new Set of the accumulated properties of this class
-    Set<PropertyInformation> allMyProperties = new HashSet<PropertyInformation>(propertiesInTheHierarchySoFar);
-    //collect the properties defined in this class
-    for (PropertyInformation property : bean.getProperties()) {
-      allMyProperties.add(property);
+      //and go down the hierarchy
+      for (ContentBeanInformation childBean : bean.getChilds()) {
+        generateClass(beanPackage, childBean, codeModel, allMyProperties);
+      }
     }
-    //generate getter for each property
-    for (PropertyInformation property : allMyProperties) {
-      generatePropertyMethod(beanClass, property, codeModel);
-    }
-
-    //and go down the hierarchy
-    for (ContentBeanInformation childBean : bean.getChilds()) {
-      generateClass(beanPackage, childBean, codeModel, allMyProperties);
-    }
-
   }
 
   private void generatePropertyMethod(JDefinedClass beanClass, PropertyInformation propertyInformation, JCodeModel codeModel) {

@@ -213,16 +213,19 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
   private String getBeanXml(ContentBeanInformation contentBeanInformation) {
     StringBuilder stringBuilder = new StringBuilder();
-
     stringBuilder.append("\t<bean name=\"").append(getBeanName(contentBeanInformation)).append("\"\n");
     String beanName = getBeanName(contentBeanInformation.getParent());
     if (!StringUtils.isEmpty(beanName)) {
       stringBuilder.append("\t\tparent=\"").append(beanName).append("\"\n");
     }
     stringBuilder.append("\t\tscope=\"prototype\"\n");
-    stringBuilder.append("\t\tclass=\"").append(generator.getCanonicalGeneratedClassName(contentBeanInformation)).append("\"");
+    //abstract beans do not get a class attribute
+    if (!contentBeanInformation.isAbstract()) {
+      stringBuilder.append("\t\tclass=\"");
+      stringBuilder.append(generator.getCanonicalGeneratedClassName(contentBeanInformation));
+      stringBuilder.append("\"");
+    }
     stringBuilder.append("/>\n");
-
     return stringBuilder.toString();
   }
 
@@ -231,7 +234,13 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
       // root node
       return SPRING_BEAN_CONFIG_DEFAULT_ROOT_PARENT;
     }
-
-    return SPRING_BEAN_NAME_PREFIX + contentBeanInformation.getDocumentName();
+    if (contentBeanInformation.isAbstract()) {
+      //create a bean which cannot be found by the content bean factory
+      return contentBeanInformation.getContentBean().getSimpleName();
+    }
+    else {
+      //create a bean for the conten bean factory
+      return SPRING_BEAN_NAME_PREFIX + contentBeanInformation.getDocumentName();
+    }
   }
 }
