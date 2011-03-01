@@ -216,6 +216,12 @@ public class DocTypeMarshaller extends MavenProcessor {
     DocType currentDocType = objectFactory.createDocType();
     currentDocType.setName(contentBeanInformation.getDocumentName());
 
+    //set abstract doctypes to abstract
+    //not done for non abstract since it is the default
+    if (contentBeanInformation.isAbstract()) {
+      currentDocType.setAbstract(true);
+    }
+
     knownDoctypes.put(currentDocType.getName(), currentDocType);
 
     // Will collect current DocType and all child doctypes
