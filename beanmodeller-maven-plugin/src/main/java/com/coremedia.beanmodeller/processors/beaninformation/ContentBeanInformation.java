@@ -50,4 +50,11 @@ public interface ContentBeanInformation {
    * @return Set containing all Properties of this contentbean or empty Set if there are non.
    */
   Set<? extends PropertyInformation> getProperties();
+
+  /**
+   * Is this an abstract document type?
+   *
+   * @return if the doc type is abstract
+   */
+  public boolean isAbstract();
 }
