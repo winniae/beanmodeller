@@ -21,6 +21,7 @@ import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyza
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 
 /**
  * A test case to test if the names of objects and methods are correctly checked.

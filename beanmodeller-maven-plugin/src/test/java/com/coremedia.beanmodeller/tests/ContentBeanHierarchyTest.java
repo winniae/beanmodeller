@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.util.Set;
 
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isOneOf;
 import static org.junit.Assert.assertNotNull;
