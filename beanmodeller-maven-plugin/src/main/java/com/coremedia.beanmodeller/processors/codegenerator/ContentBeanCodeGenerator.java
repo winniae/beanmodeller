@@ -1,14 +1,14 @@
 package com.coremedia.beanmodeller.processors.codegenerator;
 
+import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.DatePropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.IntegerPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
-import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.DatePropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.IntegerPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.LinkListPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.MarkupPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.StringPropertyInformation;
 import com.coremedia.cap.content.Content;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;

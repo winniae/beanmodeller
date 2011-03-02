@@ -1,6 +1,6 @@
 package com.coremedia.beanmodeller.maven;
 
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;

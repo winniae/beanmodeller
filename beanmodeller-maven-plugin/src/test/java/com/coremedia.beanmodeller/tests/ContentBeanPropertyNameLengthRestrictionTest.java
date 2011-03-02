@@ -1,12 +1,12 @@
 package com.coremedia.beanmodeller.tests;
 
+import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
+import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.IntegerPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.IntegerPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdAnno;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFailA;
 import com.coremedia.beanmodeller.testcontentbeans.CBGLongMthdFailD;
@@ -21,7 +21,6 @@ import static com.coremedia.beanmodeller.testutils.BeanModellerTestUtils.analyza
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 
 /**
  * A test case to test if the names of objects and methods are correctly checked.

@@ -1,8 +1,8 @@
 package com.coremedia.beanmodeller.testutils;
 
+import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 
 import java.util.HashMap;
 import java.util.List;

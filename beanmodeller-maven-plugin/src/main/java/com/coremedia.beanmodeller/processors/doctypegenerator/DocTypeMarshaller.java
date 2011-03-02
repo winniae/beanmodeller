@@ -1,12 +1,12 @@
 package com.coremedia.beanmodeller.processors.doctypegenerator;
 
+import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.LinkListPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
-import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.LinkListPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.MarkupPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.PropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.StringPropertyInformation;
 import com.coremedia.schemabeans.BlobProperty;
 import com.coremedia.schemabeans.DocType;
 import com.coremedia.schemabeans.DocumentTypeModel;

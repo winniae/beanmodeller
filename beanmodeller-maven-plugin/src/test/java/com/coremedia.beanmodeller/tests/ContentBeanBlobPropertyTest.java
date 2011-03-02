@@ -1,11 +1,11 @@
 package com.coremedia.beanmodeller.tests;
 
+import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
+import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
-import com.coremedia.beanmodeller.processors.beaninformation.BlobPropertyInformation;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanHierarchy;
-import com.coremedia.beanmodeller.processors.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.testcontentbeans.CBGRubbishBlobContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;
@@ -15,7 +15,6 @@ import org.junit.Test;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertNotNull;
 
 /**

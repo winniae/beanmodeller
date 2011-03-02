@@ -1,4 +1,4 @@
-package com.coremedia.beanmodeller.processors.beaninformation;
+package com.coremedia.beanmodeller.beaninformation;
 
 import java.util.HashSet;
 import java.util.Set;
