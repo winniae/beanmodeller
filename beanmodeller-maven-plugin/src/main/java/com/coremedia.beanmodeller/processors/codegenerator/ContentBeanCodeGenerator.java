@@ -130,7 +130,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       propertyMethod.body()._return(JExpr.cast(returnType, getterCall));
     }
     else if ((propertyInformation instanceof LinkListPropertyInformation)) {
-      createLinkListMethod(codeModel, methodReturnType, propertyMethod, getterCall, returnType);
+      createLinkListMethod(codeModel, methodReturnType, propertyMethod, propertyInformation, returnType);
 
     }
     else if (propertyInformation instanceof DatePropertyInformation) {
@@ -159,7 +159,9 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     }
   }
 
-  private void createLinkListMethod(JCodeModel codeModel, Class<?> methodReturnType, JMethod propertyMethod, JInvocation getterCall, JType returnType) {
+  private void createLinkListMethod(JCodeModel codeModel, Class<?> methodReturnType, JMethod propertyMethod, PropertyInformation propertyInformation, JType returnType) {
+    //we redefine the getter call to avoid nulll as list return value - empty list are easier to handle
+    JInvocation getterCall = JExpr.invoke("getContent").invoke("getLink").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
     //get the content as a list
     JVar contentList = propertyMethod.body().decl(codeModel.ref(List.class), "contentList", JExpr.cast(codeModel.ref(List.class), getterCall));
     if (Collection.class.isAssignableFrom(methodReturnType)) {
