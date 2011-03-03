@@ -74,7 +74,7 @@ public class XSDCopyier extends MavenProcessor {
           }
           String resourceName = resourcePath.substring(resourceNamePosition + 1);
           getLog().info("Copying " + schemaName + " from classpath " + resourceName + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
-          InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName);
+          InputStream resourceStream = getClass().getResourceAsStream(resourceName);
           if (resourceStream == null) {
             throw new DocTypeMarshallerException("Unable to open input stream for resource " + resourceName + " from URL " + schemaUrl);
           }
