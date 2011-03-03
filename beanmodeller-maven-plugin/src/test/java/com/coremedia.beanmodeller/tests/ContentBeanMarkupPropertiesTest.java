@@ -28,7 +28,7 @@ public class ContentBeanMarkupPropertiesTest {
   MarkupPropertyInformation markupProperty;
 
   public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "coremedia-richtext-1.0";
-  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "simple.xsd";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "classpath:/xml_schema_definitions/simple.xsd";
 
   private Class<CBGMarkupAnno> markupPropertyBeanClass = CBGMarkupAnno.class;
   private MarkupPropertyInformation anotherTextProperty;

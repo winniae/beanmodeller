@@ -31,7 +31,7 @@ public class BeanModellerHelper {
     String dirName = FilenameUtils.getFullPathNoEndSeparator(fileName);
     //sanity check if there is a directory componente in the filename
     if (!StringUtils.isEmpty(dirName)) {
-      realDestDir = getSanitizedDirectory(dirName);
+      realDestDir = getSanitizedDirectory(destDir.getAbsolutePath() + "/" + dirName);
       realFileName = FilenameUtils.getName(fileName);
     }
     return new File(realDestDir, realFileName);

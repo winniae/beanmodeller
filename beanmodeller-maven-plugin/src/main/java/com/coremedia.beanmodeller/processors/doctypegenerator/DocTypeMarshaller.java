@@ -313,39 +313,57 @@ public class DocTypeMarshaller extends MavenProcessor {
         return objectFactory.createIntProperty(descriptor);
 
       case LINK:
-        final LinkListProperty listProperty = objectFactory.createLinkListProperty();
-        final String docTypeName = ((LinkListPropertyInformation) propertyInformation).getLinkType().getDocumentName();
-        listProperty.setLinkType(knownDoctypes.get(docTypeName));
-        listProperty.setMin(BigInteger.valueOf(((LinkListPropertyInformation) propertyInformation).getMin()));
-        listProperty.setMax(BigInteger.valueOf(((LinkListPropertyInformation) propertyInformation).getMax()));
-        return listProperty;
+        return createLinkProperty((LinkListPropertyInformation) propertyInformation);
 
       case DATE:
         return objectFactory.createDateProperty(descriptor);
 
       case MARKUP:
-        final XmlProperty xmlProperty = objectFactory.createXmlProperty();
-        final String grammarName = ((MarkupPropertyInformation) propertyInformation).getGrammarName();
-        final XmlGrammar grammarProperty = objectFactory.createXmlGrammar();
-        grammarProperty.setSystemId(grammarName);
-        grammarProperty.setName(grammarName);
-        grammarProperty.setRoot(grammarName);
-        xmlProperty.setGrammar(grammarProperty);
-        return xmlProperty;
+        return createMarkupProperty((MarkupPropertyInformation) propertyInformation);
 
       case BLOB:
-        final BlobProperty blobProperty = objectFactory.createBlobProperty();
-        BlobPropertyInformation blobPropertyInformation = (BlobPropertyInformation) propertyInformation;
-        blobProperty.setName(blobPropertyInformation.getDocumentTypePropertyName());
-        blobProperty.setMimeType(blobPropertyInformation.getAllowedMimeTypes());
-        //this is possible too
-        //blobProperty.setExtension();
-        //blobProperty.setOverride();
-        return blobProperty;
+        return createMarkupProperty((BlobPropertyInformation) propertyInformation);
 
       default:
         return null;
     }
+  }
+
+  private Object createMarkupProperty(BlobPropertyInformation propertyInformation) {
+    final BlobProperty blobProperty = objectFactory.createBlobProperty();
+    blobProperty.setName(propertyInformation.getDocumentTypePropertyName());
+    blobProperty.setMimeType(propertyInformation.getAllowedMimeTypes());
+    //this is possible too
+    //blobProperty.setExtension();
+    //blobProperty.setOverride();
+    return blobProperty;
+  }
+
+  private Object createMarkupProperty(MarkupPropertyInformation propertyInformation) {
+    final XmlProperty xmlProperty = objectFactory.createXmlProperty();
+    final URL grammarURL = propertyInformation.getGrammarURL();
+    String grammarName;
+    if ((grammarURL != null) && ("jar".equals(grammarURL.getProtocol()))) {
+      grammarName = "classpath:" + grammarURL.getPath();
+    }
+    else {
+      grammarName = propertyInformation.getGrammarName();
+    }
+    final XmlGrammar grammarProperty = objectFactory.createXmlGrammar();
+    grammarProperty.setSystemId(grammarName);
+    grammarProperty.setName(grammarName);
+    grammarProperty.setRoot(grammarName);
+    xmlProperty.setGrammar(grammarProperty);
+    return xmlProperty;
+  }
+
+  private Object createLinkProperty(LinkListPropertyInformation propertyInformation) {
+    final LinkListProperty listProperty = objectFactory.createLinkListProperty();
+    final String docTypeName = propertyInformation.getLinkType().getDocumentName();
+    listProperty.setLinkType(knownDoctypes.get(docTypeName));
+    listProperty.setMin(BigInteger.valueOf(propertyInformation.getMin()));
+    listProperty.setMax(BigInteger.valueOf(propertyInformation.getMax()));
+    return listProperty;
   }
 
   public Map<String, URL> getFoundMarkupSchemaDefinitions() {

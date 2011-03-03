@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +45,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
   public static final int MAX_CONTENT_TYPE_LENGTH = 16;
   public static final int MAX_PROPERTY_LENGTH = 32;
-  public static final String SCHEMA_DEFINITION_LOCATION = "/xml_schema_definitions/";
 
   private static final ContentBeanInformation PROPERTY_DEFAULT_LINKLIST_TYPE = EmptyContentBeanInformation.getInstance();
 
@@ -532,21 +532,32 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   private AbstractPropertyInformation getMarkupPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
-    String grammarName;
     URL grammarURL = null;
     String grammarRoot = null;
+    String grammarName;
 
     if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
       grammarName = getPropertyDefaultMarkupGrammar();
     }
     else {
-      grammarName = methodAnnotation.propertyXmlGrammar();
-      grammarURL = getClass().getResource(SCHEMA_DEFINITION_LOCATION + grammarName);
       grammarRoot = methodAnnotation.propertyXmlRoot();
-      if (grammarURL == null) {
-        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is expected to reside in folder " + SCHEMA_DEFINITION_LOCATION);
+      grammarName = methodAnnotation.propertyXmlGrammar();
+      if (grammarName.startsWith("classpath:")) {
+        String grammarSource = grammarName.substring("classpath:".length());
+        grammarURL = getClass().getResource(grammarSource);
       }
-      else if (ContentProperty.MARKUP_PROPERTY_NO_ROOT_SET.equals(grammarRoot)) {
+      else {
+        try {
+          grammarURL = new URL(grammarName);
+        }
+        catch (MalformedURLException e) {
+          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable as URL");
+        }
+      }
+      if (grammarURL == null) {
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
+      }
+      else if (grammarRoot == null || ContentProperty.MARKUP_PROPERTY_NO_ROOT_SET.equals(grammarRoot)) {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_NO_XML_ROOT_SET_MESSAGE + " " + grammarName);
       }
     }

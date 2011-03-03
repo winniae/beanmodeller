@@ -42,7 +42,7 @@ public class GenerateDoctypesMojoTest extends AbstractMojoTestCase {
     generateDoctypesMojo.execute();
 
 
-    File expectedGrammarFile = new File("target/xsd/simple.xsd");
+    File expectedGrammarFile = new File("target/xsd/xml_schema_definitions/simple.xsd");
     assertTrue(expectedGrammarFile.exists());
 
   }

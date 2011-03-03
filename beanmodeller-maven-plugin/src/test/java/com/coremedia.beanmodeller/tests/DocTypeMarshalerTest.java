@@ -3,6 +3,8 @@ package com.coremedia.beanmodeller.tests;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
+import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
+import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
@@ -14,6 +16,8 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +31,7 @@ import static org.junit.Assert.fail;
  */
 public class DocTypeMarshalerTest {
 
+  public static final String TARGET_XSD_TEST_PATH = "target/xsd-test";
   private DocTypeMarshaller marshaller = null;
 
   @Before
@@ -53,26 +58,18 @@ public class DocTypeMarshalerTest {
    */
   @Test
   public void testMarshalerBasic() {
-    OutputStream os = new ByteArrayOutputStream();
-    assertNotNull(marshaller);
-    marshaller.setOutputStream(os);
-    try {
-      marshaller.marshallDoctype();
-    }
-    catch (Exception e) {
-      fail();
-    }
+    OutputStream os = marshalToOutputStream();
 
     String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
-        "    <XmlGrammar Name=\"simple.xsd\"/>\n" +
+        "    <XmlGrammar Name=\"classpath:/xml_schema_definitions/simple.xsd\"/>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
         "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAppointment\" Parent=\"CBGContent\">\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
         "        <DateProperty Name=\"beginDate\"/>\n" +
-        "        <XmlProperty Grammar=\"simple.xsd\" Name=\"customXML\"/>\n" +
+        "        <XmlProperty Grammar=\"classpath:/xml_schema_definitions/simple.xsd\" Name=\"customXML\"/>\n" +
         "        <DateProperty Name=\"endDate\"/>\n" +
         "        <IntProperty Name=\"numberOfAttendees\"/>\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"organizer\" Max=\"1\" Min=\"0\"/>\n" +
@@ -99,4 +96,29 @@ public class DocTypeMarshalerTest {
 
   }
 
+  private OutputStream marshalToOutputStream() {
+    OutputStream os = new ByteArrayOutputStream();
+    assertNotNull(marshaller);
+    marshaller.setOutputStream(os);
+    try {
+      marshaller.marshallDoctype();
+    }
+    catch (Exception e) {
+      fail();
+    }
+    return os;
+  }
+
+  @Test
+  public void testXSDCopy() {
+    marshalToOutputStream();
+    Map<String, URL> foundMarkupSchemaDefinitions = marshaller.getFoundMarkupSchemaDefinitions();
+    XSDCopyier xsdCopyier = new XSDCopyier(TARGET_XSD_TEST_PATH);
+    try {
+      xsdCopyier.copyXSD(foundMarkupSchemaDefinitions);
+    }
+    catch (DocTypeMarshallerException e) {
+      fail();
+    }
+  }
 }

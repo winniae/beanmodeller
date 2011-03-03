@@ -40,7 +40,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   /**
    * Where should the custom XML Schema definitions copied.
    *
-   * @parameter default-value="${project.build.directory}/contentserver/lib/xml"
+   * @parameter default-value="${project.build.directory}/${project.build.finalName}/lib/classes"
    */
   private String xsdTargetPath;
 

@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
@@ -41,33 +42,55 @@ public class XSDCopyier extends MavenProcessor {
     }
     getLog().info("Copying " + schemas.size() + " schemas to " + xsdPath);
     for (String schemaName : schemas.keySet()) {
-      URL schemaUrl = schemas.get(schemaName);
-      if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
-        getLog().info("Copying " + schemaName + " from " + schemaUrl);
-        File sourceFile = new File(schemaUrl.getPath());
-        try {
-          File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, sourceFile.getName());
-          if ("file".equals(schemaUrl.getProtocol())) {
-            FileUtils.copyFile(sourceFile, targetFile);
-          }
-          //TODO there is no way to copy the file from the jar
-          //TODO find out how the XSD are handled in CM6
-          //TODO update this whole f* block
-        }
-        catch (IOException e) {
-          throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir, e);
-        }
-        catch (PluginException e) {
-          throw new DocTypeMarshallerException("Unable to copy " + sourceFile + " to " + targetDir, e);
-        }
-      }
-      else {
-        if (schemaUrl == null) {
-          getLog().warn("Unable to copy " + schemaUrl + " since I the URL is null!");
+      copySchema(schemas, targetDir, schemaName);
+    }
+  }
+
+  private void copySchema(Map<String, URL> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
+    URL schemaUrl = schemas.get(schemaName);
+    if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
+      try {
+        String targetFileName;
+        if (schemaName.startsWith("classpath:")) {
+          targetFileName = schemaName.substring("classpath:".length());
         }
         else {
-          getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
+          targetFileName = schemaName;
         }
+        File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, targetFileName);
+        if ("file".equals(schemaUrl.getProtocol())) {
+          File sourceFile = new File(schemaUrl.getPath());
+          if (sourceFile.length() == 0) {
+            throw new DocTypeMarshallerException("Unable to read " + sourceFile);
+          }
+          getLog().info("Copying " + schemaName + " from " + sourceFile.getAbsolutePath() + " to " + targetFile.getAbsolutePath());
+          FileUtils.copyFile(sourceFile, targetFile);
+        }
+        else if ("jar".equals(schemaUrl.getProtocol())) {
+          String resourcePath = schemaUrl.getPath();
+          int resourceNamePosition = resourcePath.lastIndexOf('!');
+          if (resourceNamePosition < 0) {
+            throw new DocTypeMarshallerException("Unable to determine filename from " + schemaUrl + ".");
+          }
+          String resourceName = resourcePath.substring(resourceNamePosition);
+          getLog().info("Copying " + schemaName + " from classpath " + resourceNamePosition + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
+          InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName);
+          FileUtils.copyInputStreamToFile(resourceStream, targetFile);
+        }
+      }
+      catch (IOException e) {
+        throw new DocTypeMarshallerException("Unable to copy " + schemaUrl + " to " + targetDir, e);
+      }
+      catch (PluginException e) {
+        throw new DocTypeMarshallerException("Unable to copy " + schemaUrl + " to " + targetDir, e);
+      }
+    }
+    else {
+      if (schemaUrl == null) {
+        getLog().warn("Unable to copy " + schemaUrl + " since I the URL is null!");
+      }
+      else {
+        getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
       }
     }
   }
