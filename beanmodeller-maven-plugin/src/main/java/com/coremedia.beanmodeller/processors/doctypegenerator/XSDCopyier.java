@@ -72,8 +72,8 @@ public class XSDCopyier extends MavenProcessor {
           if (resourceNamePosition < 0) {
             throw new DocTypeMarshallerException("Unable to determine filename from " + schemaUrl + ".");
           }
-          String resourceName = resourcePath.substring(resourceNamePosition);
-          getLog().info("Copying " + schemaName + " from classpath " + resourceNamePosition + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
+          String resourceName = resourcePath.substring(resourceNamePosition + 1);
+          getLog().info("Copying " + schemaName + " from classpath " + resourceName + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
           InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName);
           FileUtils.copyInputStreamToFile(resourceStream, targetFile);
         }
