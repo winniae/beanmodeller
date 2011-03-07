@@ -132,6 +132,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
     // for each bean, write code and call recursive
     for (ContentBeanInformation contentBeanInformation : beanInformationsSorted) {
+      getLog().info("Writing spring Configuration for "+contentBeanInformation);
       writer.append(getBeanXml(contentBeanInformation));
 
       writeBeanConfigRecursive(contentBeanInformation.getChilds(), writer);
