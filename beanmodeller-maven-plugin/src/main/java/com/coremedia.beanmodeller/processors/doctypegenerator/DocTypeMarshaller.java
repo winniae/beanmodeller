@@ -212,6 +212,7 @@ public class DocTypeMarshaller extends MavenProcessor {
    * @return
    */
   private List<DocType> extractChildDocTypes(ContentBeanInformation contentBeanInformation, DocType parentDocType) {
+    getLog().info("Writing doctype for " + contentBeanInformation);
     // ContentBeanInformation contains information for a one DocType
     DocType currentDocType = objectFactory.createDocType();
     currentDocType.setName(contentBeanInformation.getDocumentName());
