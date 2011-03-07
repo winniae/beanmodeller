@@ -50,11 +50,12 @@ public class XSDCopyier extends MavenProcessor {
   private void copySchema(Map<String, GrammarInformation> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
     GrammarInformation grammarInformation = schemas.get(schemaName);
     URL schemaUrl = grammarInformation.getGrammarURL();
+    String schemaLocation = grammarInformation.getGrammarLocation();
     if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
       try {
         String targetFileName;
-        if (schemaName.startsWith("classpath:")) {
-          targetFileName = schemaName.substring("classpath:".length());
+        if (schemaLocation != null && schemaLocation.startsWith("classpath:")) {
+          targetFileName = schemaLocation.substring("classpath:".length());
         }
         else {
           targetFileName = schemaName;
