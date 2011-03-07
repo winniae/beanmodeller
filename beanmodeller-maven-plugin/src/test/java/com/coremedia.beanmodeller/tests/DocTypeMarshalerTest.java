@@ -62,7 +62,7 @@ public class DocTypeMarshalerTest {
 
     String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
-        "    <XmlGrammar Name=\"simple.xsd\" SchemaLocation=\"classpath:/xml_schema_definitions/simple.xsd\"/>\n" +
+        "    <XmlSchema Name=\"simple.xsd\" SchemaLocation=\"classpath:/xml_schema_definitions/simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
         "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +
         "    </DocType>\n" +
