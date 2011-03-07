@@ -12,7 +12,7 @@ import java.io.File;
  * Date: 10.02.2011
  * Time: 10:38:04
  */
-public class BeanModellerHelper {
+public final class BeanModellerHelper {
   public static final String ERROR_CREATING_TARGET_DIRECTORY = "Target directory could not be created! ";
 
   //hiding the constructor

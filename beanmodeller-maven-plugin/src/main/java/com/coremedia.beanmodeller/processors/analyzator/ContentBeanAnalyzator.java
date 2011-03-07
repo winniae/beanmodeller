@@ -534,7 +534,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
     URL grammarURL = null;
-    String grammarRoot = null;
     String grammarName;
     String grammarLocation = null;
 
@@ -548,7 +547,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         grammarURL = getClass().getResource(grammarSource);
         grammarLocation = grammarName;
         if (grammarName.contains("/")) {
-          grammarName = grammarName.substring(grammarName.lastIndexOf("/") + 1);
+          grammarName = grammarName.substring(grammarName.lastIndexOf('/') + 1);
         }
       }
       else {
