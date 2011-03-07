@@ -9,6 +9,7 @@ import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.DatePropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.EmptyContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.beaninformation.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
@@ -533,18 +534,21 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
     URL grammarURL = null;
-    String grammarRoot = null;
     String grammarName;
+    String grammarLocation = null;
 
     if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
       grammarName = getPropertyDefaultMarkupGrammar();
     }
     else {
-      grammarRoot = methodAnnotation.propertyXmlRoot();
       grammarName = methodAnnotation.propertyXmlGrammar();
       if (grammarName.startsWith("classpath:")) {
         String grammarSource = grammarName.substring("classpath:".length());
         grammarURL = getClass().getResource(grammarSource);
+        grammarLocation = grammarName;
+        if (grammarName.contains("/")) {
+          grammarName = grammarName.substring(grammarName.lastIndexOf('/') + 1);
+        }
       }
       else {
         try {
@@ -557,15 +561,17 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       if (grammarURL == null) {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
       }
-      else if (grammarRoot == null || ContentProperty.MARKUP_PROPERTY_NO_ROOT_SET.equals(grammarRoot)) {
-        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_NO_XML_ROOT_SET_MESSAGE + " " + grammarName);
-      }
     }
 
     final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
-    markupInformation.setGrammarName(grammarName);
-    markupInformation.setGrammarURL(grammarURL);
-    markupInformation.setGrammarRoot(grammarRoot);
+    //only add grammar information for no default grammars
+    if (grammarName != null && !grammarName.equals(getPropertyDefaultMarkupGrammar())) {
+      GrammarInformation grammarInformation = new GrammarInformation();
+      grammarInformation.setGrammarName(grammarName);
+      grammarInformation.setGrammarURL(grammarURL);
+      grammarInformation.setGrammarLocation(grammarLocation);
+      markupInformation.setGrammarInformation(grammarInformation);
+    }
 
     return markupInformation;
   }

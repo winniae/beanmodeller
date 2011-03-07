@@ -1,5 +1,6 @@
 package com.coremedia.beanmodeller.processors.doctypegenerator;
 
+import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.maven.PluginException;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.utils.BeanModellerHelper;
@@ -26,7 +27,7 @@ public class XSDCopyier extends MavenProcessor {
     this.xsdPath = xsdPath;
   }
 
-  public void copyXSD(Map<String, URL> schemas) throws DocTypeMarshallerException {
+  public void copyXSD(Map<String, GrammarInformation> schemas) throws DocTypeMarshallerException {
     if (xsdPath == null) {
       throw new DocTypeMarshallerException("You must provide a target path for the XSDs");
     }
@@ -46,39 +47,19 @@ public class XSDCopyier extends MavenProcessor {
     }
   }
 
-  private void copySchema(Map<String, URL> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
-    URL schemaUrl = schemas.get(schemaName);
+  private void copySchema(Map<String, GrammarInformation> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
+    GrammarInformation grammarInformation = schemas.get(schemaName);
+    URL schemaUrl = grammarInformation.getGrammarURL();
+    String schemaLocation = grammarInformation.getGrammarLocation();
     if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
       try {
-        String targetFileName;
-        if (schemaName.startsWith("classpath:")) {
-          targetFileName = schemaName.substring("classpath:".length());
-        }
-        else {
-          targetFileName = schemaName;
-        }
+        String targetFileName = getTargetFileName(schemaName, schemaLocation);
         File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, targetFileName);
         if ("file".equals(schemaUrl.getProtocol())) {
-          File sourceFile = new File(schemaUrl.getPath());
-          if (sourceFile.length() == 0) {
-            throw new DocTypeMarshallerException("Unable to read " + sourceFile);
-          }
-          getLog().info("Copying " + schemaName + " from " + sourceFile.getAbsolutePath() + " to " + targetFile.getAbsolutePath());
-          FileUtils.copyFile(sourceFile, targetFile);
+          copyFile(schemaName, schemaUrl, targetFile);
         }
         else if ("jar".equals(schemaUrl.getProtocol())) {
-          String resourcePath = schemaUrl.getPath();
-          int resourceNamePosition = resourcePath.lastIndexOf('!');
-          if (resourceNamePosition < 0) {
-            throw new DocTypeMarshallerException("Unable to determine filename from " + schemaUrl + ".");
-          }
-          String resourceName = resourcePath.substring(resourceNamePosition + 1);
-          getLog().info("Copying " + schemaName + " from classpath " + resourceName + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
-          InputStream resourceStream = getClass().getResourceAsStream(resourceName);
-          if (resourceStream == null) {
-            throw new DocTypeMarshallerException("Unable to open input stream for resource " + resourceName + " from URL " + schemaUrl);
-          }
-          FileUtils.copyInputStreamToFile(resourceStream, targetFile);
+          copyJarResource(schemaName, schemaUrl, targetFile);
         }
       }
       catch (IOException e) {
@@ -96,5 +77,40 @@ public class XSDCopyier extends MavenProcessor {
         getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
       }
     }
+  }
+
+  private String getTargetFileName(String schemaName, String schemaLocation) {
+    String targetFileName;
+    if (schemaLocation != null && schemaLocation.startsWith("classpath:")) {
+      targetFileName = schemaLocation.substring("classpath:".length());
+    }
+    else {
+      targetFileName = schemaName;
+    }
+    return targetFileName;
+  }
+
+  private void copyJarResource(String schemaName, URL schemaUrl, File targetFile) throws DocTypeMarshallerException, IOException {
+    String resourcePath = schemaUrl.getPath();
+    int resourceNamePosition = resourcePath.lastIndexOf('!');
+    if (resourceNamePosition < 0) {
+      throw new DocTypeMarshallerException("Unable to determine filename from " + schemaUrl + ".");
+    }
+    String resourceName = resourcePath.substring(resourceNamePosition + 1);
+    getLog().info("Copying " + schemaName + " from classpath " + resourceName + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
+    InputStream resourceStream = getClass().getResourceAsStream(resourceName);
+    if (resourceStream == null) {
+      throw new DocTypeMarshallerException("Unable to open input stream for resource " + resourceName + " from URL " + schemaUrl);
+    }
+    FileUtils.copyInputStreamToFile(resourceStream, targetFile);
+  }
+
+  private void copyFile(String schemaName, URL schemaUrl, File targetFile) throws DocTypeMarshallerException, IOException {
+    File sourceFile = new File(schemaUrl.getPath());
+    if (sourceFile.length() == 0) {
+      throw new DocTypeMarshallerException("Unable to read " + sourceFile);
+    }
+    getLog().info("Copying " + schemaName + " from " + sourceFile.getAbsolutePath() + " to " + targetFile.getAbsolutePath());
+    FileUtils.copyFile(sourceFile, targetFile);
   }
 }
