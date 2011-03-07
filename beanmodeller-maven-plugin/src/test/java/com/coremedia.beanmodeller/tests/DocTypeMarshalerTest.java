@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
+import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
@@ -16,7 +17,6 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -62,14 +62,14 @@ public class DocTypeMarshalerTest {
 
     String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
-        "    <XmlGrammar Name=\"classpath:/xml_schema_definitions/simple.xsd\"/>\n" +
+        "    <XmlGrammar Name=\"simple.xsd\" SchemaLocation=\"classpath:/xml_schema_definitions/simple.xsd\"/>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
         "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGAppointment\" Parent=\"CBGContent\">\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
         "        <DateProperty Name=\"beginDate\"/>\n" +
-        "        <XmlProperty Grammar=\"classpath:/xml_schema_definitions/simple.xsd\" Name=\"customXML\"/>\n" +
+        "        <XmlProperty Grammar=\"simple.xsd\" Name=\"customXML\"/>\n" +
         "        <DateProperty Name=\"endDate\"/>\n" +
         "        <IntProperty Name=\"numberOfAttendees\"/>\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"organizer\" Max=\"1\" Min=\"0\"/>\n" +
@@ -112,7 +112,7 @@ public class DocTypeMarshalerTest {
   @Test
   public void testXSDCopy() {
     marshalToOutputStream();
-    Map<String, URL> foundMarkupSchemaDefinitions = marshaller.getFoundMarkupSchemaDefinitions();
+    Map<String, GrammarInformation> foundMarkupSchemaDefinitions = marshaller.getFoundMarkupSchemaDefinitions();
     XSDCopyier xsdCopyier = new XSDCopyier(TARGET_XSD_TEST_PATH);
     try {
       xsdCopyier.copyXSD(foundMarkupSchemaDefinitions);

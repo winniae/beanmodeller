@@ -16,7 +16,6 @@ public @interface ContentProperty {
   String PROPERTY_NAME_USE_METHOD_NAME = "[useMethodName]";
   int STRING_PROPERTY_DEFAULT_LENGTH = -1;
   String MARKUP_PROPERTY_DEFAULT_GRAMMAR = "[useDefaultGrammar]";
-  String MARKUP_PROPERTY_NO_ROOT_SET = "[noRootSet]";
   String BLOB_PROPERTY_DEFAULT_MIME_TYPE = "*/*";
 
   /**
@@ -39,13 +38,6 @@ public @interface ContentProperty {
    * @return the custom grammar for the Markup property
    */
   String propertyXmlGrammar() default MARKUP_PROPERTY_DEFAULT_GRAMMAR;
-
-  /**
-   * The root element for markup property.
-   *
-   * @return the markup root element.
-   */
-  String propertyXmlRoot() default MARKUP_PROPERTY_NO_ROOT_SET;
 
   /**
    * The mime type to use for a Blob Property. By default '*\/*' - anything is allowed.

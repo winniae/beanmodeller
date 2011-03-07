@@ -2,6 +2,7 @@ package com.coremedia.beanmodeller.tests;
 
 import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
@@ -28,7 +29,8 @@ public class ContentBeanMarkupPropertiesTest {
   MarkupPropertyInformation markupProperty;
 
   public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "coremedia-richtext-1.0";
-  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR = "classpath:/xml_schema_definitions/simple.xsd";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION = "classpath:/xml_schema_definitions/simple.xsd";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME = "simple.xsd";
 
   private Class<CBGMarkupAnno> markupPropertyBeanClass = CBGMarkupAnno.class;
   private MarkupPropertyInformation anotherTextProperty;
@@ -46,19 +48,20 @@ public class ContentBeanMarkupPropertiesTest {
     Method textMethod = markupPropertyBeanClass.getDeclaredMethod("getText");
     markupProperty = new MarkupPropertyInformation(textMethod);
     markupProperty.setDocumentTypePropertyName(textName);
-    markupProperty.setGrammarName(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
     String anotherTextName = "another";
     Method anotherTextMethod = markupPropertyBeanClass.getDeclaredMethod("getAnotherText");
     anotherTextProperty = new MarkupPropertyInformation(anotherTextMethod);
     anotherTextProperty.setDocumentTypePropertyName(anotherTextName);
-    anotherTextProperty.setGrammarName(DEFAULT_MARKUP_PROPERTY_GRAMMAR);
 
     String otherGrammarName = "otherGrammar";
     Method otherGrammarMethod = markupPropertyBeanClass.getDeclaredMethod("getOtherGrammar");
     otherGrammarProperty = new MarkupPropertyInformation(otherGrammarMethod);
     otherGrammarProperty.setDocumentTypePropertyName(otherGrammarName);
-    otherGrammarProperty.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR);
+    GrammarInformation otherGrammarInfo = new GrammarInformation();
+    otherGrammarInfo.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME);
+    otherGrammarInfo.setGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION);
+    otherGrammarProperty.setGrammarInformation(otherGrammarInfo);
   }
 
   @Test

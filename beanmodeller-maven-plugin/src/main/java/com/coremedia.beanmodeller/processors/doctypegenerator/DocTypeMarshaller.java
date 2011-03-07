@@ -2,6 +2,7 @@ package com.coremedia.beanmodeller.processors.doctypegenerator;
 
 import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
+import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.beaninformation.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
@@ -14,10 +15,9 @@ import com.coremedia.schemabeans.Import;
 import com.coremedia.schemabeans.IndexablePropertyDescriptor;
 import com.coremedia.schemabeans.LinkListProperty;
 import com.coremedia.schemabeans.ObjectFactory;
-import com.coremedia.schemabeans.Propertydescriptor;
 import com.coremedia.schemabeans.StringProperty;
-import com.coremedia.schemabeans.XmlGrammar;
 import com.coremedia.schemabeans.XmlProperty;
+import com.coremedia.schemabeans.XmlSchema;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -26,7 +26,6 @@ import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,10 +45,11 @@ import java.util.TreeSet;
  */
 public class DocTypeMarshaller extends MavenProcessor {
 
+  public static final String XML_SCHEMA_NAME = "http://www.w3.org/2001/XMLSchema";
   private Set<ContentBeanInformation> rootBeanInformations = null;
   private ObjectFactory objectFactory = null;
   private OutputStream outputStream = null;
-  private Map<String, URL> foundMarkupSchemaDefinitions = new HashMap<String, URL>();
+  private Map<String, GrammarInformation> foundMarkupSchemaDefinitions = new HashMap<String, GrammarInformation>();
 
   /**
    * global store to remember known DocTypes. This is required when linking properties back to DocTypes.
@@ -96,27 +96,31 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     getGrammars(sortedRootBeansInformation);
 
+    addGrammars(documentTypeModel);
+
     getChildDocTypes(documentTypeModel, sortedRootBeansInformation);
 
     getProperties(sortedRootBeansInformation);
-
-    addGrammars(documentTypeModel);
 
     writeDocTypeModel(documentTypeModel);
   }
 
   private void addGrammars(DocumentTypeModel documentTypeModel) {
     List<Object> elements = documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType();
-    SortedSet<String> grammarNames = new TreeSet<String>();
-    grammarNames.addAll(foundMarkupSchemaDefinitions.keySet());
-    List<XmlGrammar> grammars = new LinkedList<XmlGrammar>();
-    for (String grammarName : grammarNames) {
-      XmlGrammar grammar = new XmlGrammar();
-      grammar.setName(grammarName);
+    SortedSet<String> schemaNames = new TreeSet<String>();
+    schemaNames.addAll(foundMarkupSchemaDefinitions.keySet());
+    List<XmlSchema> schemas = new LinkedList<XmlSchema>();
+    for (String grammarName : schemaNames) {
+      GrammarInformation grammarInformation = foundMarkupSchemaDefinitions.get(grammarName);
+      XmlSchema schema = objectFactory.createXmlSchema();
+      schema.setName(grammarName);
+      schema.setSchemaLocation(grammarInformation.getGrammarLocation());
+      //TODO shouldnt we support more than xsd??
+      schema.setLanguage(XML_SCHEMA_NAME);
       //TODO we should als support public IDs via real internet URLS
-      grammars.add(grammar);
+      schemas.add(schema);
     }
-    elements.addAll(0, grammars);
+    elements.addAll(0, schemas);
     //adding the coremedia richtext grammar
     Import importElement = objectFactory.createImport();
     importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
@@ -125,7 +129,6 @@ public class DocTypeMarshaller extends MavenProcessor {
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
     findGrammars(sortedRootBeansInformation);
-
   }
 
   private void findGrammars(Set<? extends ContentBeanInformation> beanInformations) {
@@ -134,16 +137,10 @@ public class DocTypeMarshaller extends MavenProcessor {
       for (PropertyInformation propertyInformation : beanInformation.getProperties()) {
         if (propertyInformation instanceof MarkupPropertyInformation) {
           MarkupPropertyInformation markupPropertyInformation = (MarkupPropertyInformation) propertyInformation;
-          String grammarName = markupPropertyInformation.getGrammarName();
-          URL grammarURL = markupPropertyInformation.getGrammarURL();
-          if (grammarURL != null) {
-            foundMarkupSchemaDefinitions.put(grammarName, grammarURL);
-          }
-          else {
-            if (!MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME.equals(grammarName)) {
-              getLog().warn("No xsd given for " + grammarName);
-              //todo we can stop here with an exception
-            }
+          GrammarInformation grammarInformation = markupPropertyInformation.getGrammarInformation();
+          if (grammarInformation != null) {
+            String grammarName = grammarInformation.getGrammarName();
+            foundMarkupSchemaDefinitions.put(grammarName, grammarInformation);
           }
         }
       }
@@ -274,24 +271,6 @@ public class DocTypeMarshaller extends MavenProcessor {
       Object element = createPropertyDescriptionFromPropertyInformation(propertyInformation);
 
       if (element != null) {
-        if (element instanceof Propertydescriptor) {
-          Propertydescriptor propertydescriptor = (Propertydescriptor) element;
-          propertydescriptor.setName(propertyInformation.getDocumentTypePropertyName());
-        }
-        else if (element instanceof JAXBElement) {
-          JAXBElement jaxbElement = (JAXBElement) element;
-          Object value = jaxbElement.getValue();
-          if (value instanceof Propertydescriptor) {
-            Propertydescriptor indexablePropertyDescriptor = (Propertydescriptor) value;
-            indexablePropertyDescriptor.setName(propertyInformation.getDocumentTypePropertyName());
-          }
-          else {
-            throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing " + value.getClass());
-          }
-        }
-        else {
-          throw new IllegalArgumentException("DocType Marshaller cannot deal with JAXBElements containing " + element.getClass());
-        }
         currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
       }
     }
@@ -307,30 +286,35 @@ public class DocTypeMarshaller extends MavenProcessor {
     switch (propertyInformation.getType()) {
       case STRING:
         final StringProperty stringProperty = objectFactory.createStringProperty();
+        stringProperty.setName(propertyInformation.getDocumentTypePropertyName());
         stringProperty.setLength(BigInteger.valueOf(((StringPropertyInformation) propertyInformation).getLength()));
         return stringProperty;
 
       case INTEGER:
-        return objectFactory.createIntProperty(descriptor);
+        JAXBElement<IndexablePropertyDescriptor> intProperty = objectFactory.createIntProperty(descriptor);
+        intProperty.getValue().setName(propertyInformation.getDocumentTypePropertyName());
+        return intProperty;
 
       case LINK:
         return createLinkProperty((LinkListPropertyInformation) propertyInformation);
 
       case DATE:
-        return objectFactory.createDateProperty(descriptor);
+        JAXBElement<IndexablePropertyDescriptor> dateProperty = objectFactory.createDateProperty(descriptor);
+        dateProperty.getValue().setName(propertyInformation.getDocumentTypePropertyName());
+        return dateProperty;
 
       case MARKUP:
         return createMarkupProperty((MarkupPropertyInformation) propertyInformation);
 
       case BLOB:
-        return createMarkupProperty((BlobPropertyInformation) propertyInformation);
+        return createBlobProperty((BlobPropertyInformation) propertyInformation);
 
       default:
         return null;
     }
   }
 
-  private Object createMarkupProperty(BlobPropertyInformation propertyInformation) {
+  private Object createBlobProperty(BlobPropertyInformation propertyInformation) {
     final BlobProperty blobProperty = objectFactory.createBlobProperty();
     blobProperty.setName(propertyInformation.getDocumentTypePropertyName());
     blobProperty.setMimeType(propertyInformation.getAllowedMimeTypes());
@@ -342,32 +326,28 @@ public class DocTypeMarshaller extends MavenProcessor {
 
   private Object createMarkupProperty(MarkupPropertyInformation propertyInformation) {
     final XmlProperty xmlProperty = objectFactory.createXmlProperty();
-    final URL grammarURL = propertyInformation.getGrammarURL();
-    String grammarName;
-    if ((grammarURL != null) && ("jar".equals(grammarURL.getProtocol()))) {
-      grammarName = "classpath:" + grammarURL.getPath();
+    xmlProperty.setName(propertyInformation.getDocumentTypePropertyName());
+    GrammarInformation grammarInformation = propertyInformation.getGrammarInformation();
+    if (grammarInformation != null) {
+      xmlProperty.setGrammar(grammarInformation.getGrammarName());
     }
     else {
-      grammarName = propertyInformation.getGrammarName();
+      xmlProperty.setGrammar(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
     }
-    final XmlGrammar grammarProperty = objectFactory.createXmlGrammar();
-    grammarProperty.setSystemId(grammarName);
-    grammarProperty.setName(grammarName);
-    grammarProperty.setRoot(grammarName);
-    xmlProperty.setGrammar(grammarProperty);
     return xmlProperty;
   }
 
   private Object createLinkProperty(LinkListPropertyInformation propertyInformation) {
     final LinkListProperty listProperty = objectFactory.createLinkListProperty();
     final String docTypeName = propertyInformation.getLinkType().getDocumentName();
+    listProperty.setName(propertyInformation.getDocumentTypePropertyName());
     listProperty.setLinkType(knownDoctypes.get(docTypeName));
     listProperty.setMin(BigInteger.valueOf(propertyInformation.getMin()));
     listProperty.setMax(BigInteger.valueOf(propertyInformation.getMax()));
     return listProperty;
   }
 
-  public Map<String, URL> getFoundMarkupSchemaDefinitions() {
+  public Map<String, GrammarInformation> getFoundMarkupSchemaDefinitions() {
     return foundMarkupSchemaDefinitions;
   }
 }

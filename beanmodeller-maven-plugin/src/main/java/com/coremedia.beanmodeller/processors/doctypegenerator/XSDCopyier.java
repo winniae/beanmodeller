@@ -1,5 +1,6 @@
 package com.coremedia.beanmodeller.processors.doctypegenerator;
 
+import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.maven.PluginException;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.utils.BeanModellerHelper;
@@ -26,7 +27,7 @@ public class XSDCopyier extends MavenProcessor {
     this.xsdPath = xsdPath;
   }
 
-  public void copyXSD(Map<String, URL> schemas) throws DocTypeMarshallerException {
+  public void copyXSD(Map<String, GrammarInformation> schemas) throws DocTypeMarshallerException {
     if (xsdPath == null) {
       throw new DocTypeMarshallerException("You must provide a target path for the XSDs");
     }
@@ -46,8 +47,9 @@ public class XSDCopyier extends MavenProcessor {
     }
   }
 
-  private void copySchema(Map<String, URL> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
-    URL schemaUrl = schemas.get(schemaName);
+  private void copySchema(Map<String, GrammarInformation> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
+    GrammarInformation grammarInformation = schemas.get(schemaName);
+    URL schemaUrl = grammarInformation.getGrammarURL();
     if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
       try {
         String targetFileName;
