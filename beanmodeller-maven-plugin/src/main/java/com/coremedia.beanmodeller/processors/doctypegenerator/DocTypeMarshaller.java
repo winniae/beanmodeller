@@ -50,6 +50,7 @@ public class DocTypeMarshaller extends MavenProcessor {
   private ObjectFactory objectFactory = null;
   private OutputStream outputStream = null;
   private Map<String, GrammarInformation> foundMarkupSchemaDefinitions = new HashMap<String, GrammarInformation>();
+  private Map<String, Object> schemaReferences = new HashMap<String, Object>();
 
   /**
    * global store to remember known DocTypes. This is required when linking properties back to DocTypes.
@@ -119,12 +120,14 @@ public class DocTypeMarshaller extends MavenProcessor {
       schema.setLanguage(XML_SCHEMA_NAME);
       //TODO we should als support public IDs via real internet URLS
       schemas.add(schema);
+      schemaReferences.put(grammarName, schema);
     }
     elements.addAll(0, schemas);
     //adding the coremedia richtext grammar
     Import importElement = objectFactory.createImport();
     importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
     elements.add(0, objectFactory.createImportGrammar(importElement));
+    schemaReferences.put(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME, importElement);
   }
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
@@ -334,6 +337,8 @@ public class DocTypeMarshaller extends MavenProcessor {
     else {
       xmlProperty.setGrammar(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
     }
+    //rewrite the grammar object to it's reference
+    xmlProperty.setGrammar(schemaReferences.get(xmlProperty.getGrammar()));
     return xmlProperty;
   }
 
