@@ -63,6 +63,18 @@ public class StringPropertyInformation extends AbstractPropertyInformation {
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("String property ");
+    builder.append(getDocumentTypePropertyName());
+    builder.append(" for ");
+    builder.append(getMethod().getName());
+    builder.append(", length: ");
+    builder.append(length);
+    return builder.toString();
+  }
+
+  @Override
   public String toString() {
     return "StringPropertyInformation{" +
         "method=" + getMethod() +

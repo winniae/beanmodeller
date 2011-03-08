@@ -87,8 +87,16 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
 
   @Override
   public String getHumanUnderstandableRepresentation() {
-    //TODO that is not what we want
-    return toString();
+    StringBuilder builder = new StringBuilder();
+    if (isAbstract) {
+      builder.append("Abstract ");
+    }
+    builder.append(name);
+    builder.append(" for ");
+    builder.append(contentBean.getCanonicalName());
+    builder.append(", document type ");
+    builder.append(documentName);
+    return builder.toString();
   }
 
   @Override

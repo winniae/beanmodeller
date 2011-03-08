@@ -149,12 +149,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   private void logHierarchyInformation(ContentBeanInformation beanInfo, int level, StringBuilder builder) {
     logHierarchyInformationAddIdent(level, builder);
     builder.append("Content Bean: ");
-    builder.append(beanInfo.toString());
+    builder.append(beanInfo.getHumanUnderstandableRepresentation());
     builder.append('\n');
     for (PropertyInformation propertyInformation : beanInfo.getProperties()) {
       logHierarchyInformationAddIdent(level + 2, builder);
-      builder.append("Property ");
-      builder.append(propertyInformation.toString());
+      builder.append("+ ");
+      builder.append(propertyInformation.getHumanUnderstandableRepresentation());
       builder.append('\n');
     }
     for (ContentBeanInformation childBean : beanInfo.getChilds()) {
