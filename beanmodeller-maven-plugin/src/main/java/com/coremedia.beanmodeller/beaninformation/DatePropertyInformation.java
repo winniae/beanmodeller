@@ -22,6 +22,16 @@ public class DatePropertyInformation extends AbstractPropertyInformation {
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Date property ");
+    builder.append(getDocumentTypePropertyName());
+    builder.append(" for ");
+    builder.append(getMethod().getName());
+    return builder.toString();
+  }
+
+  @Override
   public String toString() {
     return "DatePropertyInformation{" +
         "method=" + getMethod() +

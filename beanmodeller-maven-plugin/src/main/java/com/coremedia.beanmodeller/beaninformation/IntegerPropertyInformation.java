@@ -24,6 +24,16 @@ public class IntegerPropertyInformation extends AbstractPropertyInformation {
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Int property ");
+    builder.append(getDocumentTypePropertyName());
+    builder.append(" for ");
+    builder.append(getMethod().getName());
+    return builder.toString();
+  }
+
+  @Override
   public String toString() {
     return "IntegerPropertyInformation{" +
         "method=" + getMethod() +

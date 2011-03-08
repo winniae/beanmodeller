@@ -50,6 +50,31 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    StringBuilder builder = new StringBuilder();
+    if (grammarInformation == null) {
+      builder.append("Richtext property ");
+    }
+    else {
+      builder.append("XML property ");
+    }
+    builder.append(getDocumentTypePropertyName());
+    builder.append(" for ");
+    builder.append(getMethod().getName());
+    if (grammarInformation != null) {
+      builder.append("(Schema: ");
+      builder.append(grammarInformation.getGrammarName());
+      builder.append(", ");
+      builder.append(grammarInformation.getGrammarLocation());
+      builder.append(", @ ");
+      builder.append(grammarInformation.getGrammarURL());
+      builder.append(')');
+    }
+    return builder.toString();
+
+  }
+
+  @Override
   public String toString() {
     return "MarkupPropertyInformation{" +
         "method=" + getMethod() +

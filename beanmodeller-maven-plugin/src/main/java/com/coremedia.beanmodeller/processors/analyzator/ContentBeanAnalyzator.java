@@ -85,16 +85,22 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     if (getLog().isDebugEnabled()) {
       getLog().debug("Searching for content beans in package " + packageName);
     }
+    //we create the scanner
     ClassPathContentBeanScanner scanner = new ClassPathContentBeanScanner();
+    //and force it to look for content beans in the given package
     Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses(packageName, getLog());
-    if (getLog().isInfoEnabled()) {
-      getLog().info("Found " + candidateCBs.size() + " beans in package " + packageName);
-    }
+    getLog().info("Found " + candidateCBs.size() + " beans in package " + packageName);
+    //add al found content beans for further analysation
     for (Class contentBean : candidateCBs) {
       this.addContentBean(contentBean);
     }
   }
 
+  /**
+   * manually add a content bean for analyzation.
+   *
+   * @param bean the bean to add for analyzation
+   */
   public void addContentBean(Class bean) {
     if (getLog().isDebugEnabled()) {
       getLog().debug("Adding class " + bean.getCanonicalName() + " to the analysation list");
@@ -103,7 +109,11 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   /**
-   * writes to rootBeanInformation.
+   * analyze the content beans either added by addContentBean or findContentBeans
+   *
+   * @return the analyzed bean hierarchy
+   * @throws ContentBeanAnalyzationException
+   *          if there was any error in the bean definitions - all found errors are returned
    */
   public ContentBeanHierarchy analyzeContentBeanInformation() throws ContentBeanAnalyzationException {
     ContentBeanHierarchy hierarchy = new ContentBeanHierarchy();
@@ -137,55 +147,59 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private void logHierarchyInformation(ContentBeanHierarchy hierarchy) {
+    //this is the string builder were we collect the debug string
     StringBuilder builder = new StringBuilder();
     builder.append("Extracted Content Bean Hierarchy:\n");
+    //for each root bean we print the methods and the child beans
     for (ContentBeanInformation beanInfo : hierarchy.getRootBeanInformation()) {
-      int level = 0;
-      logHierarchyInformation(beanInfo, level, builder);
+      //the indentationLevel is representating the indentation
+      int indentationLevel = 0;
+      logHierarchyInformation(beanInfo, indentationLevel, builder);
     }
     getLog().info(builder.toString());
   }
 
-  private void logHierarchyInformation(ContentBeanInformation beanInfo, int level, StringBuilder builder) {
-    logHierarchyInformationAddIdent(level, builder);
+  private void logHierarchyInformation(ContentBeanInformation beanInfo, int indentationLevel, StringBuilder builder) {
+    logHierarchyInformationAddIdent(indentationLevel, builder);
     builder.append("Content Bean: ");
-    builder.append(beanInfo.toString());
+    builder.append(beanInfo.getHumanUnderstandableRepresentation());
     builder.append('\n');
     for (PropertyInformation propertyInformation : beanInfo.getProperties()) {
-      logHierarchyInformationAddIdent(level + 2, builder);
-      builder.append("Property ");
-      builder.append(propertyInformation.toString());
+      logHierarchyInformationAddIdent(indentationLevel + 2, builder);
+      builder.append("+ ");
+      builder.append(propertyInformation.getHumanUnderstandableRepresentation());
       builder.append('\n');
     }
     for (ContentBeanInformation childBean : beanInfo.getChilds()) {
-      logHierarchyInformation(childBean, level + 1, builder);
+      logHierarchyInformation(childBean, indentationLevel + 1, builder);
     }
   }
 
-  private void logHierarchyInformationAddIdent(int level, StringBuilder builder) {
-    for (int i = 0; i < level; i++) {
+  private void logHierarchyInformationAddIdent(int indentationLevel, StringBuilder builder) {
+    for (int i = 0; i < indentationLevel; i++) {
       builder.append(' ');
     }
   }
 
   private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
     getLog().debug("checking bean class hierarchy");
+    //to avoid potential loops we note which bean we already have analyzed
     Set<Class> visitedClasses = new HashSet<Class>(hierarchy.getAllFoundContentBeans().size());
+    //then we simply analyze each bean
     for (ContentBeanInformation bean : hierarchy.getAllContentBeanInformation()) {
-      checkBeanClassHierarchy(potentialException, bean, visitedClasses, hierarchy);
-    }
-  }
-
-  private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanInformation bean, Set<Class> visitedClasses, ContentBeanHierarchy hierarchy) {
-    //first look if there is no problem in the hierarchy between bean and parent
-    Class contentBean = bean.getContentBean();
-    for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass = currentClass.getSuperclass()) {
-      if (getLog().isDebugEnabled()) {
-        getLog().debug("checking class in hierarchy: " + currentClass);
+      //first look if there is no problem in the hierarchy between bean and parent
+      Class contentBean = bean.getContentBean();
+      //this mad for is a cycle to go up the complete hierarchy up to abstract content bean
+      // or if we find an already analyzed class
+      for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass = currentClass.getSuperclass()) {
+        if (getLog().isDebugEnabled()) {
+          getLog().debug("checking class in hierarchy: " + currentClass);
+        }
+        //first of all note that we visited the class
+        visitedClasses.add(currentClass);
+        //analyze the methods
+        analyzeMethods(potentialException, contentBean, currentClass, hierarchy);
       }
-      //first of all note that we visited the class
-      visitedClasses.add(currentClass);
-      analyzeMethods(potentialException, contentBean, currentClass, hierarchy);
     }
   }
 
@@ -202,7 +216,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
         methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType);
-
       }
       else {
         methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType);

@@ -97,6 +97,21 @@ public class LinkListPropertyInformation extends AbstractPropertyInformation {
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Linklist property ");
+    builder.append(getDocumentTypePropertyName());
+    builder.append(" for ");
+    builder.append(getMethod().getName());
+    builder.append(" (");
+    builder.append(getMin());
+    builder.append(" - ");
+    builder.append(getMax());
+    builder.append(')');
+    return builder.toString();
+  }
+
+  @Override
   public String toString() {
     return "LinkListPropertyInformation{" +
         "method=" + getMethod() +

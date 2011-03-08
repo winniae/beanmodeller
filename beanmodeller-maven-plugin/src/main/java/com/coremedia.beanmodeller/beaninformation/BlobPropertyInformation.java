@@ -33,6 +33,18 @@ public class BlobPropertyInformation extends AbstractPropertyInformation {
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Blob property ");
+    builder.append(getDocumentTypePropertyName());
+    builder.append(" for ");
+    builder.append(getMethod().getName());
+    builder.append(", allowed MIME types: ");
+    builder.append(allowedMimeTypes);
+    return builder.toString();
+  }
+
+  @Override
   public String toString() {
     return "BlobPropertyInformation{" +
         "method=" + getMethod() +
