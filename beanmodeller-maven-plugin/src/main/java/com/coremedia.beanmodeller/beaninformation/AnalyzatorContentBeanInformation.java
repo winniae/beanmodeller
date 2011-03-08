@@ -86,6 +86,12 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    //TODO that is not what we want
+    return toString();
+  }
+
+  @Override
   public String toString() {
     return "AnalyzatorContentBeanInformation{" +
         "name='" + name + '\'' +

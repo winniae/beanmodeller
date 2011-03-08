@@ -39,6 +39,12 @@ public abstract class AbstractPropertyInformation implements PropertyInformation
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    //TODO that is not what we want
+    return toString();
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;

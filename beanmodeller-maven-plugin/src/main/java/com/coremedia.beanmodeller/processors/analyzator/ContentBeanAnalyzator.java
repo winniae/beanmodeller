@@ -20,7 +20,6 @@ import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.cap.common.Blob;
 import com.coremedia.objectserver.beans.AbstractContentBean;
 import com.coremedia.xml.Markup;
-import org.apache.maven.plugin.logging.Log;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -117,8 +116,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
     extractBeanClassHierarchy(potentialException, hierarchy);
 
-    getLog().info("Found " + hierarchy.getAllFoundContentBeans().size() + " content beans");
-
     //from this point on we can assume that all content beans are found and rootContentBeans &
     // allFoundContentBeanInformation are properly filled.
     //so first of all let's see if there is a problem in the hierarchy
@@ -150,8 +147,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private void logHierarchyInformation(ContentBeanInformation beanInfo, int level, StringBuilder builder) {
-    //we save the log to have easier access
-    Log logger = getLog();
     logHierarchyInformationAddIdent(level, builder);
     builder.append("Content Bean: ");
     builder.append(beanInfo.toString());

@@ -57,4 +57,11 @@ public interface ContentBeanInformation {
    * @return if the doc type is abstract
    */
   public boolean isAbstract();
+
+  /**
+   * gives a nice string representation for this bean info (e.g. for logging)
+   *
+   * @return the string representation
+   */
+  public String getHumanUnderstandableRepresentation();
 }

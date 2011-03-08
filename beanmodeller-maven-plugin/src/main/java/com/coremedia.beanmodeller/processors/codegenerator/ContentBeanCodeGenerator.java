@@ -97,6 +97,9 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
         generateClass(beanPackage, childBean, codeModel, allMyProperties);
       }
     }
+    else {
+      getLog().info(bean.getContentBean().getCanonicalName() + " is an abstract document - no accessorizer is generated");
+    }
   }
 
   private void generatePropertyMethod(JDefinedClass beanClass, PropertyInformation propertyInformation, JCodeModel codeModel) {

@@ -34,4 +34,11 @@ public interface PropertyInformation {
    * @return the method represented by this property.
    */
   Method getMethod();
+
+  /**
+   * gives a nice string representation for this bean info (e.g. for logging)
+   *
+   * @return the string representation
+   */
+  public String getHumanUnderstandableRepresentation();
 }
