@@ -99,4 +99,13 @@ public class GrammarInformation {
     result = 31 * result + (grammarLocation != null ? grammarLocation.hashCode() : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "GrammarInformation{" +
+        "grammarName='" + grammarName + '\'' +
+        ", grammarURL=" + grammarURL +
+        ", grammarLocation='" + grammarLocation + '\'' +
+        '}';
+  }
 }

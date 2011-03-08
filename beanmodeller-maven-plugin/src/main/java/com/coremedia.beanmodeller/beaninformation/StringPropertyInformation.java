@@ -64,6 +64,10 @@ public class StringPropertyInformation extends AbstractPropertyInformation {
 
   @Override
   public String toString() {
-    return "PropertyInformation [name: " + getDocumentTypePropertyName() + "; type: " + getType() + "; length: " + getLength() + "]";
+    return "StringPropertyInformation{" +
+        "method=" + getMethod() +
+        ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
+        "length=" + length +
+        '}';
   }
 }

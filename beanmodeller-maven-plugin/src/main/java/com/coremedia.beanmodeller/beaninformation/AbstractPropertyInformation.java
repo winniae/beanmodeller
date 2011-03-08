@@ -68,6 +68,9 @@ public abstract class AbstractPropertyInformation implements PropertyInformation
 
   @Override
   public String toString() {
-    return "PropertyInformation [documentTypePropertyName: " + documentTypePropertyName + "; type: " + getType() + "]";
+    return "AbstractPropertyInformation{" +
+        "method=" + method +
+        ", documentTypePropertyName='" + documentTypePropertyName + '\'' +
+        '}';
   }
 }

@@ -20,4 +20,12 @@ public class DatePropertyInformation extends AbstractPropertyInformation {
   public final CapPropertyDescriptorType getType() {
     return CapPropertyDescriptorType.DATE;
   }
+
+  @Override
+  public String toString() {
+    return "DatePropertyInformation{" +
+        "method=" + getMethod() +
+        ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
+        '}';
+  }
 }

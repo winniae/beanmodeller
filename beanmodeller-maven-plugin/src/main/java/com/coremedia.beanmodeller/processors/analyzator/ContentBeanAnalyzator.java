@@ -13,12 +13,14 @@ import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
 import com.coremedia.beanmodeller.beaninformation.IntegerPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.LinkListPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.UnknownPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.cap.common.Blob;
 import com.coremedia.objectserver.beans.AbstractContentBean;
 import com.coremedia.xml.Markup;
+import org.apache.maven.plugin.logging.Log;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
@@ -132,12 +134,47 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       throw potentialException;
     }
     getLog().info("Content bean analyzation successfully performed");
+    logHierarchyInformation(hierarchy);
     //and return the results
     return hierarchy;
   }
 
+  private void logHierarchyInformation(ContentBeanHierarchy hierarchy) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Extracted Content Bean Hierarchy:\n");
+    for (ContentBeanInformation beanInfo : hierarchy.getRootBeanInformation()) {
+      int level = 0;
+      logHierarchyInformation(beanInfo, level, builder);
+    }
+    getLog().info(builder.toString());
+  }
+
+  private void logHierarchyInformation(ContentBeanInformation beanInfo, int level, StringBuilder builder) {
+    //we save the log to have easier access
+    Log logger = getLog();
+    logHierarchyInformationAddIdent(level, builder);
+    builder.append("Content Bean: ");
+    builder.append(beanInfo.toString());
+    builder.append('\n');
+    for (PropertyInformation propertyInformation : beanInfo.getProperties()) {
+      logHierarchyInformationAddIdent(level + 2, builder);
+      builder.append("Property ");
+      builder.append(propertyInformation.toString());
+      builder.append('\n');
+    }
+    for (ContentBeanInformation childBean : beanInfo.getChilds()) {
+      logHierarchyInformation(childBean, level + 1, builder);
+    }
+  }
+
+  private void logHierarchyInformationAddIdent(int level, StringBuilder builder) {
+    for (int i = 0; i < level; i++) {
+      builder.append(' ');
+    }
+  }
+
   private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
-    getLog().info("checking bean class hierarchy");
+    getLog().debug("checking bean class hierarchy");
     Set<Class> visitedClasses = new HashSet<Class>(hierarchy.getAllFoundContentBeans().size());
     for (ContentBeanInformation bean : hierarchy.getAllContentBeanInformation()) {
       checkBeanClassHierarchy(potentialException, bean, visitedClasses, hierarchy);
@@ -145,13 +182,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanInformation bean, Set<Class> visitedClasses, ContentBeanHierarchy hierarchy) {
-    if (getLog().isDebugEnabled()) {
-      getLog().debug("checking bean class hierarchy for " + bean);
-    }
     //first look if there is no problem in the hierarchy between bean and parent
     Class contentBean = bean.getContentBean();
     for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass = currentClass.getSuperclass()) {
-      getLog().info("checking class in hierarchy: " + currentClass);
+      if (getLog().isDebugEnabled()) {
+        getLog().debug("checking class in hierarchy: " + currentClass);
+      }
       //first of all note that we visited the class
       visitedClasses.add(currentClass);
       analyzeMethods(potentialException, contentBean, currentClass, hierarchy);
@@ -250,7 +286,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       //and ignore this method
       return true;
     }
-    getLog().info("Found property for " + currentClass.getCanonicalName() + ": " + documentTypePropertyName + "(" + method.getName() + ")");
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Found property for " + currentClass.getCanonicalName() + ": " + documentTypePropertyName + "(" + method.getName() + ")");
+    }
     foundContentBeanProperties.add(method);
     // save property name for validation of duplicate entries in next iteration for each class
     foundPropertyNames.add(documentTypePropertyName);
@@ -258,7 +296,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private void extractBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
-    getLog().info("Extracting bean hierarchy");
+    getLog().debug("Extracting bean hierarchy");
     for (Class bean : beansToAnalyze) {
       //all content bean must extend AbstractContentBean – if not we must mark is as an error
       if (!(AbstractContentBean.class.isAssignableFrom(bean))) {
@@ -279,7 +317,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
           AnalyzatorContentBeanInformation contentBeanInformation = (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(currentClass);
           // if we have not seen the class create a content bean information
           if (contentBeanInformation == null) {
-            getLog().info("Found content bean " + currentClass.toString());
+            if (getLog().isDebugEnabled()) {
+              getLog().debug("Found content bean " + currentClass.toString());
+            }
             contentBeanInformation = new AnalyzatorContentBeanInformation(currentClass);
             //and we save the information that we have a bean infor for that class
             hierarchy.addContentBeanInformation(currentClass, contentBeanInformation);
