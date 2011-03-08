@@ -76,6 +76,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     getLog().info("Analyzing contentbeans took " + getTimeSinceLastMeasurement() + "ms.");
 
     generator = new ContentBeanCodeGenerator();
+    generator.setLog(getLog());
     generator.setPackageName(accessorizorBeansTargetPackage);
 
     createContentBeanImplementations(roots);

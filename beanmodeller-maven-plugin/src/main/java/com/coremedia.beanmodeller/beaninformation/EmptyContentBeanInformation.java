@@ -59,6 +59,11 @@ public final class EmptyContentBeanInformation implements ContentBeanInformation
   }
 
   @Override
+  public String getHumanUnderstandableRepresentation() {
+    return toString();
+  }
+
+  @Override
   public String toString() {
     return "EmptyContentBeanInformation";
   }
