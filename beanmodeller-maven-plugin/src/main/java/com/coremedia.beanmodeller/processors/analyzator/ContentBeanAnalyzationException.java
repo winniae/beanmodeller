@@ -27,7 +27,6 @@ public class ContentBeanAnalyzationException extends ContentBeanAnalyzatorIntern
   public static final String VALID_METHOD_HINTS_MESSAGE = "\nKeep in mind it has to be abstract, without parameters and either public or protected.";
 
   private List<ContentBeanAnalyzationError> errors = new LinkedList<ContentBeanAnalyzationError>();
-  public static final String SCHEMA_NO_XML_ROOT_SET_MESSAGE = "There is no XML root defined for the grammar ";
   public static final String INVALID_MIME_TYPE_MESSAGE = "There is a invalid mime type definition";
 
   /**
@@ -83,6 +82,9 @@ public class ContentBeanAnalyzationException extends ContentBeanAnalyzatorIntern
     return result.toString();
   }
 
+  /**
+   * Represents a single error while anaylsing the content beans
+   */
   public final class ContentBeanAnalyzationError {
     private ContentBeanInformation beanInformation;
     private Class beanClass;

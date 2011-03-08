@@ -54,6 +54,7 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
     // delegate to find candidate components, which may be candidate beans
     Set<BeanDefinition> candidateComponents = this.findCandidateComponents(packageName);
 
+    //now convert the bean definitions to real beans
     for (BeanDefinition definition : candidateComponents) {
       Class beanClass = null;
       try {
@@ -61,6 +62,7 @@ public class ClassPathContentBeanScanner extends ClassPathScanningCandidateCompo
         candidateBeanClasses.add(beanClass);
       }
       catch (ClassNotFoundException e) {
+        //this is so awkward that it should never happen - finding a bean that we don't find???
         log.error("Found A class as content bean which I did not find", e);
         throw new IllegalStateException("Did not found a bean class for a found bean - this does not make sense", e);
       }
