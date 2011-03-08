@@ -64,6 +64,12 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
   }
 
   private void generateClass(JPackage beanPackage, ContentBeanInformation bean, JCodeModel codeModel, Set<PropertyInformation> propertiesInTheHierarchySoFar) throws JClassAlreadyExistsException {
+    //create a new Set of the accumulated properties of this class
+    Set<PropertyInformation> allMyProperties = new HashSet<PropertyInformation>(propertiesInTheHierarchySoFar);
+    //collect the properties defined in this class
+    for (PropertyInformation property : bean.getProperties()) {
+      allMyProperties.add(property);
+    }
     //we only generate classes for non abstract content beans
     if (!bean.isAbstract()) {
       //the content accessor class is derrived from the bean class
@@ -81,24 +87,18 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       javaDoc.add("You can safely ignore this implementation, since it just fills your abstract getter Methods with content access implementtions\n");
       javaDoc.add("<b>Do never, ever use this class directly in your code - or even change it</b>, please.");
 
-      //create a new Set of the accumulated properties of this class
-      Set<PropertyInformation> allMyProperties = new HashSet<PropertyInformation>(propertiesInTheHierarchySoFar);
-      //collect the properties defined in this class
-      for (PropertyInformation property : bean.getProperties()) {
-        allMyProperties.add(property);
-      }
       //generate getter for each property
       for (PropertyInformation property : allMyProperties) {
         generatePropertyMethod(beanClass, property, codeModel);
       }
 
-      //and go down the hierarchy
-      for (ContentBeanInformation childBean : bean.getChilds()) {
-        generateClass(beanPackage, childBean, codeModel, allMyProperties);
-      }
     }
     else {
       getLog().info(bean.getContentBean().getCanonicalName() + " is an abstract document - no accessorizer is generated");
+    }
+    //and go down the hierarchy
+    for (ContentBeanInformation childBean : bean.getChilds()) {
+      generateClass(beanPackage, childBean, codeModel, allMyProperties);
     }
   }
 
