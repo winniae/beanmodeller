@@ -68,9 +68,10 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     if (!bean.isAbstract()) {
       //the content accessor class is derrived from the bean class
       Class parentClass = bean.getContentBean();
-      getLog().info("Generating class for " + parentClass.getCanonicalName());
       //generate the class
       JDefinedClass beanClass = beanPackage._class(bean.getName() + IMPL_SUFFIX);
+      //log what we are doing
+      getLog().info("Generating accessorizer class " + beanClass.fullName() + " for " + parentClass.getCanonicalName());
       //no null check since extends(null) leas to java.lang.Object
       beanClass._extends(parentClass);
       //TODO this comment has to be better

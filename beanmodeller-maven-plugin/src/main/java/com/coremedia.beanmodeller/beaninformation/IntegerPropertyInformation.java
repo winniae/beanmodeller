@@ -22,4 +22,12 @@ public class IntegerPropertyInformation extends AbstractPropertyInformation {
   public final CapPropertyDescriptorType getType() {
     return CapPropertyDescriptorType.INTEGER;
   }
+
+  @Override
+  public String toString() {
+    return "IntegerPropertyInformation{" +
+        "method=" + getMethod() +
+        ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
+        '}';
+  }
 }

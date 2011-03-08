@@ -31,4 +31,13 @@ public class BlobPropertyInformation extends AbstractPropertyInformation {
   public void setAllowedMimeTypes(String allowedMimeTypes) {
     this.allowedMimeTypes = allowedMimeTypes;
   }
+
+  @Override
+  public String toString() {
+    return "BlobPropertyInformation{" +
+        "method=" + getMethod() +
+        ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
+        "allowedMimeTypes='" + allowedMimeTypes + '\'' +
+        '}';
+  }
 }

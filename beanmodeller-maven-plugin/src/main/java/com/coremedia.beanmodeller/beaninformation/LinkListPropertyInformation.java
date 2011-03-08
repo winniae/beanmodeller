@@ -98,6 +98,12 @@ public class LinkListPropertyInformation extends AbstractPropertyInformation {
 
   @Override
   public String toString() {
-    return "PropertyInformation [documentTypePropertyName: " + getDocumentTypePropertyName() + "; type: " + getType() + "; min/max: " + getMin() + "/" + getMax() + "; linkType: " + getLinkType() + "]";
+    return "LinkListPropertyInformation{" +
+        "method=" + getMethod() +
+        ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
+        "max=" + max +
+        ", min=" + min +
+        ", linkType=" + linkType +
+        '}';
   }
 }

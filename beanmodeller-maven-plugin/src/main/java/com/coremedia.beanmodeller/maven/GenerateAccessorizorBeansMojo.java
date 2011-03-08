@@ -132,7 +132,9 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
 
     // for each bean, write code and call recursive
     for (ContentBeanInformation contentBeanInformation : beanInformationsSorted) {
-      getLog().info("Writing spring Configuration for " + contentBeanInformation);
+      if (getLog().isDebugEnabled()) {
+        getLog().debug("Writing spring Configuration for " + contentBeanInformation);
+      }
       writer.append(getBeanXml(contentBeanInformation));
 
       writeBeanConfigRecursive(contentBeanInformation.getChilds(), writer);
@@ -145,13 +147,11 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     try {
       targetDirectory = getTargetDirectory();
       getLog().info("Writing bean implementation to directory " + targetDirectory.getPath());
+      CodeWriter output = new FileCodeWriter(targetDirectory);
+      codeModel.build(output);
     }
     catch (PluginException e) {
       throw new MojoFailureException("There was a problem with the target path", e);
-    }
-    try {
-      CodeWriter output = new FileCodeWriter(targetDirectory);
-      codeModel.build(output);
     }
     catch (IOException e) {
       throw new MojoFailureException("Unable to write content bean code", e);

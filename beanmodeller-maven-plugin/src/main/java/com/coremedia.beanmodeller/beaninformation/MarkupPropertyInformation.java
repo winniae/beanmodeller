@@ -48,4 +48,13 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
   public void setGrammarInformation(GrammarInformation grammarInformation) {
     this.grammarInformation = grammarInformation;
   }
+
+  @Override
+  public String toString() {
+    return "MarkupPropertyInformation{" +
+        "method=" + getMethod() +
+        ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
+        "grammarInformation=" + grammarInformation +
+        '}';
+  }
 }
