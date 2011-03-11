@@ -18,6 +18,9 @@ import java.util.Set;
 /**
  * Telekom .COM Relaunch 2011
  * <p> Triggers generation of DocType XML</p>
+ * <p/>
+ * Generates a doctypes.xml based on exctracted beaninformation.
+ * Copies required xsd files.
  *
  * @goal generate-doctypes
  */
@@ -49,9 +52,11 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
     startTimeMeasurements();
 
+    // Exctract beaninformation
     Set<ContentBeanInformation> rootBeanInformations = analyzeContentBeans();
     getLog().info("Analyzing content beans took " + getTimeSinceLastMeasurement() + "ms.");
 
+    // Write doctypes.xml
     File destFile = getDestinationFile();
 
     DocTypeMarshaller marshaller;
@@ -74,7 +79,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
 
       getLog().info("Generating doctype.xml took " + getTimeSinceLastMeasurement() + "ms.");
 
-      //copy the xsd
+      // copy the xsd
       XSDCopyier copyier = new XSDCopyier(xsdTargetPath);
       copyier.setLog(getLog());
       try {
