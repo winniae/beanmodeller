@@ -22,6 +22,14 @@ public abstract class CBGMarkupAnno extends CBGContent {
    *
    * @return .
    */
-  @ContentProperty(propertyXmlGrammar = "classpath:/xml_schema_definitions/simple.xsd")
+  @ContentProperty(propertyXmlGrammar = "classpath:xml_schema_definitions/simple.xsd")
   public abstract Markup getOtherGrammar();
+
+  /**
+   * Markup with Annotation for custom-grammar.
+   *
+   * @return .
+   */
+  @ContentProperty(propertyXmlGrammar = "classpath:xml_schema_definitions/simple.xsd classpath:xml_schema_definitions/simple2.xsd")
+  public abstract Markup getMultipleGrammar();
 }

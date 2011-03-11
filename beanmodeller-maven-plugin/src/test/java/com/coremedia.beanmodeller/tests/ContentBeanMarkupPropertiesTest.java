@@ -15,7 +15,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,12 +29,18 @@ public class ContentBeanMarkupPropertiesTest {
   MarkupPropertyInformation markupProperty;
 
   public static final String DEFAULT_MARKUP_PROPERTY_GRAMMAR = "coremedia-richtext-1.0";
-  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION = "classpath:/xml_schema_definitions/simple.xsd";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION = "classpath:xml_schema_definitions/simple.xsd";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION2 = "classpath:xml_schema_definitions/simple2.xsd";
   public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME = "simple.xsd";
+  public static final String CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME2 = "simple2.xsd";
 
   private Class<CBGMarkupAnno> markupPropertyBeanClass = CBGMarkupAnno.class;
   private MarkupPropertyInformation anotherTextProperty;
   private MarkupPropertyInformation otherGrammarProperty;
+  private MarkupPropertyInformation multipleGrammarProperty;
+
+  // Test value
+  ContentBeanInformation cbgContent = null;
 
   @Before
   public void setup() throws NoSuchMethodException {
@@ -61,7 +67,38 @@ public class ContentBeanMarkupPropertiesTest {
     GrammarInformation otherGrammarInfo = new GrammarInformation();
     otherGrammarInfo.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME);
     otherGrammarInfo.setGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION);
-    otherGrammarProperty.setGrammarInformation(otherGrammarInfo);
+    otherGrammarProperty.addGrammarInformation(otherGrammarInfo);
+
+    String multipleGrammarName = "multipleGrammar";
+    Method multipleGrammarMethod = markupPropertyBeanClass.getDeclaredMethod("getMultipleGrammar");
+    multipleGrammarProperty = new MarkupPropertyInformation(multipleGrammarMethod);
+    multipleGrammarProperty.setDocumentTypePropertyName(multipleGrammarName);
+    GrammarInformation multipleGrammarInfo = new GrammarInformation();
+    multipleGrammarInfo.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME2);
+    multipleGrammarInfo.setGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION2);
+    // add both grammar informations
+    multipleGrammarProperty.addGrammarInformation(otherGrammarInfo);
+    multipleGrammarProperty.addGrammarInformation(multipleGrammarInfo);
+
+
+    // Analyzator Setup
+    contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
+
+    ContentBeanHierarchy hierarchy = null;
+    try {
+      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
+    }
+    catch (ContentBeanAnalyzationException e) {
+      fail();
+    }
+
+
+    try {
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
+    }
+    catch (ContentBeanAnalyzatorInternalException e) {
+      fail();
+    }
   }
 
   @Test
@@ -69,72 +106,22 @@ public class ContentBeanMarkupPropertiesTest {
    * No annotation on method. This is valid. Check defined default!
    */
   public void testNoAnnotation() {
-
-    contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
-
-    ContentBeanHierarchy hierarchy = null;
-    try {
-      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
-    }
-    catch (ContentBeanAnalyzationException e) {
-      fail();
-    }
-
-    ContentBeanInformation cbgContent = null;
-    try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
-    }
-    catch (ContentBeanAnalyzatorInternalException e) {
-      fail();
-    }
-
     assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(markupProperty));
   }
 
   @Test
   public void testAnnotationButNoGrammar() throws NoSuchMethodException {
-    contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
-
-    ContentBeanHierarchy hierarchy = null;
-    try {
-      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
-    }
-    catch (ContentBeanAnalyzationException e) {
-      fail();
-    }
-
-    ContentBeanInformation cbgContent = null;
-    try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
-    }
-    catch (ContentBeanAnalyzatorInternalException e) {
-      fail();
-    }
-
     assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(anotherTextProperty));
   }
 
   @Test
   public void testNonStandardGrammar() {
-    contentBeanAnalyzator.addContentBean(markupPropertyBeanClass);
-
-    ContentBeanHierarchy hierarchy = null;
-    try {
-      hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
-    }
-    catch (ContentBeanAnalyzationException e) {
-      fail();
-    }
-
-    ContentBeanInformation cbgContent = null;
-    try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGMarkupAnno");
-    }
-    catch (ContentBeanAnalyzatorInternalException e) {
-      fail();
-    }
-
     assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(otherGrammarProperty));
+  }
+
+  @Test
+  public void testMultipleNonStandardGrammar() {
+    assertThat((Iterable<MarkupPropertyInformation>) cbgContent.getProperties(), hasItem(multipleGrammarProperty));
   }
 
 //  @Test don't know how to test yet..

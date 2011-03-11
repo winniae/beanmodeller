@@ -140,8 +140,8 @@ public class DocTypeMarshaller extends MavenProcessor {
       for (PropertyInformation propertyInformation : beanInformation.getProperties()) {
         if (propertyInformation instanceof MarkupPropertyInformation) {
           MarkupPropertyInformation markupPropertyInformation = (MarkupPropertyInformation) propertyInformation;
-          GrammarInformation grammarInformation = markupPropertyInformation.getGrammarInformation();
-          if (grammarInformation != null) {
+          List<GrammarInformation> grammarInformations = markupPropertyInformation.getGrammarInformation();
+          for (GrammarInformation grammarInformation : grammarInformations) {
             String grammarName = grammarInformation.getGrammarName();
             foundMarkupSchemaDefinitions.put(grammarName, grammarInformation);
           }
@@ -330,9 +330,10 @@ public class DocTypeMarshaller extends MavenProcessor {
   private Object createMarkupProperty(MarkupPropertyInformation propertyInformation) {
     final XmlProperty xmlProperty = objectFactory.createXmlProperty();
     xmlProperty.setName(propertyInformation.getDocumentTypePropertyName());
-    GrammarInformation grammarInformation = propertyInformation.getGrammarInformation();
-    if (grammarInformation != null) {
-      xmlProperty.setGrammar(grammarInformation.getGrammarName());
+    List<GrammarInformation> grammarInformations = propertyInformation.getGrammarInformation();
+    if (!grammarInformations.isEmpty()) {
+      // get only the first grammar
+      xmlProperty.setGrammar(grammarInformations.get(0).getGrammarName());
     }
     else {
       xmlProperty.setGrammar(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);

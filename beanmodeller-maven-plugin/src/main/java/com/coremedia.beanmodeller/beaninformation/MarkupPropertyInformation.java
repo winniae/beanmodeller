@@ -3,6 +3,8 @@ package com.coremedia.beanmodeller.beaninformation;
 import com.coremedia.cap.common.CapPropertyDescriptorType;
 
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -14,7 +16,7 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
   public static final String COREMEDIA_RICHTEXT_GRAMMAR_NAME = "coremedia-richtext-1.0";
 
-  private GrammarInformation grammarInformation = null;
+  private List<GrammarInformation> grammarInformations = new LinkedList<GrammarInformation>();
 
   /**
    * Creates a markup information object. You should not have any need to do this
@@ -31,13 +33,13 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
   }
 
   /**
-   * Which grammar is used
+   * Which grammars are used
    * if set to null the default richtext grammar is used
    *
    * @return the grammar of this markup
    */
-  public GrammarInformation getGrammarInformation() {
-    return grammarInformation;
+  public List<GrammarInformation> getGrammarInformation() {
+    return grammarInformations;
   }
 
   /**
@@ -45,14 +47,14 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
    *
    * @param grammarInformation the grammar information
    */
-  public void setGrammarInformation(GrammarInformation grammarInformation) {
-    this.grammarInformation = grammarInformation;
+  public void addGrammarInformation(GrammarInformation grammarInformation) {
+    this.grammarInformations.add(grammarInformation);
   }
 
   @Override
   public String getHumanUnderstandableRepresentation() {
     StringBuilder builder = new StringBuilder();
-    if (grammarInformation == null) {
+    if (grammarInformations.isEmpty()) {
       builder.append("Richtext property ");
     }
     else {
@@ -61,7 +63,7 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
     builder.append(getDocumentTypePropertyName());
     builder.append(" for ");
     builder.append(getMethod().getName());
-    if (grammarInformation != null) {
+    for (GrammarInformation grammarInformation : grammarInformations) {
       builder.append("(Schema: ");
       builder.append(grammarInformation.getGrammarName());
       builder.append(", ");
@@ -79,7 +81,7 @@ public class MarkupPropertyInformation extends AbstractPropertyInformation {
     return "MarkupPropertyInformation{" +
         "method=" + getMethod() +
         ", documentTypePropertyName='" + getDocumentTypePropertyName() + '\'' +
-        "grammarInformation=" + grammarInformation +
+        "grammarInformation=" + grammarInformations +
         '}';
   }
 }

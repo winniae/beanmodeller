@@ -581,20 +581,31 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   private AbstractPropertyInformation getMarkupPropertyInformation(Method method) throws ContentBeanAnalyzatorInternalException {
     // method annotation
     final ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
-    URL grammarURL = null;
-    String grammarName;
-    String grammarLocation = null;
+
+    final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
 
     if (methodAnnotation == null || ContentProperty.MARKUP_PROPERTY_DEFAULT_GRAMMAR.equals(methodAnnotation.propertyXmlGrammar())) {
-      grammarName = getPropertyDefaultMarkupGrammar();
+      // use default grammar, return immediately.
+
+      return markupInformation;
     }
-    else {
-      grammarName = methodAnnotation.propertyXmlGrammar();
+
+
+    // read grammarinformation from annotation
+    String grammarNames = methodAnnotation.propertyXmlGrammar();
+
+    // tokenize on whitespaces
+    for (String grammarName : grammarNames.split("\\s")) {
+      URL grammarURL;
+      String grammarLocation = null;
+
+      // distinguish between classpath and http locations
       if (grammarName.startsWith("classpath:")) {
         String grammarSource = grammarName.substring("classpath:".length());
-        grammarURL = getClass().getResource(grammarSource);
+        // get URL just like com.coremedia.io.ResourceLoader (line 119) gets it
+        grammarURL = Thread.currentThread().getContextClassLoader().getResource(grammarSource);
         grammarLocation = grammarName;
-        if (grammarName.contains("/")) {
+        if (grammarName.contains("/")) { // get plain grammar name withou any path information
           grammarName = grammarName.substring(grammarName.lastIndexOf('/') + 1);
         }
       }
@@ -609,16 +620,16 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       if (grammarURL == null) {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
       }
-    }
 
-    final MarkupPropertyInformation markupInformation = new MarkupPropertyInformation(method);
-    //only add grammar information for no default grammars
-    if (grammarName != null && !grammarName.equals(getPropertyDefaultMarkupGrammar())) {
-      GrammarInformation grammarInformation = new GrammarInformation();
-      grammarInformation.setGrammarName(grammarName);
-      grammarInformation.setGrammarURL(grammarURL);
-      grammarInformation.setGrammarLocation(grammarLocation);
-      markupInformation.setGrammarInformation(grammarInformation);
+
+      //only add grammar information for no default grammars.
+      if (grammarName != null && !grammarName.equals(getPropertyDefaultMarkupGrammar())) {
+        GrammarInformation grammarInformation = new GrammarInformation();
+        grammarInformation.setGrammarName(grammarName);
+        grammarInformation.setGrammarURL(grammarURL);
+        grammarInformation.setGrammarLocation(grammarLocation);
+        markupInformation.addGrammarInformation(grammarInformation);
+      }
     }
 
     return markupInformation;
