@@ -4,7 +4,7 @@
 
   <groupId>com.coremedia.maven</groupId>
   <artifactId>beanmodeller</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <name>CoreMedia Bean Modeller</name>
   <url>https://h1844669.stratoserver.net/jenkins/job/BeanModeller/</url>
 
