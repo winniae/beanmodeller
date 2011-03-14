@@ -1,6 +1,8 @@
 package com.coremedia.beanmodeller.beaninformation;
 
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -12,7 +14,7 @@ public class GrammarInformation {
 
   private String grammarName = MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME;
   private URL grammarURL = null;
-  private String grammarLocation;
+  private List<String> grammarLocations = new LinkedList<String>();
 
   /**
    * Sets the public name of the grammar
@@ -51,21 +53,31 @@ public class GrammarInformation {
   }
 
   /**
-   * the location where the grammar can be loaded by the content server
+   * the location where the grammars can be loaded by the content server
    *
-   * @return the location of the grammar if given
+   * @return the location of the grammars if given
    */
-  public String getGrammarLocation() {
-    return grammarLocation;
+  public List<String> getGrammarLocations() {
+    return grammarLocations;
   }
 
   /**
-   * the location where the grammar can be loaded by the content server
+   * add a location where the grammars can be loaded by the content server
    *
    * @param grammarLocation the location of the grammar (can be null)
    */
-  public void setGrammarLocation(String grammarLocation) {
-    this.grammarLocation = grammarLocation;
+  public void addGrammarLocation(String grammarLocation) {
+    this.grammarLocations.add(grammarLocation);
+  }
+
+
+  @Override
+  public String toString() {
+    return "GrammarInformation{" +
+        "grammarName='" + grammarName + '\'' +
+        ", grammarURL=" + grammarURL +
+        ", grammarLocation='" + grammarLocations + '\'' +
+        '}';
   }
 
   @Override
@@ -79,10 +91,10 @@ public class GrammarInformation {
 
     GrammarInformation that = (GrammarInformation) o;
 
-    if (grammarLocation != null ? !grammarLocation.equals(that.grammarLocation) : that.grammarLocation != null) {
+    if (grammarLocations != null ? !grammarLocations.equals(that.grammarLocations) : that.grammarLocations != null) {
       return false;
     }
-    if (!grammarName.equals(that.grammarName)) {
+    if (grammarName != null ? !grammarName.equals(that.grammarName) : that.grammarName != null) {
       return false;
     }
     if (grammarURL != null ? !grammarURL.equals(that.grammarURL) : that.grammarURL != null) {
@@ -94,18 +106,9 @@ public class GrammarInformation {
 
   @Override
   public int hashCode() {
-    int result = grammarName.hashCode();
+    int result = grammarName != null ? grammarName.hashCode() : 0;
     result = 31 * result + (grammarURL != null ? grammarURL.hashCode() : 0);
-    result = 31 * result + (grammarLocation != null ? grammarLocation.hashCode() : 0);
+    result = 31 * result + (grammarLocations != null ? grammarLocations.hashCode() : 0);
     return result;
-  }
-
-  @Override
-  public String toString() {
-    return "GrammarInformation{" +
-        "grammarName='" + grammarName + '\'' +
-        ", grammarURL=" + grammarURL +
-        ", grammarLocation='" + grammarLocation + '\'' +
-        '}';
   }
 }

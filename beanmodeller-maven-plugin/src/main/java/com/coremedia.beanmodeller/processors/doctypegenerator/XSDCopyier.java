@@ -49,32 +49,39 @@ public class XSDCopyier extends MavenProcessor {
 
   private void copySchema(Map<String, GrammarInformation> schemas, File targetDir, String schemaName) throws DocTypeMarshallerException {
     GrammarInformation grammarInformation = schemas.get(schemaName);
-    URL schemaUrl = grammarInformation.getGrammarURL();
-    String schemaLocation = grammarInformation.getGrammarLocation();
-    if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
-      try {
-        String targetFileName = getTargetFileName(schemaName, schemaLocation);
-        File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, targetFileName);
-        if ("file".equals(schemaUrl.getProtocol())) {
-          copyFile(schemaName, schemaUrl, targetFile);
+    for (String schemaLocation : grammarInformation.getGrammarLocations()) {
+      URL schemaUrl = null;
+      if (schemaLocation.startsWith("classpath:")) {
+        String grammarSource = schemaLocation.substring("classpath:".length());
+        // get URL just like com.coremedia.io.ResourceLoader (line 119) gets it
+        schemaUrl = Thread.currentThread().getContextClassLoader().getResource(grammarSource);
+      }
+
+      if (schemaUrl != null && ("file".equals(schemaUrl.getProtocol()) || "jar".equals(schemaUrl.getProtocol()))) {
+        try {
+          String targetFileName = getTargetFileName(schemaName, schemaLocation);
+          File targetFile = BeanModellerHelper.getSanitizedFile(targetDir, targetFileName);
+          if ("file".equals(schemaUrl.getProtocol())) {
+            copyFile(schemaName, schemaUrl, targetFile);
+          }
+          else if ("jar".equals(schemaUrl.getProtocol())) {
+            copyJarResource(schemaName, schemaUrl, targetFile);
+          }
         }
-        else if ("jar".equals(schemaUrl.getProtocol())) {
-          copyJarResource(schemaName, schemaUrl, targetFile);
+        catch (IOException e) {
+          throw new DocTypeMarshallerException("Unable to copy " + schemaUrl + " to " + targetDir, e);
         }
-      }
-      catch (IOException e) {
-        throw new DocTypeMarshallerException("Unable to copy " + schemaUrl + " to " + targetDir, e);
-      }
-      catch (PluginException e) {
-        throw new DocTypeMarshallerException("Unable to copy " + schemaUrl + " to " + targetDir, e);
-      }
-    }
-    else {
-      if (schemaUrl == null) {
-        getLog().warn("Unable to copy " + schemaUrl + " since I the URL is null!");
+        catch (PluginException e) {
+          throw new DocTypeMarshallerException("Unable to copy " + schemaUrl + " to " + targetDir, e);
+        }
       }
       else {
-        getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
+        if (schemaUrl == null) {
+          getLog().warn("Unable to copy " + schemaUrl + " since the URL is null!");
+        }
+        else {
+          getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
+        }
       }
     }
   }

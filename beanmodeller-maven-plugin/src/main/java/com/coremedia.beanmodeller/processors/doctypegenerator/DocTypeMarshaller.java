@@ -115,8 +115,12 @@ public class DocTypeMarshaller extends MavenProcessor {
       GrammarInformation grammarInformation = foundMarkupSchemaDefinitions.get(grammarName);
       XmlSchema schema = objectFactory.createXmlSchema();
       schema.setName(grammarName);
-      schema.setSchemaLocation(grammarInformation.getGrammarLocation());
-      //TODO shouldnt we support more than xsd??
+      // create white space separated list of schema locations
+      StringBuilder schemaLocations = new StringBuilder();
+      for (String s : grammarInformation.getGrammarLocations()) {
+        schemaLocations.append(s).append(" ");
+      }
+      schema.setSchemaLocation(schemaLocations.toString().trim());
       schema.setLanguage(XML_SCHEMA_NAME);
       //TODO we should als support public IDs via real internet URLS
       schemas.add(schema);
@@ -140,8 +144,8 @@ public class DocTypeMarshaller extends MavenProcessor {
       for (PropertyInformation propertyInformation : beanInformation.getProperties()) {
         if (propertyInformation instanceof MarkupPropertyInformation) {
           MarkupPropertyInformation markupPropertyInformation = (MarkupPropertyInformation) propertyInformation;
-          List<GrammarInformation> grammarInformations = markupPropertyInformation.getGrammarInformation();
-          for (GrammarInformation grammarInformation : grammarInformations) {
+          GrammarInformation grammarInformation = markupPropertyInformation.getGrammarInformation();
+          if (grammarInformation != null) {
             String grammarName = grammarInformation.getGrammarName();
             foundMarkupSchemaDefinitions.put(grammarName, grammarInformation);
           }
@@ -330,10 +334,10 @@ public class DocTypeMarshaller extends MavenProcessor {
   private Object createMarkupProperty(MarkupPropertyInformation propertyInformation) {
     final XmlProperty xmlProperty = objectFactory.createXmlProperty();
     xmlProperty.setName(propertyInformation.getDocumentTypePropertyName());
-    List<GrammarInformation> grammarInformations = propertyInformation.getGrammarInformation();
-    if (!grammarInformations.isEmpty()) {
+    GrammarInformation grammarInformation = propertyInformation.getGrammarInformation();
+    if (grammarInformation != null) {
       // get only the first grammar
-      xmlProperty.setGrammar(grammarInformations.get(0).getGrammarName());
+      xmlProperty.setGrammar(grammarInformation.getGrammarName());
     }
     else {
       xmlProperty.setGrammar(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);

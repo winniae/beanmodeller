@@ -66,8 +66,8 @@ public class ContentBeanMarkupPropertiesTest {
     otherGrammarProperty.setDocumentTypePropertyName(otherGrammarName);
     GrammarInformation otherGrammarInfo = new GrammarInformation();
     otherGrammarInfo.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME);
-    otherGrammarInfo.setGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION);
-    otherGrammarProperty.addGrammarInformation(otherGrammarInfo);
+    otherGrammarInfo.addGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION);
+    otherGrammarProperty.setGrammarInformation(otherGrammarInfo);
 
     String multipleGrammarName = "multipleGrammar";
     Method multipleGrammarMethod = markupPropertyBeanClass.getDeclaredMethod("getMultipleGrammar");
@@ -75,10 +75,10 @@ public class ContentBeanMarkupPropertiesTest {
     multipleGrammarProperty.setDocumentTypePropertyName(multipleGrammarName);
     GrammarInformation multipleGrammarInfo = new GrammarInformation();
     multipleGrammarInfo.setGrammarName(CHANGED_MARKUP_PROPERTY_GRAMMAR_NAME2);
-    multipleGrammarInfo.setGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION2);
+    multipleGrammarInfo.addGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION);
+    multipleGrammarInfo.addGrammarLocation(CHANGED_MARKUP_PROPERTY_GRAMMAR_LOCATION2);
     // add both grammar informations
-    multipleGrammarProperty.addGrammarInformation(otherGrammarInfo);
-    multipleGrammarProperty.addGrammarInformation(multipleGrammarInfo);
+    multipleGrammarProperty.setGrammarInformation(multipleGrammarInfo);
 
 
     // Analyzator Setup

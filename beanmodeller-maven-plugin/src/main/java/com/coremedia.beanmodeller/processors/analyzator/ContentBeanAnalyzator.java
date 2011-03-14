@@ -593,8 +593,11 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
     // read grammarinformation from annotation
     String grammarNames = methodAnnotation.propertyXmlGrammar();
+    GrammarInformation grammarInformation = new GrammarInformation();
+
 
     // tokenize on whitespaces
+    boolean firstGrammarName = true;
     for (String grammarName : grammarNames.split("\\s")) {
       URL grammarURL;
       String grammarLocation = null;
@@ -605,7 +608,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         // get URL just like com.coremedia.io.ResourceLoader (line 119) gets it
         grammarURL = Thread.currentThread().getContextClassLoader().getResource(grammarSource);
         grammarLocation = grammarName;
-        if (grammarName.contains("/")) { // get plain grammar name withou any path information
+        if (grammarName.contains("/")) { // get plain grammar name without any path information
           grammarName = grammarName.substring(grammarName.lastIndexOf('/') + 1);
         }
       }
@@ -621,15 +624,19 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
       }
 
-
-      //only add grammar information for no default grammars.
-      if (grammarName != null && !grammarName.equals(getPropertyDefaultMarkupGrammar())) {
-        GrammarInformation grammarInformation = new GrammarInformation();
+      // set GrammarName and URL only for the first Grammar specified
+      if (firstGrammarName) {
         grammarInformation.setGrammarName(grammarName);
         grammarInformation.setGrammarURL(grammarURL);
-        grammarInformation.setGrammarLocation(grammarLocation);
-        markupInformation.addGrammarInformation(grammarInformation);
       }
+
+      // add location for all given Schemas
+      grammarInformation.addGrammarLocation(grammarLocation);
+    }
+
+    //only add grammar information for no default grammars.
+    if (grammarInformation != null && !grammarInformation.getGrammarName().equals(getPropertyDefaultMarkupGrammar())) {
+      markupInformation.setGrammarInformation(grammarInformation);
     }
 
     return markupInformation;
