@@ -3,6 +3,7 @@ package com.coremedia.beanmodeller.maven;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.coremedia.beanmodeller.processors.configgenerator.ContentBeansSpringXmlGenerator;
+import com.coremedia.beanmodeller.processors.configgenerator.ContentBeansSpringXmlStringBuilderGenerator;
 import com.coremedia.beanmodeller.utils.BeanModellerHelper;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
@@ -80,7 +81,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     createContentBeanImplementations(roots);
     getLog().info("Creating implementations took " + getTimeSinceLastMeasurement() + "ms.");
 
-    configGenerator = new ContentBeansSpringXmlGenerator();
+    configGenerator = new ContentBeansSpringXmlStringBuilderGenerator();
     configGenerator.setSpringConfigBasePath(springConfigBasePath);
     configGenerator.setSpringConfigTargetFileName(springConfigTargetFileName);
     configGenerator.setCodeGenerator(generator);
