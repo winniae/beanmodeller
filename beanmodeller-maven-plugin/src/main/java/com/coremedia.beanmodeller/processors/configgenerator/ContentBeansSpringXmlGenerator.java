@@ -7,8 +7,13 @@ import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenera
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -65,7 +70,7 @@ public abstract class ContentBeansSpringXmlGenerator extends MavenProcessor {
 
   abstract public void createSpringConfig(Set<ContentBeanInformation> roots) throws MojoFailureException;
 
-  public File getTargetSpringConfigFile() throws PluginException, IOException {
+  public Writer getTargetSpringConfigFile() throws PluginException, IOException {
     File result = new File(springConfigBasePath, springConfigTargetFileName);
     if (!result.exists()) {
       final File parentFile = result.getParentFile();
@@ -87,7 +92,8 @@ public abstract class ContentBeansSpringXmlGenerator extends MavenProcessor {
     if (!result.canWrite()) {
       throw new PluginException("The target file \'" + springConfigTargetFileName + "\' for the config is not writeable");
     }
-    return result;
+
+    return new FileWriter(result);
   }
 
   public String getBeanName(ContentBeanInformation contentBeanInformation) {
@@ -103,5 +109,18 @@ public abstract class ContentBeansSpringXmlGenerator extends MavenProcessor {
       //create a bean for the conten bean factory
       return springBeanNamePrefix + contentBeanInformation.getDocumentName();
     }
+  }
+
+  public SortedSet<ContentBeanInformation> sortContentBeanInformationSet(Set<? extends ContentBeanInformation> contentBeanInformations) {
+    // sort beans
+    SortedSet<ContentBeanInformation> beanInformationsSorted = new TreeSet<ContentBeanInformation>(
+        new Comparator<ContentBeanInformation>() {
+          @Override
+          public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
+            return o1.getDocumentName().compareTo(o2.getDocumentName());
+          }
+        });
+    beanInformationsSorted.addAll(contentBeanInformations);
+    return beanInformationsSorted;
   }
 }

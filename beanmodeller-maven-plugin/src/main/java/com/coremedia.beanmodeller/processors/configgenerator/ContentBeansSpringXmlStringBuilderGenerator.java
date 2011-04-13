@@ -5,13 +5,10 @@ import com.coremedia.beanmodeller.maven.PluginException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Comparator;
+import java.io.Writer;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -22,8 +19,7 @@ import java.util.TreeSet;
 public class ContentBeansSpringXmlStringBuilderGenerator extends ContentBeansSpringXmlGenerator {
   public void createSpringConfig(Set<ContentBeanInformation> roots) throws MojoFailureException {
     try {
-      final File output = getTargetSpringConfigFile();
-      final FileWriter writer = new FileWriter(output);
+      final Writer writer = getTargetSpringConfigFile();
 
       writer.append("<beans xmlns=\"http://www.springframework.org/schema/beans\"\n");
       writer.append("\t\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
@@ -46,16 +42,8 @@ public class ContentBeansSpringXmlStringBuilderGenerator extends ContentBeansSpr
     }
   }
 
-  private void writeBeanConfigRecursive(Set<? extends ContentBeanInformation> contentBeanInformations, FileWriter writer) throws IOException {
-    // sort beans
-    SortedSet<ContentBeanInformation> beanInformationsSorted = new TreeSet<ContentBeanInformation>(
-        new Comparator<ContentBeanInformation>() {
-          @Override
-          public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
-            return o1.getDocumentName().compareTo(o2.getDocumentName());
-          }
-        });
-    beanInformationsSorted.addAll(contentBeanInformations);
+  private void writeBeanConfigRecursive(Set<? extends ContentBeanInformation> contentBeanInformations, Writer writer) throws IOException {
+    SortedSet<ContentBeanInformation> beanInformationsSorted = sortContentBeanInformationSet(contentBeanInformations);
 
     // for each bean, write code and call recursive
     for (ContentBeanInformation contentBeanInformation : beanInformationsSorted) {
@@ -67,7 +55,6 @@ public class ContentBeansSpringXmlStringBuilderGenerator extends ContentBeansSpr
       writeBeanConfigRecursive(contentBeanInformation.getChilds(), writer);
     }
   }
-
 
   private String getBeanXml(ContentBeanInformation contentBeanInformation) {
     StringBuilder stringBuilder = new StringBuilder();
