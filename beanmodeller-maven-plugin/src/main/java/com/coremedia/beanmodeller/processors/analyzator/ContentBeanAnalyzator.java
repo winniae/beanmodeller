@@ -224,10 +224,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       }
       //if the analyzation was successfull we note it for later property generation
-      if (methodIsContentBeanMethod) {
-        if (checkMethod(potentialException, currentClass, foundPropertyNames, method)) {
-          break;
-        }
+      if (methodIsContentBeanMethod && checkMethod(potentialException, currentClass, foundPropertyNames, method)) {
+        break;
       }
     }
   }
@@ -493,7 +491,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       MimeType mimetype = new MimeType(mimeTypeName); //NOSONAR - this is a test if it is a proper mime type
     }
     catch (MimeTypeParseException e) {
-      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y");
+      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y", e);
     }
 
     BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
@@ -617,7 +615,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
           grammarURL = new URL(grammarName);
         }
         catch (MalformedURLException e) {
-          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable as URL");
+          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable as URL", e);
         }
       }
       if (grammarURL == null) {

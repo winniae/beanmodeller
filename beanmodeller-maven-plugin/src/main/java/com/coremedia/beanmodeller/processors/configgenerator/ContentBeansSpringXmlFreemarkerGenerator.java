@@ -42,7 +42,7 @@ public class ContentBeansSpringXmlFreemarkerGenerator extends ContentBeansSpring
       temp = cfg.getTemplate("contentbeans.xml.ftl");
     }
     catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      getLog().error("there is an error reading the template", e);
     }
 
 
