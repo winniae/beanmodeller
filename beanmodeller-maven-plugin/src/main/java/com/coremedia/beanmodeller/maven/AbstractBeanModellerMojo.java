@@ -59,7 +59,7 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     StringBuffer message = new StringBuffer();
     for (ContentBeanAnalyzationException.ContentBeanAnalyzationError error : errors) {
       message.append("\n\t");
-      message.append(e.toString());
+      message.append(error.toString());
     }
     message.append("\n");
     return message.toString();

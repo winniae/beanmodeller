@@ -97,7 +97,7 @@ public class GrammarInformation {
     if (grammarName != null ? !grammarName.equals(that.grammarName) : that.grammarName != null) {
       return false;
     }
-    if (grammarURL != null ? !grammarURL.equals(that.grammarURL) : that.grammarURL != null) {
+    if (grammarURL != null ? !grammarURL.equals(that.grammarURL) : that.grammarURL != null) { //NOSONAR - this is slow but we are runnning it single threaded anyway
       return false;
     }
 
@@ -107,7 +107,7 @@ public class GrammarInformation {
   @Override
   public int hashCode() {
     int result = grammarName != null ? grammarName.hashCode() : 0;
-    result = 31 * result + (grammarURL != null ? grammarURL.hashCode() : 0);
+    result = 31 * result + (grammarURL != null ? grammarURL.hashCode() : 0); //NOSONAR - this is slow but we are runnning it single threaded anyway
     result = 31 * result + (grammarLocations != null ? grammarLocations.hashCode() : 0);
     return result;
   }

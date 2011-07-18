@@ -490,7 +490,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     ContentProperty annotation = method.getAnnotation(ContentProperty.class);
     String mimeTypeName = (annotation != null) ? annotation.propertyBlobMimeType() : ContentProperty.BLOB_PROPERTY_DEFAULT_MIME_TYPE;
     try {
-      MimeType mimetype = new MimeType(mimeTypeName);
+      MimeType mimetype = new MimeType(mimeTypeName); //NOSONAR - this is a test if it is a proper mime type
     }
     catch (MimeTypeParseException e) {
       throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y");

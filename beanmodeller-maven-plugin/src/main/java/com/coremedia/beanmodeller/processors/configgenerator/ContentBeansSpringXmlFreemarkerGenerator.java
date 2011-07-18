@@ -67,11 +67,13 @@ public class ContentBeansSpringXmlFreemarkerGenerator extends ContentBeansSpring
       writer.close();
     }
     catch (PluginException e) {
+      getLog().error("there is a plugin error", e);
     }
     catch (IOException e) {
+      getLog().error("there is an error writing the spring config", e);
     }
     catch (TemplateException e) {
-      e.printStackTrace();
+      getLog().error("there is an error in the template", e);
     }
 
   }

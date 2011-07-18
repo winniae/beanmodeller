@@ -21,6 +21,7 @@ import java.util.Map;
  */
 public class XSDCopyier extends MavenProcessor {
 
+  private static final String CLASSPATH_DENOMITOR = "classpath:";
   private String xsdPath;
 
   public XSDCopyier(String xsdPath) {
@@ -51,8 +52,8 @@ public class XSDCopyier extends MavenProcessor {
     GrammarInformation grammarInformation = schemas.get(schemaName);
     for (String schemaLocation : grammarInformation.getGrammarLocations()) {
       URL schemaUrl = null;
-      if (schemaLocation.startsWith("classpath:")) {
-        String grammarSource = schemaLocation.substring("classpath:".length());
+      if (schemaLocation.startsWith(CLASSPATH_DENOMITOR)) {
+        String grammarSource = schemaLocation.substring(CLASSPATH_DENOMITOR.length());
         // get URL just like com.coremedia.io.ResourceLoader (line 119) gets it
         schemaUrl = Thread.currentThread().getContextClassLoader().getResource(grammarSource);
       }
@@ -77,7 +78,7 @@ public class XSDCopyier extends MavenProcessor {
       }
       else {
         if (schemaUrl == null) {
-          getLog().warn("Unable to copy " + schemaUrl + " since the URL is null!");
+          getLog().warn("Unable to copy the schema since the URL is null!");
         }
         else {
           getLog().warn("Unable to copy " + schemaUrl + " since I cannot handle protocol " + schemaUrl.getProtocol() + "!");
@@ -88,8 +89,8 @@ public class XSDCopyier extends MavenProcessor {
 
   private String getTargetFileName(String schemaName, String schemaLocation) {
     String targetFileName;
-    if (schemaLocation != null && schemaLocation.startsWith("classpath:")) {
-      targetFileName = schemaLocation.substring("classpath:".length());
+    if (schemaLocation != null && schemaLocation.startsWith(CLASSPATH_DENOMITOR)) {
+      targetFileName = schemaLocation.substring(CLASSPATH_DENOMITOR.length());
     }
     else {
       targetFileName = schemaName;
@@ -105,7 +106,7 @@ public class XSDCopyier extends MavenProcessor {
     }
     String resourceName = resourcePath.substring(resourceNamePosition + 1);
     getLog().info("Copying " + schemaName + " from classpath " + resourceName + "(" + schemaUrl + ") to " + targetFile.getAbsolutePath());
-    InputStream resourceStream = getClass().getResourceAsStream(resourceName);
+    InputStream resourceStream = XSDCopyier.class.getResourceAsStream(resourceName);
     if (resourceStream == null) {
       throw new DocTypeMarshallerException("Unable to open input stream for resource " + resourceName + " from URL " + schemaUrl);
     }
