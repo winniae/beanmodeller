@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.coremedia.maven</groupId>
@@ -16,8 +17,9 @@
   </organization>
 
   <scm>
-    <connection>scm:git:https://h1844669.stratoserver.net/git/telekom_com/beanmodeller/</connection>
-    <developerConnection>scm:git:https://h1844669.stratoserver.net/git/telekom_com/beanmodeller/</developerConnection>
+    <connection>scm:git:ssh://h1844669.stratoserver.net:21/srv/git/telekom_com/beanmodeller/</connection>
+    <developerConnection>scm:git:ssh://h1844669.stratoserver.net:21/srv/git/telekom_com/beanmodeller/
+    </developerConnection>
   </scm>
 
   <distributionManagement>
