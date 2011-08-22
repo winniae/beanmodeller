@@ -5,6 +5,7 @@ import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.beanmodeller.beaninformation.AbstractPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.AnalyzatorContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.BooleanPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.DatePropertyInformation;
@@ -57,6 +58,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   private static final Set<Class> VALID_METHOD_RETURN_TYPES = new HashSet<Class>();
 
   static {
+    VALID_METHOD_RETURN_TYPES.add(Boolean.class);
     VALID_METHOD_RETURN_TYPES.add(Integer.class);
     VALID_METHOD_RETURN_TYPES.add(Date.class);
     VALID_METHOD_RETURN_TYPES.add(Calendar.class);
@@ -459,6 +461,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     final Class<?> returnType = method.getReturnType();
     if (returnType.equals(Integer.class)) {
       return new IntegerPropertyInformation(method);
+    }
+    else if (returnType.equals(Boolean.class)) {
+      return new BooleanPropertyInformation(method);
     }
     else if (returnType.equals(Calendar.class) || returnType.equals(Date.class)) {
       return new DatePropertyInformation(method);

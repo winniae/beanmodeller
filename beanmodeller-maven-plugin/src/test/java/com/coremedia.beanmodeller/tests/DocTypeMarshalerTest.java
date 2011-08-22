@@ -75,7 +75,9 @@ public class DocTypeMarshalerTest {
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"organizer\" Max=\"1\" Min=\"0\"/>\n" +
         "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"text\"/>\n" +
         "    </DocType>\n" +
-        "    <DocType Name=\"CBGAttendee\" Parent=\"CBGContent\"/>\n" +
+        "    <DocType Name=\"CBGAttendee\" Parent=\"CBGContent\">\n" +
+        "        <IntProperty Name=\"fun\"/>\n" +
+        "    </DocType>\n" +
         "    <DocType Name=\"CBGImage\" Parent=\"CBGContent\">\n" +
         "        <BlobProperty MimeType=\"*/*\" Name=\"genericBlob\" />\n" +
         "        <BlobProperty MimeType=\"image/*\" Name=\"image\" />\n" +

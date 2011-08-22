@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.processors.codegenerator;
 
 import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.BooleanPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.DatePropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.IntegerPropertyInformation;
@@ -138,7 +139,16 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     else if (propertyInformation instanceof DatePropertyInformation) {
       createTimePropertyMethod(codeModel, methodReturnType, propertyMethod, getterCall, returnType);
     }
+    else if (propertyInformation instanceof BooleanPropertyInformation) {
+      createBooleanPropertyMethod(codeModel, methodReturnType, propertyMethod, getterCall, returnType);
+    }
     //get the return type of the method
+  }
+
+  private void createBooleanPropertyMethod(JCodeModel codeModel, Class<?> methodReturnType, JMethod propertyMethod, JInvocation getterCall, JType returnType) {
+    // Boolean is mapped to an int, where 1 equals true, false otherwise
+    JVar integerObject = propertyMethod.body().decl(codeModel.ref(Integer.class), "integerObject", getterCall);
+    propertyMethod.body()._return(integerObject.ne(JExpr._null()).cand(integerObject.eq(JExpr.direct("1"))));
   }
 
   private void createTimePropertyMethod(JCodeModel codeModel, Class<?> methodReturnType, JMethod propertyMethod, JInvocation getterCall, JType returnType) {
