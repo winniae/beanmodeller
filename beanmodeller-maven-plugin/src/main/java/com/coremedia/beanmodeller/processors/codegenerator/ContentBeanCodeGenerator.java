@@ -147,7 +147,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
 
   private void createBooleanPropertyMethod(JCodeModel codeModel, Class<?> methodReturnType, JMethod propertyMethod, JInvocation getterCall, JType returnType) {
     // Boolean is mapped to an int, where 1 equals true, false otherwise
-    JVar integerObject = propertyMethod.body().decl(codeModel.ref(Integer.class), "integerObject", getterCall);
+    JVar integerObject = propertyMethod.body().decl(codeModel.ref(Integer.class), "integerObject", JExpr.cast(codeModel.ref(Integer.class), getterCall));
     propertyMethod.body()._return(integerObject.ne(JExpr._null()).cand(integerObject.eq(JExpr.direct("1"))));
   }
 
