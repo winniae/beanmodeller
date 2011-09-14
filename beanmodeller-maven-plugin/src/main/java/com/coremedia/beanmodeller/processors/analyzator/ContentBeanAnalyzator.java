@@ -46,8 +46,13 @@ import java.util.Set;
 public class ContentBeanAnalyzator extends MavenProcessor {
   private List<Class> beansToAnalyze = new LinkedList<Class>();
 
-  public static final int MAX_CONTENT_TYPE_LENGTH = 16;
-  public static final int MAX_PROPERTY_LENGTH = 32;
+  // see https://documentation.coremedia.com/servlet/permalink/285388/286256/en/5.3
+  public static final int MAX_CONTENT_TYPE_LENGTH = 15;
+
+  // see https://documentation.coremedia.com/servlet/permalink/285388/286228/en/5.3
+  // TODO 15 for date property?!
+  // TODO 18 is only true for Oracle! MySQL for instance allows more chars.
+  public static final int MAX_PROPERTY_LENGTH = 18;
 
   private static final ContentBeanInformation PROPERTY_DEFAULT_LINKLIST_TYPE = EmptyContentBeanInformation.getInstance();
 
@@ -185,20 +190,25 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
   private void checkBeanClassHierarchy(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
     getLog().debug("checking bean class hierarchy");
+
     //to avoid potential loops we note which bean we already have analyzed
     Set<Class> visitedClasses = new HashSet<Class>(hierarchy.getAllFoundContentBeans().size());
+
     //then we simply analyze each bean
     for (ContentBeanInformation bean : hierarchy.getAllContentBeanInformation()) {
       //first look if there is no problem in the hierarchy between bean and parent
       Class contentBean = bean.getContentBean();
+
       //this mad for is a cycle to go up the complete hierarchy up to abstract content bean
       // or if we find an already analyzed class
       for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass = currentClass.getSuperclass()) {
         if (getLog().isDebugEnabled()) {
           getLog().debug("checking class in hierarchy: " + currentClass);
         }
+
         //first of all note that we visited the class
         visitedClasses.add(currentClass);
+
         //analyze the methods
         analyzeMethods(potentialException, contentBean, currentClass, hierarchy);
       }
@@ -207,10 +217,13 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
   private void analyzeMethods(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, ContentBeanHierarchy hierarchy) {
     Method[] methods = currentClass.getDeclaredMethods();
+
     //it is a content bean if there is an annotation - we do not really care about details here
     boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
+
     // stores propertyNames for each class to prevent double property declarations
     Set<String> foundPropertyNames = new HashSet<String>();
+
     for (Method method : methods) {
       Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
@@ -225,9 +238,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       {
 
       }
+
       //if the analyzation was successfull we note it for later property generation
-      if (methodIsContentBeanMethod && checkMethod(potentialException, currentClass, foundPropertyNames, method)) {
-        break;
+      if (methodIsContentBeanMethod) {
+        // do some more sanity checks, like property length
+        // this method will add the method to the final result set, too
+        checkMethod(potentialException, currentClass, foundPropertyNames, method);
       }
     }
   }
@@ -297,6 +313,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     if (getLog().isDebugEnabled()) {
       getLog().debug("Found property for " + currentClass.getCanonicalName() + ": " + documentTypePropertyName + "(" + method.getName() + ")");
     }
+
     foundContentBeanProperties.add(method);
     // save property name for validation of duplicate entries in next iteration for each class
     foundPropertyNames.add(documentTypePropertyName);

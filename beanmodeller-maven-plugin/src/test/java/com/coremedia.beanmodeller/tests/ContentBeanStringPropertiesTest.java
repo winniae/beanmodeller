@@ -7,8 +7,8 @@ import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationEx
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpANeg;
-import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpANoL;
 import com.coremedia.beanmodeller.testcontentbeans.CBGStringPrpNoA;
+import com.coremedia.beanmodeller.testcontentbeans.CBGStrngPrpANoL;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -79,12 +79,12 @@ public class ContentBeanStringPropertiesTest {
   public void testAnnotationButNoLength() throws NoSuchMethodException {
 
     String descriptionName = "description";
-    Method descriptionMethod = CBGStringPrpANoL.class.getDeclaredMethod("getDescription");
+    Method descriptionMethod = CBGStrngPrpANoL.class.getDeclaredMethod("getDescription");
     StringPropertyInformation myStringProperty = new StringPropertyInformation(descriptionMethod);
     myStringProperty.setDocumentTypePropertyName(descriptionName);
     myStringProperty.setLength(20);
 
-    contentBeanAnalyzator.addContentBean(CBGStringPrpANoL.class);
+    contentBeanAnalyzator.addContentBean(CBGStrngPrpANoL.class);
 
     ContentBeanHierarchy hierarchy = null;
     try {
@@ -96,7 +96,7 @@ public class ContentBeanStringPropertiesTest {
 
     ContentBeanInformation cbgContent = null;
     try {
-      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGStringPrpANoL");
+      cbgContent = BeanModellerTestUtils.getContentBeans(hierarchy.getRootBeanInformation()).get("CBGStrngPrpANoL");
     }
     catch (ContentBeanAnalyzatorInternalException e) {
       fail();

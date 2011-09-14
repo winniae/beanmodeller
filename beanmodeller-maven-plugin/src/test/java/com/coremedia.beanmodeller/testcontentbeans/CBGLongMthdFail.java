@@ -16,7 +16,7 @@ import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
  * This should fail.
  */
 @ContentBean
-public abstract class CBGLongMthdFails extends CBGContent {
+public abstract class CBGLongMthdFail extends CBGContent {
 
 
   /**

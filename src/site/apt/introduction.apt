@@ -68,9 +68,12 @@ What to do about too long class and method names?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Sometimes, you just want to specif long Class and Method names, but the CMS doesn't allow it.
 
-    DocTypes have a limit of 11 (or 15) characters. https://documentation.coremedia.com/servlet/permalink/241542/251888/en/5.2
+    DocTypes have a limit of 15 characters. https://documentation.coremedia.com/servlet/permalink/285388/286256/en/5.3
     
-    Propertys have a limit of ?? character. (TODO verify)
+    Propertys have a limit of 18 characters (For DatePropertys, the limit is 15, but this is not enforced by the Bean Modeller). https://documentation.coremedia.com/servlet/permalink/285388/286228/en/5.3
+
+    TODO, this is only true for Oracle! MySQL allows more chars.
+
 
     With the Bean Modeller, you can annotate your classes and methods to use specific names
     for the generated DocTypes and Propertys.

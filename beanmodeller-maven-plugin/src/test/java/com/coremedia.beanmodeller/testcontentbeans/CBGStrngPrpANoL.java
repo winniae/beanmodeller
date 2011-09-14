@@ -11,7 +11,7 @@ import com.coremedia.objectserver.beans.AbstractContentBean;
  * Time: 9:42:04 AM
  */
 @ContentBean
-public abstract class CBGStringPrpANoL extends AbstractContentBean {
+public abstract class CBGStrngPrpANoL extends AbstractContentBean {
 
   /**
    * Test missing stringLength definition but with existing Annotation. This should work and a reasonable default must be set.
