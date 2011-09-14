@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.coremedia.maven</groupId>
     <artifactId>beanmodeller</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
   </parent>
 
   <artifactId>beanmodeller-maven-plugin</artifactId>
