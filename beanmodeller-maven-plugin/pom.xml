@@ -1,194 +1,195 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>com.coremedia.maven</groupId>
-    <artifactId>beanmodeller</artifactId>
-    <version>1.5-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>com.coremedia.contribution.maven</groupId>
+        <artifactId>beanmodeller</artifactId>
+        <version>1.5-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>beanmodeller-maven-plugin</artifactId>
-  <packaging>maven-plugin</packaging>
-  <name>CoreMedia Bean Modeller Maven Plugin</name>
-  <url>http://maven.apache.org</url>
+    <artifactId>beanmodeller-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <name>CoreMedia Bean Modeller Maven Plugin</name>
+    <url>http://maven.apache.org</url>
 
-  <properties>
-    <jaxb.version>2.2.2</jaxb.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <jaxb.version>2.2.2</jaxb.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <!-- Global Dependencies -->
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>beanmodeller-annotations</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <version>1.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.coremedia.cms</groupId>
-      <artifactId>cap-objectserver</artifactId>
-      <version>5.3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>3.0.5.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>${jaxb.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-xjc</artifactId>
-      <version>${jaxb.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.0.1</version>
-    </dependency>
-    <dependency>
-      <!-- According to http://freemarker.sourceforge.net/freemarkerdownload.html -->
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <!-- Latest 2.3.x (not 2.4.x), at least 2.3.16 -->
-      <version>[2.3.16,2.4)</version>
-    </dependency>
+    <!-- Global Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>beanmodeller-annotations</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.coremedia.cms</groupId>
+            <artifactId>cap-objectserver</artifactId>
+            <version>5.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>3.0.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <!-- According to http://freemarker.sourceforge.net/freemarkerdownload.html -->
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <!-- Latest 2.3.x (not 2.4.x), at least 2.3.16 -->
+            <version>[2.3.16,2.4)</version>
+        </dependency>
 
 
-    <!-- test dependencies -->
-    <dependency>
-      <groupId>org.apache.maven.plugin-testing</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>1.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>1.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.3</version>
-    </dependency>
-  </dependencies>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.apache.maven.plugin-testing</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.3</version>
+        </dependency>
+    </dependencies>
 
-  <!-- Build Instructions -->
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.7.5</version>
-        <executions>
-          <execution>
-            <id>generate-doctypes</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generatePackage>com.coremedia.schemabeans</generatePackage>
-              <extension>true</extension>
-              <schemaDirectory>src/main/resources/schema/</schemaDirectory>
-              <verbose>true</verbose>
-              <args>
-                <param>-npa</param>
-              </args>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+    <!-- Build Instructions -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.7.5</version>
+                <executions>
+                    <execution>
+                        <id>generate-doctypes</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatePackage>com.coremedia.schemabeans</generatePackage>
+                            <extension>true</extension>
+                            <schemaDirectory>src/main/resources/schema/</schemaDirectory>
+                            <verbose>true</verbose>
+                            <args>
+                                <param>-npa</param>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.7.2</version>
-        <configuration>
-          <additionalClasspathElements>
-            <additionalClasspathElement>${project.basedir}/src/test/resources</additionalClasspathElement>
-            <additionalClasspathElement>${project.basedir}/target/test-classes/</additionalClasspathElement>
-          </additionalClasspathElements>
-        </configuration>
-      </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.7.2</version>
+                <configuration>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${project.basedir}/src/test/resources</additionalClasspathElement>
+                        <additionalClasspathElement>${project.basedir}/target/test-classes/</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
 
-    </plugins>
-  </build>
+        </plugins>
+    </build>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <!-- Used for some JAXB Code -->
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Maven 2 Repository</name>
-      <url>http://download.java.net/maven/2</url>
-      <layout>default</layout>
-    </pluginRepository>
-  </pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <!-- Used for some JAXB Code -->
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Maven 2 Repository</name>
+            <url>http://download.java.net/maven/2</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
 
-  <repositories>
-    <!-- the first too repositories collect any releases and snapshot from proxies, internal & 3rd party -->
-    <repository>
-      <id>telekom.all.releases</id>
-      <name>Telekom All Relesases Repository</name>
-      <url>https://h1844669.stratoserver.net/nexus/content/groups/all-releases/</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>telekom.all.snapshots</id>
-      <name>Telekom All Snapshots Repository</name>
-      <url>https://h1844669.stratoserver.net/nexus/content/groups/all-snapshots/</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <!-- this repository is redundnant. BUT PLEASE DO NOT DELETE IT!
-         It is useful for coremedia consultants to get source code -->
-    <repository>
-      <id>coremedia.external.releases</id>
-      <name>CoreMedia CMS</name>
-      <url>https://repository.coremedia.com/nexus/content/groups/cms/</url>
-      <layout>default</layout>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <!-- Used for some JAXB Code -->
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Maven 2 Repository</name>
-      <url>http://download.java.net/maven/2</url>
-      <layout>default</layout>
-    </repository>
-  </repositories>
+    <repositories>
+        <!-- the first too repositories collect any releases and snapshot from proxies, internal & 3rd party -->
+        <repository>
+            <id>telekom.all.releases</id>
+            <name>Telekom All Relesases Repository</name>
+            <url>https://h1844669.stratoserver.net/nexus/content/groups/all-releases/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>telekom.all.snapshots</id>
+            <name>Telekom All Snapshots Repository</name>
+            <url>https://h1844669.stratoserver.net/nexus/content/groups/all-snapshots/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- this repository is redundnant. BUT PLEASE DO NOT DELETE IT!
+It is useful for coremedia consultants to get source code -->
+        <repository>
+            <id>coremedia.external.releases</id>
+            <name>CoreMedia CMS</name>
+            <url>https://repository.coremedia.com/nexus/content/groups/cms/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <!-- Used for some JAXB Code -->
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Maven 2 Repository</name>
+            <url>http://download.java.net/maven/2</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 
 </project>
