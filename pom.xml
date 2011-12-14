@@ -4,7 +4,7 @@
 
   <groupId>com.coremedia.contribution.maven</groupId>
   <artifactId>beanmodeller</artifactId>
-  <version>1.5</version>
+  <version>1.6-SNAPSHOT</version>
   <name>CoreMedia Bean Modeller</name>
   <url>https://contributions.coremedia.com/shared/bean-modeler/</url>
 
