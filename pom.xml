@@ -1,107 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.coremedia.contribution.maven</groupId>
-    <artifactId>beanmodeller</artifactId>
-    <version>1.5-SNAPSHOT</version>
-    <name>CoreMedia Bean Modeller</name>
-    <url>https://h1844669.stratoserver.net/jenkins/job/BeanModeller/</url>
+  <groupId>com.coremedia.contribution.maven</groupId>
+  <artifactId>beanmodeller</artifactId>
+  <version>1.5-SNAPSHOT</version>
+  <name>CoreMedia Bean Modeller</name>
+  <url>https://contributions.coremedia.com/shared/bean-modeler/</url>
 
-    <packaging>pom</packaging>
+  <packaging>pom</packaging>
 
-    <organization>
-        <name>Deutsche Telekom AG</name>
-        <url>http://telekom.com</url>
-    </organization>
+  <organization>
+    <name>CoreMedia AG</name>
+    <url>http://www.coremedia.com</url>
+  </organization>
 
-    <scm>
-        <connection>scm:git:ssh://h1844669.stratoserver.net:21/srv/git/telekom_com/beanmodeller/</connection>
-        <developerConnection>scm:git:ssh://h1844669.stratoserver.net:21/srv/git/telekom_com/beanmodeller/
-        </developerConnection>
-    </scm>
+  <scm>
+    <connection>scm:git:git://github.com:wmosler/beanmodeller.git</connection>
+    <developerConnection>scm:git:git@github.com:wmosler/beanmodeller.git</developerConnection>
+  </scm>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>https://h1844669.stratoserver.net/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>releases</id>
-            <url>https://h1844669.stratoserver.net/nexus/content/repositories/releases/</url>
-        </repository>
-    </distributionManagement>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>coremedia-contributions-snapshots</id>
+      <url>https://repository.coremedia.com/nexus/content/repositories/contributions-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>coremedia-contributions-releases</id>
+      <url>https://repository.coremedia.com/nexus/content/repositories/contributions-releases/</url>
+    </repository>
+  </distributionManagement>
 
-    <modules>
-        <module>beanmodeller-maven-plugin</module>
-        <module>beanmodeller-annotations</module>
-    </modules>
+  <modules>
+    <module>beanmodeller-maven-plugin</module>
+    <module>beanmodeller-annotations</module>
+  </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
+  <properties>
+    <cms.version>5.3.20</cms.version>
 
-            <!-- Configure Site to generate UTF-8 output.-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.0-beta-3</version>
-                <configuration>
-                    <inputEncoding>UTF-8</inputEncoding>
-                    <outputEncoding>UTF-8</outputEncoding>
-                </configuration>
-            </plugin>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-            <!-- creating soucre jar before the install phase and use them during deployment -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.1.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.1.2</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+      <!-- Configure Site to generate UTF-8 output.-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.0-beta-3</version>
+        <configuration>
+          <inputEncoding>UTF-8</inputEncoding>
+          <outputEncoding>UTF-8</outputEncoding>
+        </configuration>
+      </plugin>
+
+      <!-- creating soucre jar before the install phase and use them during deployment -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
 
 </project>
