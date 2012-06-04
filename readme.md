@@ -63,45 +63,46 @@ For the complete documentation, please clone the project from github and execute
  1. Make your ContentBean extend from `com.coremedia.objectserver.beans.AbstractContentBean`.
  1. Declare and configure the maven dependencies. See the generated site for details. Basically, the build-plugin `com.coremedia.contribution.maven.beanmodeller-maven-plugin` can be executed with the two goals `generate-doctypes` and `generate-contentbeans`.
 
-Exmple:
+Example:
 
-  import com.coremedia.beanmodeller.annotations.ContentBean;
-  import com.coremedia.beanmodeller.annotations.ContentProperty;
+    import com.coremedia.beanmodeller.annotations.ContentBean;
+    import com.coremedia.beanmodeller.annotations.ContentProperty;
+    import com.coremedia.objectserver.beans.AbstractContentBean;
 
-  @ContentBean
-  public abstract class Article extends AbstractContentBean {
+    @ContentBean
+    public abstract class Article extends AbstractContentBean {
 
-    /**
-     * Main text for the textual content.
-     *
-     * @return the main text
-     */
-    public abstract Markup getText();
+      /**
+       * Main text for the textual content.
+       *
+       * @return the main text
+       */
+      public abstract Markup getText();
 
-    /**
-     * Main image for the textual content.
-     *
-     * @return main image
-     */
-    @ContentProperty(propertyName = "image")
-    protected abstract Media getImageInternal();
+      /**
+       * Main image for the textual content.
+       *
+       * @return main image
+       */
+      @ContentProperty(propertyName = "image")
+      protected abstract Media getImageInternal();
 
-    /**
-     * Get the linked image or the default image if the linked image is a media container
-     *
-     * @return default image or null
-     */
-    public Media getImage() {
-      final Media image = getImageInternal();
+      /**
+       * Get the linked image or the default image if the linked image is a media container
+       *
+       * @return default image or null
+       */
+      public Media getImage() {
+        final Media image = getImageInternal();
 
-      //image might be Image or MediaContainer object, get default image
-      return image == null ? null : image.getMediaObject(ARTICLE_MEDIA_FORMAT_SMALL);
+        //image might be Image or MediaContainer object, get default image
+        return image == null ? null : image.getMediaObject(ARTICLE_MEDIA_FORMAT_SMALL);
+      }
+
+      @ContentProperty(propertyName = "medias", propertyXmlGrammar = "classpath:xml_schema_definitions/xml-1998.xsd
+          classpath:xml_schema_definitions/xlink-1999.xsd classpath:xml_schema_definitions/medias-1.0.xsd")
+      abstract public Markup getMediasMarkup();
     }
-
-    ...
-
-    @ContentProperty(propertyName = "medias", propertyXmlGrammar = "classpath:xml_schema_definitions/xml-1998.xsd classpath:xml_schema_definitions/xlink-1999.xsd classpath:xml_schema_definitions/medias-1.0.xsd")
-    abstract public Markup getMediasMarkup();
 
 
 ## Project workspace structure and dependency management
@@ -130,6 +131,7 @@ The root `pom.xml` configures the maven plugin to use the `contentbeans` module 
         </plugin>
         ....
 
+Remember to configure the contributions repository as a moven pluginrepository as well.
 
 
 The default `contentbeans` module only depends on the beanmodeller-annotations:
@@ -140,7 +142,7 @@ The default `contentbeans` module only depends on the beanmodeller-annotations:
     </dependency>
 
 
-The `contentbeans-accessorizors` module has no additional code, but only this build instruction:
+The `contentbeans-accessorizors` module has no additional code, but only this build instruction and a dependency to the contentbeans module:
 
     <build>
     <plugins>
@@ -163,6 +165,8 @@ The `contentbeans-accessorizors` module has no additional code, but only this bu
       </plugin>
     </plugins>
     </build>
+
+The `contentbeans.xml` is generated together with the accessorizor beans. The default location is `target/classes/beanconfig/contentbeans.xml`.
 
 
 The `contentserver-base` module generates the `doctypes.xml`:
