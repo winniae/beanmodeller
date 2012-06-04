@@ -33,6 +33,13 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    */
   private MavenProject project;
 
+  /**
+   * Default char length for String Properties when no explicit value is provided.
+   *
+   * @parameter default-value=32
+   */
+  private int defaultPropertyStringLength;
+
   private long startTime;
   private Long lastMeasurement = null;
 
@@ -41,6 +48,10 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     ContentBeanAnalyzator analyzer = new ContentBeanAnalyzator();
     //set the logging
     analyzer.setLog(getLog());
+    // set parameters
+    analyzer.setPropertyDefaultStringLength(defaultPropertyStringLength);
+
+    // start analyzation
     analyzer.findContentBeans(contentBeanPackage);
     ContentBeanHierarchy hierarchy = null;
     try {
