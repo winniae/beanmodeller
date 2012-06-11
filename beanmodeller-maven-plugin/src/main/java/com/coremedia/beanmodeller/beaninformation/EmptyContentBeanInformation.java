@@ -72,4 +72,9 @@ public final class EmptyContentBeanInformation implements ContentBeanInformation
   public boolean isAbstract() {
     return false;
   }
+
+  @Override
+  public String getExternalParentDocumentName() {
+    return null;
+  }
 }

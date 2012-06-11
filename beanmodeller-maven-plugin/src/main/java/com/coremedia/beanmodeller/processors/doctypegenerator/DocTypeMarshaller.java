@@ -18,6 +18,7 @@ import com.coremedia.schemabeans.ObjectFactory;
 import com.coremedia.schemabeans.StringProperty;
 import com.coremedia.schemabeans.XmlProperty;
 import com.coremedia.schemabeans.XmlSchema;
+import org.apache.commons.lang.StringUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -99,6 +100,8 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     addGrammars(documentTypeModel);
 
+    getAndAddImports(documentTypeModel, sortedRootBeansInformation);
+
     getChildDocTypes(documentTypeModel, sortedRootBeansInformation);
 
     getProperties(sortedRootBeansInformation);
@@ -153,6 +156,19 @@ public class DocTypeMarshaller extends MavenProcessor {
       }
       //and then down the hierarchy
       findGrammars(beanInformation.getChilds());
+    }
+  }
+
+  private void getAndAddImports(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> beanInformations) {
+    for (ContentBeanInformation beanInformation : beanInformations) {
+      final String externalParentDocumentName = beanInformation.getExternalParentDocumentName();
+      if (StringUtils.isNotBlank(externalParentDocumentName)) {
+        // create XML for ImportDocType name="parentDocType"
+        final Import anImport = objectFactory.createImport();
+        anImport.setName(externalParentDocumentName);
+        final JAXBElement<Import> importDocType = objectFactory.createImportDocType(anImport);
+        documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType().add(importDocType);
+      }
     }
   }
 
@@ -250,10 +266,14 @@ public class DocTypeMarshaller extends MavenProcessor {
     }
 
     // Current DocType may have parents
-    if (parentDocType != null)
-
-    {
+    if (parentDocType != null) {
       currentDocType.setParent(parentDocType);
+    }
+    else if (StringUtils.isNotBlank(contentBeanInformation.getExternalParentDocumentName())) {
+      // parentdoctype is explicitly set
+      final Import anImport = objectFactory.createImport();
+      anImport.setName(contentBeanInformation.getExternalParentDocumentName());
+      currentDocType.setParent(anImport);
     }
 
     return docTypes;

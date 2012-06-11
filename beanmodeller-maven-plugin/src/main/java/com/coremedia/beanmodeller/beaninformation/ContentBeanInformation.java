@@ -64,4 +64,12 @@ public interface ContentBeanInformation {
    * @return the string representation
    */
   public String getHumanUnderstandableRepresentation();
+
+  /**
+   * Has this bean a parent from an external source?
+   * Accessorizors should not be generated then, but it may be required for doctypes.xml
+   *
+   * @return empty if contentbean is generated with the BeanModeller
+   */
+  public String getExternalParentDocumentName();
 }

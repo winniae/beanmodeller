@@ -27,4 +27,11 @@ public @interface ContentBean {
    * @return if this content bean is meant to be an abstract document type
    */
   boolean isAbstract() default false;
+
+  /**
+   * Specify a custom parent doctype name. This might be necessary when you extend a ContentBean
+   * from external sources, e.g. the CoreMedia Blueprint MyCustomArticle extend CMArticle.
+   * @return Name of parent doctype or empty String if not set.
+   */
+  String parentDoctypeName() default "";
 }

@@ -131,7 +131,7 @@ The root `pom.xml` configures the maven plugin to use the `contentbeans` module 
         </plugin>
         ....
 
-Remember to configure the contributions repository as a moven pluginrepository as well.
+Remember to configure the contributions repository as a maven pluginrepository as well.
 
 
 The default `contentbeans` module only depends on the beanmodeller-annotations:

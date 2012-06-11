@@ -7,6 +7,7 @@ import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshaller;
 import com.coremedia.beanmodeller.processors.doctypegenerator.DocTypeMarshallerException;
 import com.coremedia.beanmodeller.processors.doctypegenerator.XSDCopyier;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGArticle;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
@@ -41,6 +42,7 @@ public class DocTypeMarshalerTest {
     analyzator.addContentBean(CBGAttendee.class);
     analyzator.addContentBean(CBGAppointment.class);
     analyzator.addContentBean(CBGImage.class);
+    analyzator.addContentBean(CBGArticle.class);
 
     try {
       ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
@@ -63,6 +65,10 @@ public class DocTypeMarshalerTest {
     String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlSchema Name=\"simple.xsd\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
+        "    <ImportDocType Name=\"CMArticle\"/>\n" +
+        "    <DocType Name=\"CBGArticle\" Parent=\"CMArticle\">\n" +
+        "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
+        "    </DocType>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
         "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +
         "    </DocType>\n" +

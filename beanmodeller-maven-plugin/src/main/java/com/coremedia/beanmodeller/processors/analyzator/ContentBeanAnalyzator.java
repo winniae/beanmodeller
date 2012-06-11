@@ -73,9 +73,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     VALID_METHOD_RETURN_TYPES.add(Blob.class);
   }
 
-  /**
-   * TODO make it configurable from outside.
-   */
   private int propertyDefaultStringLength = 32;
   private String propertyDefaultMarkupGrammar = MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME;
   private int propertyDefaultLinkListMin = 0;
@@ -339,16 +336,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         ContentBean beanAnnotation = (ContentBean) currentClass.getAnnotation(ContentBean.class);
         if (beanAnnotation != null) {
           //have we already seen it?
-          AnalyzatorContentBeanInformation contentBeanInformation = (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(currentClass);
-          // if we have not seen the class create a content bean information
-          if (contentBeanInformation == null) {
-            if (getLog().isDebugEnabled()) {
-              getLog().debug("Found content bean " + currentClass.toString());
-            }
-            contentBeanInformation = new AnalyzatorContentBeanInformation(currentClass);
-            //and we save the information that we have a bean infor for that class
-            hierarchy.addContentBeanInformation(currentClass, contentBeanInformation);
-          }
+          AnalyzatorContentBeanInformation contentBeanInformation = createBeanInformation(currentClass, hierarchy);
           //if it is in a hierarchy we have to model the hierarchy in the bean information
           if (lastBeanInformation != null) {
             lastBeanInformation.setParent(contentBeanInformation);
@@ -362,6 +350,28 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
     }
 
+  }
+
+  /**
+   * Create the bean information for given class or retrieve from hierarchy.
+   * Adds the bean information to the hierarchy
+   *
+   * @param currentClass
+   * @param hierarchy
+   * @return bean information newly created or found in hierarchy
+   */
+  private AnalyzatorContentBeanInformation createBeanInformation(Class currentClass, ContentBeanHierarchy hierarchy) {
+    AnalyzatorContentBeanInformation contentBeanInformation = (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(currentClass);
+    // if we have not seen the class create a content bean information
+    if (contentBeanInformation == null) {
+      if (getLog().isDebugEnabled()) {
+        getLog().debug("Found content bean " + currentClass.toString());
+      }
+      contentBeanInformation = new AnalyzatorContentBeanInformation(currentClass);
+      //and we save the information that we have a bean infor for that class
+      hierarchy.addContentBeanInformation(currentClass, contentBeanInformation);
+    }
+    return contentBeanInformation;
   }
 
   private void extractDocTypeBasicInformation(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
@@ -415,6 +425,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       //check if it is an abstract doctype
       beanInformation.setAbstract(beanAnnotation.isAbstract());
+
+      // get hint for external doctype
+      beanInformation.setExternalParentDocumentName(beanAnnotation.parentDoctypeName());
     }
   }
 
