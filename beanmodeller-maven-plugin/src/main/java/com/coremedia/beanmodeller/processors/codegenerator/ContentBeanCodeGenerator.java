@@ -45,6 +45,8 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
   //TODO this is a silly name and needs a better alternative
   public static final String IMPL_SUFFIX = "BeanAccessorizor";
 
+  private boolean generateSetters = false;
+
   public JCodeModel generateCode(Set<ContentBeanInformation> rootBeans) {
     getLog().info("Starting code generation for content beans.");
     JCodeModel contentBeanCodeModel = new JCodeModel();
@@ -91,6 +93,10 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       //generate getter for each property
       for (PropertyInformation property : allMyProperties) {
         generatePropertyMethod(beanClass, property, codeModel);
+
+        if (generateSetters) {
+          generatePropertySetterMethod(beanClass, property, codeModel);
+        }
       }
 
     }
@@ -144,6 +150,37 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     }
     //get the return type of the method
   }
+
+
+  private void generatePropertySetterMethod(JDefinedClass beanClass, PropertyInformation propertyInformation, JCodeModel codeModel) {
+    //we will use this quite often
+    final Method method = propertyInformation.getMethod();
+    final String documentTypePropertyName = propertyInformation.getDocumentTypePropertyName();
+    Class<?> propertyType = method.getReturnType();
+
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Generating corresponding setter method for " + method.toString());
+    }
+
+    //construct the correct modifiers
+    int modifiers = getModifiersForPropertyMethod(method);
+    //create the method
+    // strip name of 'get' or 'is' and add setter
+    final String methodName = method.getName().startsWith("is") ? method.getName().substring(2) : method.getName().substring(3);
+
+    JMethod propertyMethod = beanClass.method(modifiers, void.class, "set" + methodName);
+    //generate some java doc for the method
+    JDocComment javadoc = propertyMethod.javadoc();
+    javadoc.add("Setter for " + propertyInformation);
+
+    // param list
+    propertyMethod.param(propertyType, documentTypePropertyName);
+
+    // content setter method
+    JInvocation setterCall = JExpr.invoke("getContent").invoke("set").arg(JExpr.lit(documentTypePropertyName)).arg(JExpr.direct(documentTypePropertyName));
+    propertyMethod.body().add(setterCall);
+  }
+
 
   private void createBooleanPropertyMethod(JCodeModel codeModel, Class<?> methodReturnType, JMethod propertyMethod, JInvocation getterCall, JType returnType) {
     // Boolean is mapped to an int, where 1 equals true, false otherwise
@@ -239,5 +276,13 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
   public String getCanonicalGeneratedClassName(ContentBeanInformation beanInformation) {
     Class beanClass = beanInformation.getContentBean();
     return packageName + "." + beanClass.getSimpleName() + IMPL_SUFFIX;
+  }
+
+  public boolean isGenerateSetters() {
+    return generateSetters;
+  }
+
+  public void setGenerateSetters(boolean generateSetters) {
+    this.generateSetters = generateSetters;
   }
 }

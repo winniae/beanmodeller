@@ -58,6 +58,13 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
    */
   private String springConfigTargetFileName;
 
+  /**
+   * Generate content setter methods along with getters.
+   *
+   * @parameter default-value=false
+   */
+  private boolean generateSetters;
+
   private ContentBeanCodeGenerator generator;
 
   private ContentBeansSpringXmlGenerator configGenerator;
@@ -75,6 +82,7 @@ public class GenerateAccessorizorBeansMojo extends AbstractBeanModellerMojo {
     getLog().info("Analyzing contentbeans took " + getTimeSinceLastMeasurement() + "ms.");
 
     generator = new ContentBeanCodeGenerator();
+    generator.setGenerateSetters(generateSetters);
     generator.setLog(getLog());
     generator.setPackageName(accessorizorBeansTargetPackage);
 
