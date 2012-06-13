@@ -11,6 +11,7 @@ import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGArticle;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGSpecialArticle;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
@@ -43,6 +44,7 @@ public class DocTypeMarshalerTest {
     analyzator.addContentBean(CBGAppointment.class);
     analyzator.addContentBean(CBGImage.class);
     analyzator.addContentBean(CBGArticle.class);
+    analyzator.addContentBean(CBGSpecialArticle.class);
 
     try {
       ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
@@ -66,8 +68,11 @@ public class DocTypeMarshalerTest {
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlSchema Name=\"simple.xsd\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
         "    <ImportDocType Name=\"CMArticle\"/>\n" +
-        "    <DocType Name=\"CBGArticle\" Parent=\"CMArticle\">\n" +
+        "    <DocTypeAspect TargetType=\"CMArticle\">\n" +
         "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
+        "    </DocTypeAspect>\n" +
+        "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
+        "        <StringProperty Length=\"32\" Name=\"specialSensation\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
         "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +

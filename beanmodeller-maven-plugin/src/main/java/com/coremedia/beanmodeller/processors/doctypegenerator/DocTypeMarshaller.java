@@ -10,6 +10,7 @@ import com.coremedia.beanmodeller.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.schemabeans.BlobProperty;
 import com.coremedia.schemabeans.DocType;
+import com.coremedia.schemabeans.DocTypeAspect;
 import com.coremedia.schemabeans.DocumentTypeModel;
 import com.coremedia.schemabeans.Import;
 import com.coremedia.schemabeans.IndexablePropertyDescriptor;
@@ -56,7 +57,7 @@ public class DocTypeMarshaller extends MavenProcessor {
   /**
    * global store to remember known DocTypes. This is required when linking properties back to DocTypes.
    */
-  private Map<String, DocType> knownDoctypes = new HashMap<String, DocType>();
+  private Map<String, Object> knownDoctypes = new HashMap<String, Object>();
 
   /**
    * @param rootBeanInformations Set of RootBeanInformation objects whose hierarchies must be marshaled
@@ -100,7 +101,7 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     addGrammars(documentTypeModel);
 
-    getAndAddImports(documentTypeModel, sortedRootBeansInformation);
+    addImports(documentTypeModel, sortedRootBeansInformation);
 
     getChildDocTypes(documentTypeModel, sortedRootBeansInformation);
 
@@ -159,13 +160,14 @@ public class DocTypeMarshaller extends MavenProcessor {
     }
   }
 
-  private void getAndAddImports(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> beanInformations) {
+  private void addImports(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> beanInformations) {
     for (ContentBeanInformation beanInformation : beanInformations) {
-      final String externalParentDocumentName = beanInformation.getExternalParentDocumentName();
-      if (StringUtils.isNotBlank(externalParentDocumentName)) {
-        // create XML for ImportDocType name="parentDocType"
+      // create import for every doctype that will get an aspect
+      final String aspectDocumentName = beanInformation.getAspectDocumentName();
+      if (StringUtils.isNotBlank(aspectDocumentName)) {
+        // create XML for ImportDocType name="docType"
         final Import anImport = objectFactory.createImport();
-        anImport.setName(externalParentDocumentName);
+        anImport.setName(aspectDocumentName);
         final JAXBElement<Import> importDocType = objectFactory.createImportDocType(anImport);
         documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType().add(importDocType);
       }
@@ -229,28 +231,54 @@ public class DocTypeMarshaller extends MavenProcessor {
    *
    * @param contentBeanInformation
    * @param parentDocType          Document type whose children must be found
-   * @return
+   * @return list of doctypes or doctypeaspects
    */
-  private List<DocType> extractChildDocTypes(ContentBeanInformation contentBeanInformation, DocType parentDocType) {
+  private List<Object> extractChildDocTypes(ContentBeanInformation contentBeanInformation, Object parentDocType) {
     getLog().info("Writing doctype for " + contentBeanInformation);
-    // ContentBeanInformation contains information for a one DocType
-    DocType currentDocType = objectFactory.createDocType();
-    currentDocType.setName(contentBeanInformation.getDocumentName());
 
-    //set abstract doctypes to abstract
-    //not done for non abstract since it is the default
-    if (contentBeanInformation.isAbstract()) {
-      currentDocType.setAbstract(true);
+    // DocType or DocTypeAspect!
+    Object currentDoc;
+    Object newParentDoc;
+
+    if (StringUtils.isNotBlank(contentBeanInformation.getAspectDocumentName())) {
+      // ououu we got an aspect, fancy stuff
+      final Import doctypeImportReference = objectFactory.createImport();
+      doctypeImportReference.setName(contentBeanInformation.getAspectDocumentName());
+
+      DocTypeAspect currentDocTypeAspect = objectFactory.createDocTypeAspect();
+      currentDocTypeAspect.setTargetType(doctypeImportReference);
+
+      // done collecting this doctypes information
+      knownDoctypes.put(doctypeImportReference.getName(), currentDocTypeAspect);
+      currentDoc = currentDocTypeAspect;
+      newParentDoc = doctypeImportReference;
+    }
+    else {
+      // ContentBeanInformation contains information for a one DocType
+      DocType currentDocType = objectFactory.createDocType();
+      currentDocType.setName(contentBeanInformation.getDocumentName());
+
+      //set abstract doctypes to abstract
+      //not done for non abstract since it is the default
+      if (contentBeanInformation.isAbstract()) {
+        currentDocType.setAbstract(true);
+      }
+      // Current DocType may have parents
+      if (parentDocType != null) {
+        currentDocType.setParent(parentDocType);
+      }
+      // done collecting this doctypes information
+      knownDoctypes.put(currentDocType.getName(), currentDocType);
+      currentDoc = currentDocType;
+      newParentDoc = currentDoc;
     }
 
-    knownDoctypes.put(currentDocType.getName(), currentDocType);
 
-    // Will collect current DocType and all child doctypes
-    List<DocType> docTypes = new LinkedList<DocType>();
-    docTypes.add(currentDocType);
+    // Will collect current DocType and all child doctypes or doctypeaspects
+    List<Object> docTypes = new LinkedList<Object>();
+    docTypes.add(currentDoc);
 
-
-    //  add children recursively to docTypes
+    // add children recursively to docTypes
     SortedSet<ContentBeanInformation> childBeanInformationsSorted = new TreeSet<ContentBeanInformation>(
         new Comparator<ContentBeanInformation>() {
           @Override
@@ -261,26 +289,24 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     childBeanInformationsSorted.addAll(contentBeanInformation.getChilds());
 
+    // extract children information now
     for (ContentBeanInformation cbi : childBeanInformationsSorted) {
-      docTypes.addAll(extractChildDocTypes(cbi, currentDocType));
-    }
-
-    // Current DocType may have parents
-    if (parentDocType != null) {
-      currentDocType.setParent(parentDocType);
-    }
-    else if (StringUtils.isNotBlank(contentBeanInformation.getExternalParentDocumentName())) {
-      // parentdoctype is explicitly set
-      final Import anImport = objectFactory.createImport();
-      anImport.setName(contentBeanInformation.getExternalParentDocumentName());
-      currentDocType.setParent(anImport);
+      docTypes.addAll(extractChildDocTypes(cbi, newParentDoc));
     }
 
     return docTypes;
   }
 
   private void extractProperties(ContentBeanInformation contentBeanInformation) {
-    DocType currentDocType = knownDoctypes.get(contentBeanInformation.getDocumentName());
+    // doctype or doctypeaspect
+    DocType currentDocType = null;
+    DocTypeAspect currentDocTypeAspect = null;
+    if (StringUtils.isNotBlank(contentBeanInformation.getAspectDocumentName())) {
+      currentDocTypeAspect = (DocTypeAspect) knownDoctypes.get(contentBeanInformation.getAspectDocumentName());
+    }
+    else {
+      currentDocType = (DocType) knownDoctypes.get(contentBeanInformation.getDocumentName());
+    }
 
     // add Properties
     SortedSet<PropertyInformation> propertyInformationsSorted = new TreeSet<PropertyInformation>(
@@ -298,7 +324,13 @@ public class DocTypeMarshaller extends MavenProcessor {
       Object element = createPropertyDescriptionFromPropertyInformation(propertyInformation);
 
       if (element != null) {
-        currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
+        // doctype or doctypeaspect
+        if (currentDocType != null) {
+          currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
+        }
+        else {
+          currentDocTypeAspect.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
+        }
       }
     }
 

@@ -11,7 +11,7 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
   private Class contentBean;
   private String documentName;
   private boolean isAbstract = false;
-  private String externalParentDocumentName;
+  private String aspectDocumentName;
 
   private ContentBeanInformation parent;
   private Set<ContentBeanInformation> childs = new HashSet<ContentBeanInformation>();
@@ -82,12 +82,12 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
     isAbstract = anAbstract;
   }
 
-  public String getExternalParentDocumentName() {
-    return externalParentDocumentName;
+  public String getAspectDocumentName() {
+    return aspectDocumentName;
   }
 
-  public void setExternalParentDocumentName(String externalParentDocumentName) {
-    this.externalParentDocumentName = externalParentDocumentName;
+  public void setAspectDocumentName(String aspectDocumentName) {
+    this.aspectDocumentName = aspectDocumentName;
   }
 
   public void addProperty(PropertyInformation propertyInformation) {

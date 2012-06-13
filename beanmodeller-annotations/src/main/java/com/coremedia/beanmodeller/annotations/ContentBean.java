@@ -29,9 +29,13 @@ public @interface ContentBean {
   boolean isAbstract() default false;
 
   /**
-   * Specify a custom parent doctype name. This might be necessary when you extend a ContentBean
-   * from external sources, e.g. the CoreMedia Blueprint MyCustomArticle extend CMArticle.
-   * @return Name of parent doctype or empty String if not set.
+   * Instead of creating a parent doctype, take the given doctype and extend it
+   * via CoreMedia DocTypeAspect.
+   *
+   * This allows you to insert additional properties for existing doctypes, e.g. from
+   * CoreMedia Blueprint but use your own ContentBean.
+   *
+   * @return Name of doctype to generate aspect for or empty String if not set.
    */
-  String parentDoctypeName() default "";
+  String aspectDoctypeName() default "";
 }

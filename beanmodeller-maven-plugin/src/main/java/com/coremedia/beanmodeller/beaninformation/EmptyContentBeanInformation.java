@@ -74,7 +74,7 @@ public final class EmptyContentBeanInformation implements ContentBeanInformation
   }
 
   @Override
-  public String getExternalParentDocumentName() {
+  public String getAspectDocumentName() {
     return null;
   }
 }

@@ -66,10 +66,9 @@ public interface ContentBeanInformation {
   public String getHumanUnderstandableRepresentation();
 
   /**
-   * Has this bean a parent from an external source?
-   * Accessorizors should not be generated then, but it may be required for doctypes.xml
+   * Name of the Document Type to be modified via aspects.
    *
    * @return empty if contentbean is generated with the BeanModeller
    */
-  public String getExternalParentDocumentName();
+  public String getAspectDocumentName();
 }

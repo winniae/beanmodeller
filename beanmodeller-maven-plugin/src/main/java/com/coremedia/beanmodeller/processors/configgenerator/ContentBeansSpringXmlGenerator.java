@@ -5,6 +5,7 @@ import com.coremedia.beanmodeller.maven.PluginException;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -107,7 +108,18 @@ public abstract class ContentBeansSpringXmlGenerator extends MavenProcessor {
     }
     else {
       //create a bean for the conten bean factory
-      return springBeanNamePrefix + contentBeanInformation.getDocumentName();
+      String documentName;
+
+      if (StringUtils.isNotBlank(contentBeanInformation.getAspectDocumentName())) {
+        // take name from the aspect
+        documentName = contentBeanInformation.getAspectDocumentName();
+      }
+      else {
+        // the usual case!!
+        documentName = contentBeanInformation.getDocumentName();
+      }
+
+      return springBeanNamePrefix + documentName;
     }
   }
 

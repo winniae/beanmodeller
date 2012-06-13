@@ -6,9 +6,9 @@ import com.coremedia.beanmodeller.testcontentbeans.externalmodel.ExternalArticle
 /**
  * 2012/06/11 winfried.mosler@launsch.de
  *
- * ContentBean extended from an external article, should get that as parent in doctype definition.
+ * ContentBean extended from an external article, should generate an doctype aspect.
  */
-@ContentBean(parentDoctypeName = "CMArticle")
+@ContentBean(aspectDoctypeName = "CMArticle")
 public abstract class CBGArticle extends ExternalArticleImpl {
 
   public abstract String getExternalId();

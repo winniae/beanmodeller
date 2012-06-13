@@ -28,6 +28,6 @@ public class ClassPathContentBeanScannerTest extends MavenProcessor {
   public void testPackageSearch() {
     Set<Class> candidateCBs = scanner.findCandidateContentBeanClasses("com.coremedia.beanmodeller.testcontentbeans.testmodel", getLog());
     // make sure it finds all three annotated beans in folder
-    assertEquals(5, candidateCBs.size());
+    assertEquals(6, candidateCBs.size());
   }
 }

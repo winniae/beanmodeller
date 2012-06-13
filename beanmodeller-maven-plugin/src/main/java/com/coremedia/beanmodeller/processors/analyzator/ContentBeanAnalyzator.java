@@ -427,7 +427,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       beanInformation.setAbstract(beanAnnotation.isAbstract());
 
       // get hint for external doctype
-      beanInformation.setExternalParentDocumentName(beanAnnotation.parentDoctypeName());
+      beanInformation.setAspectDocumentName(beanAnnotation.aspectDoctypeName());
     }
   }
 
