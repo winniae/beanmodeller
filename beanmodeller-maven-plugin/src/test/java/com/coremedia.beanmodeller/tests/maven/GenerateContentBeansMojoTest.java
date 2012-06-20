@@ -7,8 +7,19 @@ import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.FileReader;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -46,11 +57,37 @@ public class GenerateContentBeansMojoTest extends AbstractMojoTestCase {
     super.tearDown();
   }
 
-  /**
-   * @throws Exception if any
-   */
-  public void testSomething() throws Exception {
-    // setUp
+  public void testCompileGeneratedCode() throws Exception {
+    JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
+    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+    StandardJavaFileManager sjfm = jc.getStandardFileManager(diagnostics, null, null);
+
+    File javaDir = getTestFile("target/test-content-beans/com/coremedia/test/");
+    assertThat(javaDir, is(notNullValue()));
+    assertThat(javaDir.exists(), is(true));
+    // getJavaFileObjects’ param is a vararg
+    Iterable fileObjects = sjfm.getJavaFileObjects(javaDir.listFiles());
+
+    // uhm, lets just compile into the same directory for now ..
+    List<String> options = new LinkedList<String>();
+    options.add("-d");
+    options.add(getBasedir() + "/target/test-content-beans/");
+
+    // add diagnostics to get error messages during compile
+
+
+    final Boolean compilationResult = jc.getTask(null, sjfm, diagnostics, options, null, fileObjects).call();
+
+    for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+      System.out.format("Error on line %d in %s%n",
+          diagnostic.getLineNumber(),
+          diagnostic.getSource());
+    }
+
+    // Add more compilation tasks
+    sjfm.close();
+
+    assertThat(compilationResult, is(true));
   }
 
   @Test
