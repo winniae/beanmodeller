@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -96,7 +96,7 @@ public class ContentBeanPropertiesTest {
       hierarchy = contentBeanAnalyzator.analyzeContentBeanInformation();
     }
     catch (ContentBeanAnalyzationException e) {
-      fail();
+      fail(e.getMessage());
     }
 
     try {

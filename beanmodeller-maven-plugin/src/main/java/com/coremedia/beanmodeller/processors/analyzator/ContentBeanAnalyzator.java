@@ -738,23 +738,43 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
 
   private Collection<Method> findDeclaredMethods(Class currentClass) {
-    final Collection<Method> declaredMethods = new LinkedList<Method>();
+    // it's a set to filter duplicates
+    final Collection<Method> declaredMethods = new HashSet<Method>();
 
     // methods directly declared in this class
     Collections.addAll(declaredMethods, currentClass.getDeclaredMethods());
 
     // look in interfaces directly implemented by this class; recursively
-    addDeclaredMethodsFromInterfaces(currentClass, declaredMethods);
+    addDeclaredMethodsFromInterfaces(currentClass.getMethods(), currentClass, declaredMethods);
 
 
     return declaredMethods;
   }
 
-  private void addDeclaredMethodsFromInterfaces(Class currentClass, Collection<Method> declaredMethods) {
+  private void addDeclaredMethodsFromInterfaces(Method[] baseMethods, Class currentClass, Collection<Method> declaredMethods) {
     for (Class implementedInterface : currentClass.getInterfaces()) {
-      Collections.addAll(declaredMethods, implementedInterface.getDeclaredMethods());
-      addDeclaredMethodsFromInterfaces(implementedInterface, declaredMethods);
+      for (Method method : implementedInterface.getDeclaredMethods()) {
+        if (!isImplemented(baseMethods, method)) {
+          declaredMethods.add(method);
+        }
+      }
+      addDeclaredMethodsFromInterfaces(baseMethods, implementedInterface, declaredMethods);
     }
+  }
+
+  /**
+   * if method is found by name in baseMethods and is not abstract -> ignore because it is already implemented
+   */
+  private boolean isImplemented(Method[] baseMethods, Method compareMethod) {
+    for (Method baseMethod : baseMethods) {
+      if (baseMethod.getName().equals(compareMethod.getName())) {
+        // return true if method is among baseMethods and _not_ abstract
+        return !Modifier.isAbstract(baseMethod.getModifiers());
+      }
+    }
+
+    // method not found among baseMethods
+    return false;
   }
 
 
