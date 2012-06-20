@@ -7,9 +7,11 @@ import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGArticle;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGSpecialArticle;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.writer.SingleStreamCodeWriter;
@@ -44,6 +46,8 @@ public class CodeGenerationTest {
     analyzator.addContentBean(CBGAttendee.class);
     analyzator.addContentBean(CBGContent.class);
     analyzator.addContentBean(CBGImage.class);
+    analyzator.addContentBean(CBGArticle.class);
+    analyzator.addContentBean(CBGSpecialArticle.class);
     hierarchy = analyzator.analyzeContentBeanInformation();
 
     roots = hierarchy.getRootBeanInformation();

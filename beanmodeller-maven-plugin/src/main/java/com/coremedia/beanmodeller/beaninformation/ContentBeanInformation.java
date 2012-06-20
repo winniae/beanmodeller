@@ -45,7 +45,9 @@ public interface ContentBeanInformation {
 
 
   /**
-   * Properties of this content bean TODO inheritted properties, too???
+   * Properties of this content bean
+   * <p/>
+   * inheritted properties, too??? --no, inheritance is resolved during code-generation by walking through the tree
    *
    * @return Set containing all Properties of this contentbean or empty Set if there are non.
    */

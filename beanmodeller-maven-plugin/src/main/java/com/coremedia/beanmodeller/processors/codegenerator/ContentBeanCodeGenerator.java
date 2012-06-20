@@ -38,6 +38,9 @@ import java.util.Set;
  * User: marcus
  * Date: 01.02.11
  * Time: 17:49
+ * <p/>
+ * Starts generating classes beginning with every given root bean.
+ * Walks down the tree hierarchy while passing down information which property-methods have to be generated for every Accessorizor.
  */
 public class ContentBeanCodeGenerator extends MavenProcessor {
 

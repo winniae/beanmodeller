@@ -32,6 +32,8 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -198,7 +200,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       //this mad for is a cycle to go up the complete hierarchy up to abstract content bean
       // or if we find an already analyzed class
-      for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass = currentClass.getSuperclass()) {
+      for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass =
+          currentClass.getSuperclass()) {
         if (getLog().isDebugEnabled()) {
           getLog().debug("checking class in hierarchy: " + currentClass);
         }
@@ -213,15 +216,13 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private void analyzeMethods(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, ContentBeanHierarchy hierarchy) {
-    Method[] methods = currentClass.getDeclaredMethods();
-
     //it is a content bean if there is an annotation - we do not really care about details here
     boolean isContentBean = currentClass.getAnnotation(ContentBean.class) != null;
 
     // stores propertyNames for each class to prevent double property declarations
     Set<String> foundPropertyNames = new HashSet<String>();
 
-    for (Method method : methods) {
+    for (Method method : findDeclaredMethods(currentClass)) {
       Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
       boolean hasValidReturnType = hasValidReturnType(method, hierarchy);
@@ -245,7 +246,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     }
   }
 
-  private boolean analyzeNotAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType) {
+
+  private boolean analyzeNotAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Method method, boolean validPropertyMethod,
+                                            boolean hasValidReturnType) {
     boolean methodIsContentBeanMethod = false;
     //we want to look at abstract methods only
     if (Modifier.isAbstract(method.getModifiers())) {
@@ -268,7 +271,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return methodIsContentBeanMethod;
   }
 
-  private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method, boolean validPropertyMethod, boolean hasValidReturnType) {
+  private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method,
+                                         boolean validPropertyMethod, boolean hasValidReturnType) {
     boolean methodIsContentBeanMethod = false;
     //bean properties only in content beans
     if (!isContentBean) {
@@ -297,7 +301,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     // VALIDATE
     //check if the property name name is too long
     if (documentTypePropertyName.length() > MAX_PROPERTY_LENGTH) {
-      potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " + MAX_PROPERTY_LENGTH);
+      potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " +
+          MAX_PROPERTY_LENGTH);
       //we ignore this method
       return true;
     }
@@ -443,7 +448,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
 
       // create property information for each abstract method
-      for (Method method : classToAnalyze.getDeclaredMethods()) {
+      for (Method method : findDeclaredMethods(classToAnalyze)) {
         //we only have to consider methods which have been checked earlier
         if (foundContentBeanProperties.contains(method)) {
           // property information
@@ -463,7 +468,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
           // POST CHECK
           if (propertyInformation instanceof UnknownPropertyInformation) {
-            potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE + method.getReturnType());
+            potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE + method
+                .getReturnType());
 
             // don't include this method in result
             break;
@@ -526,7 +532,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       MimeType mimetype = new MimeType(mimeTypeName); //NOSONAR - this is a test if it is a proper mime type
     }
     catch (MimeTypeParseException e) {
-      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should have the pattern X/Y", e);
+      throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should " +
+          "have the pattern X/Y", e);
     }
 
     BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
@@ -650,7 +657,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
           grammarURL = new URL(grammarName);
         }
         catch (MalformedURLException e) {
-          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable as URL", e);
+          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable " +
+              "as URL", e);
         }
       }
       if (grammarURL == null) {
@@ -726,6 +734,27 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return !returnType.isPrimitive()
         && (VALID_METHOD_RETURN_TYPES.contains(returnType)
         || hierarchy.getAllFoundContentBeans().contains(returnType));
+  }
+
+
+  private Collection<Method> findDeclaredMethods(Class currentClass) {
+    final Collection<Method> declaredMethods = new LinkedList<Method>();
+
+    // methods directly declared in this class
+    Collections.addAll(declaredMethods, currentClass.getDeclaredMethods());
+
+    // look in interfaces directly implemented by this class; recursively
+    addDeclaredMethodsFromInterfaces(currentClass, declaredMethods);
+
+
+    return declaredMethods;
+  }
+
+  private void addDeclaredMethodsFromInterfaces(Class currentClass, Collection<Method> declaredMethods) {
+    for (Class implementedInterface : currentClass.getInterfaces()) {
+      Collections.addAll(declaredMethods, implementedInterface.getDeclaredMethods());
+      addDeclaredMethodsFromInterfaces(implementedInterface, declaredMethods);
+    }
   }
 
 

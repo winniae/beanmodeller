@@ -69,7 +69,9 @@ public class DocTypeMarshalerTest {
         "    <XmlSchema Name=\"simple.xsd\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
         "    <ImportDocType Name=\"CMArticle\"/>\n" +
         "    <DocTypeAspect TargetType=\"CMArticle\">\n" +
+        "        <IntProperty Name=\"disabled\"/>\n" +
         "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
+        "        <StringProperty Length=\"128\" Name=\"linkUrl\"/>\n" +
         "    </DocTypeAspect>\n" +
         "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
         "        <StringProperty Length=\"32\" Name=\"specialSensation\"/>\n" +
