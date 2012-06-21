@@ -75,6 +75,7 @@ public class DocTypeMarshalerTest {
         "        <StringProperty Length=\"128\" Name=\"linkUrl\"/>\n" +
         "    </DocTypeAspect>\n" +
         "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
+        "        <LinkListProperty LinkType=\"CBGImage\" Name=\"images\" Max=\"2147483647\" Min=\"0\"/>\n" +
         "        <StringProperty Length=\"32\" Name=\"specialSensation\"/>\n" +
         "    </DocType>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +

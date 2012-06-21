@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
@@ -576,12 +577,33 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
     if (genericReturnType instanceof ParameterizedType) {
       // return Type is parameterized -> an explicit type is given
-      // whoo, quite optimistic cast!?
-      Class returnTypeLinkType = (Class) ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
+      final Type listType = ((ParameterizedType) genericReturnType).getActualTypeArguments()[0];
+      Class returnTypeLinkType;
+
+      if (listType instanceof Class) {
+        returnTypeLinkType = (Class) listType;
+      }
+      else if (listType instanceof WildcardType) {
+        // whoo, still quite optimistic cast!?
+        // this handles cases like public abstract List<? extends CBGImage> getImages();
+        returnTypeLinkType = (Class) ((WildcardType) listType).getUpperBounds()[0];
+
+      }
+      else {
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + listType);
+      }
 
       // find the ContentBeanInformation that represents this LinkType
       ContentBeanInformation contentBeanInformationLinkType = hierarchy.getContentBeanInformation(returnTypeLinkType);
 
+      if (contentBeanInformationLinkType == null) {
+        // ouh, not found by class. let's try to look it up by document type/class name
+        for (ContentBeanInformation beanInformation : hierarchy.getAllContentBeanInformation()) {
+          if (beanInformation.getDocumentName().equals(returnTypeLinkType.getCanonicalName())) {
+            contentBeanInformationLinkType = beanInformation;
+          }
+        }
+      }
       // ## validate
       if (contentBeanInformationLinkType == null) {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + returnTypeLinkType);

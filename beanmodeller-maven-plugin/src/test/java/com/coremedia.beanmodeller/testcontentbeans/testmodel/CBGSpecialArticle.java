@@ -2,6 +2,8 @@ package com.coremedia.beanmodeller.testcontentbeans.testmodel;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
 
+import java.util.List;
+
 /**
  * 2012/06/13 winfried.mosler@launsch.de
  *
@@ -20,4 +22,10 @@ public abstract class CBGSpecialArticle extends CBGAlmostSpecialArticle {
   public Object getNotFromContent() {
     return null;
   }
+
+  /**
+   * BeanModeller must handle WildCardTypes, too.. should generate type of CBGImage
+   * @return
+   */
+  public abstract List<? extends CBGImage> getImages();
 }
