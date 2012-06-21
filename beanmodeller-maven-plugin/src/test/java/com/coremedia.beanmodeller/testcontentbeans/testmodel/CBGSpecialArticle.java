@@ -8,7 +8,16 @@ import com.coremedia.beanmodeller.annotations.ContentBean;
  * Article that extends the standard CBGArticle which modified an external article via doctype aspects.
  */
 @ContentBean(doctypeName = "CBGSpecArticle")
-public abstract class CBGSpecialArticle extends CBGArticle {
+public abstract class CBGSpecialArticle extends CBGAlmostSpecialArticle {
 
   public abstract String getSpecialSensation();
+
+  /**
+   * implement this method only here, so when AlmostSpecialArticle is analyzed, it might fail
+   * @return
+   */
+  @Override
+  public Object getNotFromContent() {
+    return null;
+  }
 }

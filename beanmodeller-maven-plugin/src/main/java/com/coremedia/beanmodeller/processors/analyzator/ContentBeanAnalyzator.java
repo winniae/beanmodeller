@@ -222,7 +222,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     // stores propertyNames for each class to prevent double property declarations
     Set<String> foundPropertyNames = new HashSet<String>();
 
-    for (Method method : findDeclaredMethods(currentClass)) {
+    for (Method method : findDeclaredMethods(currentClass, contentBean)) {
       Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
       boolean hasValidReturnType = hasValidReturnType(method, hierarchy);
@@ -232,9 +232,6 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
       else {
         methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType);
-      }
-      {
-
       }
 
       //if the analyzation was successfull we note it for later property generation
@@ -259,6 +256,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
             ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
       }
       else if (!hasValidReturnType) {
+        getLog().error("Added potential exception for invalid return type for " + contentBean + " " + method);
         potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
       }
       else {
@@ -448,7 +446,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
 
       // create property information for each abstract method
-      for (Method method : findDeclaredMethods(classToAnalyze)) {
+      for (Method method : findDeclaredMethods(classToAnalyze, classToAnalyze)) {
         //we only have to consider methods which have been checked earlier
         if (foundContentBeanProperties.contains(method)) {
           // property information
@@ -737,7 +735,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
 
-  private Collection<Method> findDeclaredMethods(Class currentClass) {
+  private Collection<Method> findDeclaredMethods(Class currentClass, Class latestContentBean) {
     // it's a set to filter duplicates
     final Collection<Method> declaredMethods = new HashSet<Method>();
 
@@ -745,13 +743,23 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     Collections.addAll(declaredMethods, currentClass.getDeclaredMethods());
 
     // look in interfaces directly implemented by this class; recursively
-    addDeclaredMethodsFromInterfaces(currentClass.getMethods(), currentClass, declaredMethods);
+    // filter methods that are not abstract in the latestContentBean anymore
+    addDeclaredMethodsFromInterfaces(latestContentBean.getMethods(), currentClass, declaredMethods);
 
+    if (getLog().isDebugEnabled()) {
+      StringBuilder debugMessage = new StringBuilder();
+      debugMessage.append("Found methods for class ").append(currentClass.getCanonicalName()).append(":\n");
+      for (Method declaredMethod : declaredMethods) {
+        debugMessage.append(declaredMethod).append("\n");
+      }
+
+      getLog().debug(debugMessage);
+    }
 
     return declaredMethods;
   }
 
-  private void addDeclaredMethodsFromInterfaces(Method[] baseMethods, Class currentClass, Collection<Method> declaredMethods) {
+  private void addDeclaredMethodsFromInterfaces(final Method[] baseMethods, Class currentClass, Collection<Method> declaredMethods) {
     for (Class implementedInterface : currentClass.getInterfaces()) {
       for (Method method : implementedInterface.getDeclaredMethods()) {
         if (!isImplemented(baseMethods, method)) {
@@ -765,7 +773,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   /**
    * if method is found by name in baseMethods and is not abstract -> ignore because it is already implemented
    */
-  private boolean isImplemented(Method[] baseMethods, Method compareMethod) {
+  private boolean isImplemented(final Method[] baseMethods, Method compareMethod) {
     for (Method baseMethod : baseMethods) {
       if (baseMethod.getName().equals(compareMethod.getName())) {
         // return true if method is among baseMethods and _not_ abstract
