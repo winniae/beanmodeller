@@ -12,4 +12,11 @@ import com.coremedia.objectserver.beans.ContentBean;
 public interface BasicInterface extends ContentBean {
 
   Boolean isDisabled();
+
+  /**
+   * Object is not a valid return type. But the extending interface will overwrite it and BeanModeller should use
+   * that return type instead.
+   * @return
+   */
+  Object getData();
 }

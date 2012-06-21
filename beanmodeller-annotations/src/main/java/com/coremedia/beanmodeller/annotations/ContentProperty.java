@@ -45,4 +45,11 @@ public @interface ContentProperty {
    * @return
    */
   String propertyBlobMimeType() default BLOB_PROPERTY_DEFAULT_MIME_TYPE;
+
+  /**
+   * Disable interpretation of the annotated Method as ContentProperty.
+   *
+   * @return
+   */
+  boolean thisAintOne() default false;
 }

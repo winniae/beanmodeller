@@ -24,7 +24,6 @@ import com.coremedia.xml.Markup;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -200,8 +199,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       //this mad for is a cycle to go up the complete hierarchy up to abstract content bean
       // or if we find an already analyzed class
-      for (Class currentClass = contentBean; !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass()); currentClass =
-          currentClass.getSuperclass()) {
+      for (Class currentClass = contentBean;
+           !currentClass.equals(AbstractContentBean.class) && !visitedClasses.contains(currentClass.getClass());
+           currentClass = currentClass.getSuperclass()) {
         if (getLog().isDebugEnabled()) {
           getLog().debug("checking class in hierarchy: " + currentClass);
         }
@@ -223,12 +223,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     Set<String> foundPropertyNames = new HashSet<String>();
 
     for (Method method : findDeclaredMethods(currentClass, contentBean)) {
-      Annotation methodAnnotation = method.getAnnotation(ContentProperty.class);
+      ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
       boolean hasValidReturnType = hasValidReturnType(method, hierarchy);
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
-        methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType);
+        methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType, methodAnnotation);
       }
       else {
         methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType);
@@ -270,13 +270,20 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method,
-                                         boolean validPropertyMethod, boolean hasValidReturnType) {
+                                         boolean validPropertyMethod, boolean hasValidReturnType, ContentProperty methodAnnotation) {
     boolean methodIsContentBeanMethod = false;
     //bean properties only in content beans
     if (!isContentBean) {
       potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
           "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class is no content bean");
       //bean properties must be abstract
+    }
+    else if (methodAnnotation.thisAintOne()) {
+      // this ain't definately no property method
+      if (getLog().isDebugEnabled()) {
+        getLog().debug(method + " is marked as not a ContentProperty explicitly");
+      }
+      return false;
     }
     else if (!validPropertyMethod) {
       potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
@@ -762,10 +769,11 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   private void addDeclaredMethodsFromInterfaces(final Method[] baseMethods, Class currentClass, Collection<Method> declaredMethods) {
     for (Class implementedInterface : currentClass.getInterfaces()) {
       for (Method method : implementedInterface.getDeclaredMethods()) {
-        if (!isImplemented(baseMethods, method)) {
+        if (!isImplemented(baseMethods, method) && !isListed(declaredMethods, method)) {
           declaredMethods.add(method);
         }
       }
+      // call recursively
       addDeclaredMethodsFromInterfaces(baseMethods, implementedInterface, declaredMethods);
     }
   }
@@ -782,6 +790,24 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     }
 
     // method not found among baseMethods
+    return false;
+  }
+
+
+  /**
+   * is method listed in declaredMethods? compared by name
+   *
+   * @param declaredMethods
+   * @param method
+   * @return true if a method of name method.getName() is already listed in declared methods.
+   */
+  private boolean isListed(Collection<Method> declaredMethods, Method method) {
+    for (Method declaredMethod : declaredMethods) {
+      if (declaredMethod.getName().equals(method.getName())) {
+        return true;
+      }
+    }
+
     return false;
   }
 
