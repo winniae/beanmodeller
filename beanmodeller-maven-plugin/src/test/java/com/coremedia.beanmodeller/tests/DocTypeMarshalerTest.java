@@ -12,6 +12,7 @@ import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGImage;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGSpecialArticle;
+import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGSpecialAspectArticle;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
@@ -45,6 +46,7 @@ public class DocTypeMarshalerTest {
     analyzator.addContentBean(CBGImage.class);
     analyzator.addContentBean(CBGArticle.class);
     analyzator.addContentBean(CBGSpecialArticle.class);
+    analyzator.addContentBean(CBGSpecialAspectArticle.class);
 
     try {
       ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
@@ -68,17 +70,7 @@ public class DocTypeMarshalerTest {
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlSchema Name=\"simple.xsd\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
         "    <ImportDocType Name=\"CMArticle\"/>\n" +
-        "    <DocTypeAspect TargetType=\"CMArticle\">\n" +
-        "        <BlobProperty MimeType=\"*/*\" Name=\"data\"/>\n" +
-        "        <IntProperty Name=\"disabled\"/>\n" +
-        "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
-        "        <StringProperty Length=\"128\" Name=\"linkUrl\"/>\n" +
-        "        <LinkListProperty Name=\"master\" Max=\"1\" Min=\"0\"/>\n" +
-        "    </DocTypeAspect>\n" +
-        "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
-        "        <LinkListProperty LinkType=\"CBGImage\" Name=\"images\" Max=\"2147483647\" Min=\"0\"/>\n" +
-        "        <StringProperty Length=\"32\" Name=\"specialSensation\"/>\n" +
-        "    </DocType>\n" +
+        "    <ImportDocType Name=\"CBGSpecialArt\"/>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
         "        <StringProperty Length=\"20\" Name=\"description\"/>\n" +
         "    </DocType>\n" +
@@ -98,6 +90,18 @@ public class DocTypeMarshalerTest {
         "        <BlobProperty MimeType=\"*/*\" Name=\"genericBlob\" />\n" +
         "        <BlobProperty MimeType=\"image/*\" Name=\"image\" />\n" +
         "    </DocType>\n" +
+        "    <DocTypeAspect TargetType=\"CMArticle\">\n" +
+        "        <BlobProperty MimeType=\"*/*\" Name=\"data\"/>\n" +
+        "        <IntProperty Name=\"disabled\"/>\n" +
+        "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
+        "        <StringProperty Length=\"128\" Name=\"linkUrl\"/>\n" +
+        "        <LinkListProperty LinkType=\"CMArticle\" Name=\"master\" Max=\"1\" Min=\"0\"/>\n" +
+        "    </DocTypeAspect>\n" +
+        "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
+        "        <LinkListProperty LinkType=\"CBGImage\" Name=\"images\" Max=\"2147483647\" Min=\"0\"/>\n" +
+        "        <StringProperty Length=\"32\" Name=\"specialSensation\"/>\n" +
+        "    </DocType>\n" +
+        "    <DocTypeAspect TargetType=\"CBGSpecialArt\"/>\n"+
         "</DocumentTypeModel>";
 
     try {

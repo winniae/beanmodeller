@@ -1,5 +1,6 @@
 package com.coremedia.beanmodeller.processors.doctypegenerator;
 
+import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.GrammarInformation;
@@ -19,7 +20,6 @@ import com.coremedia.schemabeans.ObjectFactory;
 import com.coremedia.schemabeans.StringProperty;
 import com.coremedia.schemabeans.XmlProperty;
 import com.coremedia.schemabeans.XmlSchema;
-import org.apache.commons.lang.StringUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -160,17 +160,19 @@ public class DocTypeMarshaller extends MavenProcessor {
     }
   }
 
-  private void addImports(DocumentTypeModel documentTypeModel, SortedSet<ContentBeanInformation> beanInformations) {
+  private void addImports(DocumentTypeModel documentTypeModel, Set<? extends ContentBeanInformation> beanInformations) {
     for (ContentBeanInformation beanInformation : beanInformations) {
       // create import for every doctype that will get an aspect
       final String aspectDocumentName = beanInformation.getAspectDocumentName();
-      if (StringUtils.isNotBlank(aspectDocumentName)) {
+      if (!aspectDocumentName.equals(ContentBean.DOC_TYPE_ASPECT_DISABLED)) {
         // create XML for ImportDocType name="docType"
         final Import anImport = objectFactory.createImport();
         anImport.setName(aspectDocumentName);
         final JAXBElement<Import> importDocType = objectFactory.createImportDocType(anImport);
         documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType().add(importDocType);
       }
+      // recursively
+      addImports(documentTypeModel, beanInformation.getChilds());
     }
   }
 
@@ -240,7 +242,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     Object currentDoc;
     Object newParentDoc;
 
-    if (StringUtils.isNotBlank(contentBeanInformation.getAspectDocumentName())) {
+    if (!contentBeanInformation.getAspectDocumentName().equals(ContentBean.DOC_TYPE_ASPECT_DISABLED)) {
       // ououu we got an aspect, fancy stuff
       final Import doctypeImportReference = objectFactory.createImport();
       doctypeImportReference.setName(contentBeanInformation.getAspectDocumentName());
@@ -301,7 +303,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     // doctype or doctypeaspect
     DocType currentDocType = null;
     DocTypeAspect currentDocTypeAspect = null;
-    if (StringUtils.isNotBlank(contentBeanInformation.getAspectDocumentName())) {
+    if (!contentBeanInformation.getAspectDocumentName().equals(ContentBean.DOC_TYPE_ASPECT_DISABLED)) {
       currentDocTypeAspect = (DocTypeAspect) knownDoctypes.get(contentBeanInformation.getAspectDocumentName());
     }
     else {
@@ -403,7 +405,15 @@ public class DocTypeMarshaller extends MavenProcessor {
     final LinkListProperty listProperty = objectFactory.createLinkListProperty();
     final String docTypeName = propertyInformation.getLinkType().getDocumentName();
     listProperty.setName(propertyInformation.getDocumentTypePropertyName());
-    listProperty.setLinkType(knownDoctypes.get(docTypeName));
+
+    // target type, if DocType: great, if DocTypeAspect: get the actual target type, i.e. the import statement
+    Object value = knownDoctypes.get(docTypeName);
+    if (value instanceof DocTypeAspect) {
+      value = ((DocTypeAspect) value).getTargetType();
+
+    }
+    listProperty.setLinkType(value);
+
     listProperty.setMin(BigInteger.valueOf(propertyInformation.getMin()));
     listProperty.setMax(BigInteger.valueOf(propertyInformation.getMax()));
     return listProperty;

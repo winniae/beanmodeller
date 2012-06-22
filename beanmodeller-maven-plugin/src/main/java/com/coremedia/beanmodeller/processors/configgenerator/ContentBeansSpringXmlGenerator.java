@@ -1,11 +1,11 @@
 package com.coremedia.beanmodeller.processors.configgenerator;
 
+import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.maven.PluginException;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -110,7 +110,7 @@ public abstract class ContentBeansSpringXmlGenerator extends MavenProcessor {
       //create a bean for the conten bean factory
       String documentName;
 
-      if (StringUtils.isNotBlank(contentBeanInformation.getAspectDocumentName())) {
+      if (!contentBeanInformation.getAspectDocumentName().equals(ContentBean.DOC_TYPE_ASPECT_DISABLED)) {
         // take name from the aspect
         documentName = contentBeanInformation.getAspectDocumentName();
       }

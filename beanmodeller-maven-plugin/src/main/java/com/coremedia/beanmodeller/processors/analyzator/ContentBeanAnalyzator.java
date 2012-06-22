@@ -398,18 +398,26 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       //and create the content bean name either from the annotation or the class name
       String docTypeName;
-      if (beanAnnotation.doctypeName().equals(ContentBean.DOC_TYPE_NAME_USE_CLASS_NAME)) {
-        if (getLog().isDebugEnabled()) {
-          getLog().debug("Using class name as content type name for " + classToAnalyze.getCanonicalName() + " since it is the default");
-        }
-        docTypeName = classToAnalyze.getSimpleName();
-      }
-      else {
+      final boolean isDoctype = !beanAnnotation.doctypeName().equals(ContentBean.DOC_TYPE_NAME_USE_CLASS_NAME);
+      final boolean isAspectDoctype = !beanAnnotation.aspectDoctypeName().equals(ContentBean.DOC_TYPE_ASPECT_DISABLED);
+      if (isDoctype) {
         docTypeName = beanAnnotation.doctypeName();
         if (getLog().isDebugEnabled()) {
           getLog().debug("Using annotation name " + docTypeName + " as content type name for " + classToAnalyze.getCanonicalName() + ".");
         }
-
+      }
+      else if (isAspectDoctype) {
+        docTypeName = beanAnnotation.aspectDoctypeName();
+        if (getLog().isDebugEnabled()) {
+          getLog().debug("Using annotation name " + docTypeName + " as aspect content type name for " + classToAnalyze.getCanonicalName() + ".");
+        }
+      }
+      else /*if (!isDoctype && !isAspectDoctype)*/ {
+        // neither is set
+        docTypeName = classToAnalyze.getSimpleName();
+        if (getLog().isDebugEnabled()) {
+          getLog().debug("Using class name as content type name for " + classToAnalyze.getCanonicalName() + " since it is the default");
+        }
       }
 
       //check if the doctpye name name is too long

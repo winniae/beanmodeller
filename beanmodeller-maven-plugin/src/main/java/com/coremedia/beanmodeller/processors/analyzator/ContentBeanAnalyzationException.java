@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class ContentBeanAnalyzationException extends ContentBeanAnalyzatorInternalException {
   public static final String NOT_INHERITING_ABSTRACT_CONTENT_BEAN_MESSAGE = "This bean does not inherit ";
-  public static final String CLASSNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE = "The class name is to long for ";
-  public static final String METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE = "The method name is to long for ";
+  public static final String CLASSNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE = "The class name is too long for ";
+  public static final String METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE = "The method name is too long for ";
 
   public static final String DUPLICATE_DOCTYPE_NAMES_MESSAGE = "There are duplicate document type names :";
   public static final String DUPLICATE_PROPERTY_NAMES_MESSAGES = "There are duplicate property names :";

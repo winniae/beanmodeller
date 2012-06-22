@@ -3,13 +3,6 @@
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-  <bean name="contentBeanFactory:CMArticle"
-        scope="prototype"
-        class="com.coremedia.test.CBGArticleBeanAccessorizor"/>
-  <bean name="contentBeanFactory:CBGSpecArticle"
-        parent="contentBeanFactory:CMArticle"
-        scope="prototype"
-        class="com.coremedia.test.CBGSpecialArticleBeanAccessorizor"/>
   <bean name="CBGContent"
         scope="prototype"/>
   <bean name="contentBeanFactory:CBGAppointment"
@@ -24,4 +17,16 @@
         parent="CBGContent"
         scope="prototype"
         class="com.coremedia.test.CBGImageBeanAccessorizor"/>
+  <bean name="contentBeanFactory:CMArticle"
+        scope="prototype"
+        class="com.coremedia.test.CBGArticleBeanAccessorizor"/>
+  <bean name="contentBeanFactory:CBGSpecArticle"
+        parent="contentBeanFactory:CMArticle"
+        scope="prototype"
+        class="com.coremedia.test.CBGSpecialArticleBeanAccessorizor"/>
+  <bean name="contentBeanFactory:CBGSpecialArt"
+        parent="contentBeanFactory:CMArticle"
+        scope="prototype"
+        class="com.coremedia.test.CBGSpecialAspectArticleBeanAccessorizor"/>
+
 </beans>

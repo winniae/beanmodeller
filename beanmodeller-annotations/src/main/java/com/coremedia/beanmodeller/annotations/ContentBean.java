@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target(value = {ElementType.TYPE})
 public @interface ContentBean {
   String DOC_TYPE_NAME_USE_CLASS_NAME = "[useClassName]";
+  String DOC_TYPE_ASPECT_DISABLED ="[notAnDoctypeAspect]";
 
   /**
    * The document type name to use in the doctype.xml. This is normally the class name but if it is longer than
@@ -37,5 +38,5 @@ public @interface ContentBean {
    *
    * @return Name of doctype to generate aspect for or empty String if not set.
    */
-  String aspectDoctypeName() default "";
+  String aspectDoctypeName() default DOC_TYPE_ASPECT_DISABLED;
 }
