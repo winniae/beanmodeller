@@ -95,13 +95,16 @@ public class DocTypeMarshalerTest {
         "        <IntProperty Name=\"disabled\"/>\n" +
         "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
         "        <StringProperty Length=\"128\" Name=\"linkUrl\"/>\n" +
+        "        <StringProperty Length=\"23\" Name=\"longer\"/>\n" +
         "        <LinkListProperty LinkType=\"CMArticle\" Name=\"master\" Max=\"1\" Min=\"0\"/>\n" +
+        "        <IntProperty Name=\"nice\"/>\n" +
         "    </DocTypeAspect>\n" +
         "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
         "        <LinkListProperty LinkType=\"CBGImage\" Name=\"images\" Max=\"2147483647\" Min=\"0\"/>\n" +
+        "        <StringProperty Length=\"34\" Name=\"longer\" Override=\"true\"/>\n" +
         "        <StringProperty Length=\"32\" Name=\"specialSensation\"/>\n" +
         "    </DocType>\n" +
-        "    <DocTypeAspect TargetType=\"CBGSpecialArt\"/>\n"+
+        "    <DocTypeAspect TargetType=\"CBGSpecialArt\"/>\n" +
         "</DocumentTypeModel>";
 
     try {

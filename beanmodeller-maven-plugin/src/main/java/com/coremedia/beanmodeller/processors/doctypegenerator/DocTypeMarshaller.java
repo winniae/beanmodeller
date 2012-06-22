@@ -17,6 +17,7 @@ import com.coremedia.schemabeans.Import;
 import com.coremedia.schemabeans.IndexablePropertyDescriptor;
 import com.coremedia.schemabeans.LinkListProperty;
 import com.coremedia.schemabeans.ObjectFactory;
+import com.coremedia.schemabeans.Propertydescriptor;
 import com.coremedia.schemabeans.StringProperty;
 import com.coremedia.schemabeans.XmlProperty;
 import com.coremedia.schemabeans.XmlSchema;
@@ -28,6 +29,7 @@ import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -178,7 +180,7 @@ public class DocTypeMarshaller extends MavenProcessor {
 
   private void getProperties(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
     for (ContentBeanInformation contentBeanInformation : sortedRootBeansInformation) {
-      extractProperties(contentBeanInformation);
+      extractProperties(contentBeanInformation, Collections.<PropertyInformation>emptySet());
     }
   }
 
@@ -299,7 +301,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     return docTypes;
   }
 
-  private void extractProperties(ContentBeanInformation contentBeanInformation) {
+  private void extractProperties(ContentBeanInformation contentBeanInformation, Set<? extends PropertyInformation> parentProperties) {
     // doctype or doctypeaspect
     DocType currentDocType = null;
     DocTypeAspect currentDocTypeAspect = null;
@@ -322,8 +324,32 @@ public class DocTypeMarshaller extends MavenProcessor {
     propertyInformationsSorted.addAll(contentBeanInformation.getProperties());
 
     for (PropertyInformation propertyInformation : propertyInformationsSorted) {
+
+      // filter out properties provided by parent, if is substantially different, override instead
+      boolean isOverride = false;
+      boolean skip = false;
+      for (PropertyInformation parentProperty : parentProperties) {
+        if (parentProperty.equals(propertyInformation)) {
+          skip = true;
+          break;
+        }
+        else if (parentProperty.getDocumentTypePropertyName().equals(propertyInformation.getDocumentTypePropertyName())) {
+          // names are the same, but method signature is different -> override
+          isOverride = true;
+          break;
+        }
+      }
+      if (skip) {
+        continue;
+      }
+
+
       // XML property descriptor to create
       Object element = createPropertyDescriptionFromPropertyInformation(propertyInformation);
+
+      if (isOverride) {
+        ((Propertydescriptor) element).setOverride(true);
+      }
 
       if (element != null) {
         // doctype or doctypeaspect
@@ -336,9 +362,14 @@ public class DocTypeMarshaller extends MavenProcessor {
       }
     }
 
+
+    // merge with parent properties, then pass on properties
+    if (!parentProperties.isEmpty()) {
+      propertyInformationsSorted.addAll(parentProperties);
+    }
     // recursive call for each child
     for (ContentBeanInformation contentBeanInformationChild : contentBeanInformation.getChilds()) {
-      extractProperties(contentBeanInformationChild);
+      extractProperties(contentBeanInformationChild, propertyInformationsSorted);
     }
   }
 

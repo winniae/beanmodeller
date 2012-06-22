@@ -29,10 +29,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Telekom .COM Relaunch 2011
@@ -72,7 +74,15 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
 
   private void generateClass(JPackage beanPackage, ContentBeanInformation bean, JCodeModel codeModel, Set<PropertyInformation> propertiesInTheHierarchySoFar) throws JClassAlreadyExistsException {
     //create a new Set of the accumulated properties of this class
-    Set<PropertyInformation> allMyProperties = new HashSet<PropertyInformation>(propertiesInTheHierarchySoFar);
+    // set the Set's comparator to compare by name only to avoid clashes with re-defined properties
+    Set<PropertyInformation> allMyProperties = new TreeSet<PropertyInformation>(new Comparator<PropertyInformation>() {
+      @Override
+      public int compare(PropertyInformation o1, PropertyInformation o2) {
+        return o1.getDocumentTypePropertyName().compareTo(o2.getDocumentTypePropertyName());
+      }
+    });
+    allMyProperties.addAll(propertiesInTheHierarchySoFar);
+
     //collect the properties defined in this class
     for (PropertyInformation property : bean.getProperties()) {
       allMyProperties.add(property);
