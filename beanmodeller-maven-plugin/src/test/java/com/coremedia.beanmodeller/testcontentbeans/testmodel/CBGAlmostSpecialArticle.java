@@ -6,6 +6,6 @@ package com.coremedia.beanmodeller.testcontentbeans.testmodel;
  * not a @ContentBean, but implements some interface...
  * just like traditional external contentbeans
  */
-public abstract class CBGAlmostSpecialArticle extends CBGArticle implements NoProperties {
+public abstract class CBGAlmostSpecialArticle<T extends CBGAlmostSpecialArticle> extends CBGArticle<T> implements NoProperties {
 
 }

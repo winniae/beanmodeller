@@ -1,6 +1,7 @@
 package com.coremedia.beanmodeller.testcontentbeans.testmodel;
 
 import com.coremedia.beanmodeller.annotations.ContentBean;
+import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.beanmodeller.testcontentbeans.externalmodel.ExternalArticleImpl;
 
 /**
@@ -11,7 +12,20 @@ import com.coremedia.beanmodeller.testcontentbeans.externalmodel.ExternalArticle
  * Must generate accessorizor method for Linkable.
  */
 @ContentBean(aspectDoctypeName = "CMArticle")
-public abstract class CBGArticle extends ExternalArticleImpl implements Linkable {
+public abstract class CBGArticle<T extends CBGArticle> extends ExternalArticleImpl implements Linkable, ArticleMaster {
 
   public abstract String getExternalId();
+
+
+
+    // make a method that is supposed to be casted to appropriate supertype, type is back-injected via generics...
+    // the catch comes with the Accessorizors that have to understand and generate generics code now
+    @ContentProperty(propertyName = "master")
+    protected abstract CBGArticle getMasterInternal();
+
+
+    @Override
+    public T getMaster() {
+        return (T) getMasterInternal();
+    }
 }

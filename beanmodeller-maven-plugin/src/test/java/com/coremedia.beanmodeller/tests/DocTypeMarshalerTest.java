@@ -73,6 +73,7 @@ public class DocTypeMarshalerTest {
         "        <IntProperty Name=\"disabled\"/>\n" +
         "        <StringProperty Length=\"32\" Name=\"externalId\"/>\n" +
         "        <StringProperty Length=\"128\" Name=\"linkUrl\"/>\n" +
+        "        <LinkListProperty Name=\"master\" Max=\"1\" Min=\"0\"/>\n" +
         "    </DocTypeAspect>\n" +
         "    <DocType Name=\"CBGSpecArticle\" Parent=\"CMArticle\">\n" +
         "        <LinkListProperty LinkType=\"CBGImage\" Name=\"images\" Max=\"2147483647\" Min=\"0\"/>\n" +

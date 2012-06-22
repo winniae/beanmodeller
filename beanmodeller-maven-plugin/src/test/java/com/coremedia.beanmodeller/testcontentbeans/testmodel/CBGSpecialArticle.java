@@ -10,7 +10,7 @@ import java.util.List;
  * Article that extends the standard CBGArticle which modified an external article via doctype aspects.
  */
 @ContentBean(doctypeName = "CBGSpecArticle")
-public abstract class CBGSpecialArticle extends CBGAlmostSpecialArticle {
+public abstract class CBGSpecialArticle<T extends CBGSpecialArticle> extends CBGAlmostSpecialArticle<T> implements SpecialArticleMaster {
 
   public abstract String getSpecialSensation();
 

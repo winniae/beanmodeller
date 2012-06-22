@@ -11,6 +11,7 @@ import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
 import com.coremedia.cap.content.Content;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JConditional;
@@ -84,8 +85,18 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       JDefinedClass beanClass = beanPackage._class(bean.getName() + IMPL_SUFFIX);
       //log what we are doing
       getLog().info("Generating accessorizer class " + beanClass.fullName() + " for " + parentClass.getCanonicalName());
-      //no null check since extends(null) leas to java.lang.Object
-      beanClass._extends(parentClass);
+
+      // set parent, check if it is a generic and set a type by "narrow"ing it
+      JClass parentBeanClass = beanPackage.owner().ref(parentClass);
+      if (parentClass.getTypeParameters().length > 0 &&
+          parentClass.getTypeParameters()[0].getBounds()[0] instanceof Class &&
+          ((Class) parentClass.getTypeParameters()[0].getBounds()[0]).isAssignableFrom(parentClass)
+          ) {
+        // assign self as parameterized class, for the pattern where we inject our type down the hierarchy via generics
+        parentBeanClass = parentBeanClass.narrow(parentClass);
+      }
+      beanClass._extends(parentBeanClass);
+
       //TODO this comment has to be better
       //add some javadoc
       JDocComment javaDoc = beanClass.javadoc();
