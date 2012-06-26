@@ -152,7 +152,14 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     javadoc.add("Getter for " + propertyInformation);
     //create the call to the content object returning th neccessary information
     //we need the basic getter call anyway
-    JInvocation getterCall = JExpr.invoke("getContent").invoke("get").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
+    JInvocation getterCall;
+    if (propertyInformation instanceof BlobPropertyInformation) {
+      // make an exception for blobs...
+      getterCall = JExpr.invoke("getContent").invoke("getBlobRef").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
+    }
+    else {
+      getterCall = JExpr.invoke("getContent").invoke("get").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
+    }
     //and we will have to return the correct type anyway
     JType returnType = codeModel.ref(methodReturnType);
     if ((propertyInformation instanceof StringPropertyInformation)
@@ -279,7 +286,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       modifiers |= JMod.PUBLIC;
     }
     //make it final - don't know if it is good for anything
-    modifiers |= JMod.FINAL;
+    // modifiers |= JMod.FINAL;
     return modifiers;
   }
 
