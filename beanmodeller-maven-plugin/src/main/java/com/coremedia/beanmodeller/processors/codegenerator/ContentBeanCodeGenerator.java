@@ -157,6 +157,10 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
       // make an exception for blobs...
       getterCall = JExpr.invoke("getContent").invoke("getBlobRef").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
     }
+    else if (propertyInformation instanceof MarkupPropertyInformation) {
+      // and another exception for Markup, there you go
+      getterCall = JExpr.invoke("getMarkup").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
+    }
     else {
       getterCall = JExpr.invoke("getContent").invoke("get").arg(JExpr.lit(propertyInformation.getDocumentTypePropertyName()));
     }
