@@ -317,7 +317,7 @@ public class DocTypeMarshaller extends MavenProcessor {
         new Comparator<PropertyInformation>() {
           @Override
           public int compare(PropertyInformation o1, PropertyInformation o2) {
-            return o1.getDocumentTypePropertyName().compareTo(o2.getDocumentTypePropertyName());
+            return o1.getDocumentTypePropertyName().compareToIgnoreCase(o2.getDocumentTypePropertyName());
           }
         });
 
@@ -334,9 +334,16 @@ public class DocTypeMarshaller extends MavenProcessor {
           break;
         }
         else if (parentProperty.getDocumentTypePropertyName().equals(propertyInformation.getDocumentTypePropertyName())) {
-          // names are the same, but method signature is different -> override
-          isOverride = true;
-          break;
+          // names are the same, but method signature is different
+          // -> override if not doctypeaspect, skip if it is one!
+          if (currentDocType != null) {
+            isOverride = true;
+            break;
+          }
+          else {
+            skip = true;
+            break;
+          }
         }
       }
       if (skip) {
@@ -348,7 +355,12 @@ public class DocTypeMarshaller extends MavenProcessor {
       Object element = createPropertyDescriptionFromPropertyInformation(propertyInformation);
 
       if (isOverride) {
-        ((Propertydescriptor) element).setOverride(true);
+        if (element instanceof JAXBElement) {
+          ((JAXBElement<? extends Propertydescriptor>) element).getValue().setOverride(true);
+        }
+        else {
+          ((Propertydescriptor) element).setOverride(true);
+        }
       }
 
       if (element != null) {

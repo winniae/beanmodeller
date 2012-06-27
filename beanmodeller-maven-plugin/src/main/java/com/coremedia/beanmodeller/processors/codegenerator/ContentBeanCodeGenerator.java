@@ -81,12 +81,14 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
         return o1.getDocumentTypePropertyName().compareTo(o2.getDocumentTypePropertyName());
       }
     });
-    allMyProperties.addAll(propertiesInTheHierarchySoFar);
 
     //collect the properties defined in this class
     for (PropertyInformation property : bean.getProperties()) {
       allMyProperties.add(property);
     }
+
+    allMyProperties.addAll(propertiesInTheHierarchySoFar);
+
     //we only generate classes for non abstract content beans
     if (!bean.isAbstract()) {
       //the content accessor class is derrived from the bean class
