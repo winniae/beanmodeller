@@ -85,7 +85,7 @@ public class ContentBeanLinkListPropertiesTest {
     }
     catch (ContentBeanAnalyzationException e) {
       exceptionWasThrown = true;
-      assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN));
+      assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE));
     }
 
     assertTrue("Exception should have been thrown.", exceptionWasThrown);

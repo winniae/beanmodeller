@@ -598,7 +598,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       }
       else {
-        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + listType);
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE + listType);
       }
 
       // find the ContentBeanInformation that represents this LinkType
@@ -614,7 +614,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
       // ## validate
       if (contentBeanInformationLinkType == null) {
-        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN + returnTypeLinkType);
+        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE + returnTypeLinkType);
       }
 
       linkListPropertyInformation.setLinkType(contentBeanInformationLinkType);
