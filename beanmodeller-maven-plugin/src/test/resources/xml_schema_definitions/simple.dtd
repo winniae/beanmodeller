@@ -1,0 +1,2 @@
+<!ELEMENT simple ( someProperty* )>
+<!ELEMENT someProperty ( #PCDATA )>

@@ -19,6 +19,7 @@ import com.coremedia.schemabeans.LinkListProperty;
 import com.coremedia.schemabeans.ObjectFactory;
 import com.coremedia.schemabeans.Propertydescriptor;
 import com.coremedia.schemabeans.StringProperty;
+import com.coremedia.schemabeans.XmlGrammar;
 import com.coremedia.schemabeans.XmlProperty;
 import com.coremedia.schemabeans.XmlSchema;
 
@@ -27,6 +28,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -50,6 +53,8 @@ import java.util.TreeSet;
 public class DocTypeMarshaller extends MavenProcessor {
 
   public static final String XML_SCHEMA_NAME = "http://www.w3.org/2001/XMLSchema";
+  private static final String CLASSPATH = "classpath:";
+  private static final String DTD_ELEMENT = "<!ELEMENT";
   private Set<ContentBeanInformation> rootBeanInformations = null;
   private ObjectFactory objectFactory = null;
   private OutputStream outputStream = null;
@@ -112,13 +117,65 @@ public class DocTypeMarshaller extends MavenProcessor {
     writeDocTypeModel(documentTypeModel);
   }
 
-  private void addGrammars(DocumentTypeModel documentTypeModel) {
-    List<Object> elements = documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType();
+  private void addGrammars(DocumentTypeModel documentTypeModel) throws DocTypeMarshallerException {
+    List<Object> headerElements = documentTypeModel.getXmlGrammarOrXmlSchemaOrImportDocType();
+
+    // sort all found GrammarInformations by name
     SortedSet<String> schemaNames = new TreeSet<String>();
     schemaNames.addAll(foundMarkupSchemaDefinitions.keySet());
-    List<XmlSchema> schemas = new LinkedList<XmlSchema>();
+
+    // iterate over all GrammarInformations and create xml objects for each
+    List<Object> schemaEntries = new LinkedList<Object>();
     for (String grammarName : schemaNames) {
-      GrammarInformation grammarInformation = foundMarkupSchemaDefinitions.get(grammarName);
+      Object schema = getXmlObjectForGrammarInformation(foundMarkupSchemaDefinitions.get(grammarName));
+      schemaEntries.add(schema);
+      schemaReferences.put(grammarName, schema);
+    }
+    // add all schema xml objects
+    headerElements.addAll(0, schemaEntries);
+
+    //adding the coremedia richtext grammar
+    Import importElement = objectFactory.createImport();
+    importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
+    headerElements.add(0, objectFactory.createImportGrammar(importElement));
+    schemaReferences.put(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME, importElement);
+  }
+
+  /**
+   * Return type is either XMLGrammar or XMLSchema
+   * @param grammarInformation
+   * @return
+   */
+  private Object getXmlObjectForGrammarInformation(GrammarInformation grammarInformation) throws DocTypeMarshallerException {
+    final String grammarName = grammarInformation.getGrammarName();
+    if (grammarName.endsWith(".dtd")) {
+      XmlGrammar grammar = objectFactory.createXmlGrammar();
+      grammar.setName(grammarName);
+      // strip .dtd
+
+      String plainname = grammarName.substring(0, grammarName.length()-4);
+
+      // just take the first.. can DTDs have a list?
+      String grammarLocation = grammarInformation.getGrammarLocations().get(0);
+      grammar.setSystemId(grammarLocation);
+
+      grammar.setPublicId("-//" + plainname + "//DTD//EN");
+
+      // read root node from actual content
+      String rootElement;
+      if (grammarLocation.startsWith(CLASSPATH)) {
+        grammarLocation = grammarLocation.substring("classpath:".length());
+      }
+      // find first ELEMENT from DTD and use that as root
+      final InputStream resoruceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(grammarLocation);
+      final Scanner scanner = new Scanner(resoruceStream);
+      rootElement = scanner.findWithinHorizon(DTD_ELEMENT + " \\w+ ",0).substring(DTD_ELEMENT.length()).trim();
+
+      grammar.setRoot(rootElement);
+
+      return grammar;
+    }
+    else if (grammarName.endsWith(".xsd")) {
       XmlSchema schema = objectFactory.createXmlSchema();
       schema.setName(grammarName);
       // create white space separated list of schema locations
@@ -128,16 +185,10 @@ public class DocTypeMarshaller extends MavenProcessor {
       }
       schema.setSchemaLocation(schemaLocations.toString().trim());
       schema.setLanguage(XML_SCHEMA_NAME);
-      //TODO we should als support public IDs via real internet URLS
-      schemas.add(schema);
-      schemaReferences.put(grammarName, schema);
+      return schema;
     }
-    elements.addAll(0, schemas);
-    //adding the coremedia richtext grammar
-    Import importElement = objectFactory.createImport();
-    importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
-    elements.add(0, objectFactory.createImportGrammar(importElement));
-    schemaReferences.put(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME, importElement);
+
+    throw new DocTypeMarshallerException("unrecognized XML schema "+grammarInformation);
   }
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {

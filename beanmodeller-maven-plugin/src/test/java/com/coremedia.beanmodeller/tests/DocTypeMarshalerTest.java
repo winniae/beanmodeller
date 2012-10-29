@@ -68,7 +68,8 @@ public class DocTypeMarshalerTest {
 
     String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
-        "    <XmlSchema Name=\"simple.xsd\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
+        "    <XmlGrammar Name=\"simple.dtd\" PublicId=\"-//simple//DTD//EN\" Root=\"simple\" SystemId=\"classpath:xml_schema_definitions/simple.dtd\"/>\n" +
+        "    <XmlSchema Name=\"simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\"/>\n" +
         "    <ImportDocType Name=\"CMArticle\"/>\n" +
         "    <ImportDocType Name=\"CBGSpecialArt\"/>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
@@ -78,6 +79,7 @@ public class DocTypeMarshalerTest {
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
         "        <DateProperty Name=\"beginDate\"/>\n" +
         "        <XmlProperty Grammar=\"simple.xsd\" Name=\"customXML\"/>\n" +
+        "        <XmlProperty Grammar=\"simple.dtd\" Name=\"customXML2\"/>\n" +
         "        <DateProperty Name=\"endDate\"/>\n" +
         "        <IntProperty Name=\"numberOfAttendees\"/>\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"organizer\" Max=\"1\" Min=\"0\"/>\n" +

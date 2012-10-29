@@ -45,6 +45,13 @@ public abstract class CBGAppointment extends CBGContent {
   @ContentProperty(propertyXmlGrammar = "classpath:xml_schema_definitions/simple.xsd")
   public abstract Markup getCustomXML();
 
+  /**
+   * A simple XML property to ensure that a custom dtd is used.
+   *
+   * @return the custom XML
+   */
+  @ContentProperty(propertyXmlGrammar = "classpath:xml_schema_definitions/simple.dtd")
+  public abstract Markup getCustomXML2();
 
   /**
    * @return Duration of Appointment in Milliseconds.
