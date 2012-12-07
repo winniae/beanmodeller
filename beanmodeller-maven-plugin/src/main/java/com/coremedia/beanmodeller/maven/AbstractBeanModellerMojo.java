@@ -40,6 +40,20 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
    */
   private int defaultPropertyStringLength;
 
+  /**
+   * Max length of property names to validate against.
+   *
+   * @parameter default-value=18
+   */
+  private int maxPropertyNameLength = ContentBeanAnalyzator.MAX_PROPERTY_LENGTH;
+
+  /**
+   * Max length of doctype names to validate against.
+   *
+   * @parameter default-value=15
+   */
+  private int maxDoctypeNameLength = ContentBeanAnalyzator.MAX_CONTENT_TYPE_LENGTH;
+
   private long startTime;
   private Long lastMeasurement = null;
 
@@ -50,6 +64,9 @@ public abstract class AbstractBeanModellerMojo extends AbstractMojo {
     analyzer.setLog(getLog());
     // set parameters
     analyzer.setPropertyDefaultStringLength(defaultPropertyStringLength);
+
+    analyzer.setMaxDoctypeNameLength(maxDoctypeNameLength);
+    analyzer.setMaxPropertyNameLength(maxPropertyNameLength);
 
     // start analyzation
     analyzer.findContentBeans(contentBeanPackage);

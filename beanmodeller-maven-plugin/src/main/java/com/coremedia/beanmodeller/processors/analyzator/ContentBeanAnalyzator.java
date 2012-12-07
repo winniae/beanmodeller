@@ -56,6 +56,10 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   // TODO 18 is only true for Oracle! MySQL for instance allows more chars.
   public static final int MAX_PROPERTY_LENGTH = 18;
 
+  // now configurable
+  private int maxDoctypeNameLength = MAX_CONTENT_TYPE_LENGTH;
+  private int maxPropertyNameLength = MAX_PROPERTY_LENGTH;
+
   private static final ContentBeanInformation PROPERTY_DEFAULT_LINKLIST_TYPE = EmptyContentBeanInformation.getInstance();
 
   // this map is used during analyzation to track methods to consider as content bean properties, which is used later
@@ -306,9 +310,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     String documentTypePropertyName = getDocumentTypePropertyNameFromMethod(method);
     // VALIDATE
     //check if the property name name is too long
-    if (documentTypePropertyName.length() > MAX_PROPERTY_LENGTH) {
+    if (documentTypePropertyName.length() > maxPropertyNameLength) {
       potentialException.addError(currentClass, documentTypePropertyName, ContentBeanAnalyzationException.METHODNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + "max is " +
-          MAX_PROPERTY_LENGTH);
+              maxPropertyNameLength);
       //we ignore this method
       return true;
     }
@@ -421,9 +425,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
 
       //check if the doctpye name name is too long
-      if (docTypeName.length() > MAX_CONTENT_TYPE_LENGTH) {
+      if (docTypeName.length() > maxDoctypeNameLength) {
         potentialException.addError(classToAnalyze, ContentBeanAnalyzationException.CLASSNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + classToAnalyze.getCanonicalName()
-            + " (the name \'" + docTypeName + "\' is " + docTypeName.length() + " - max is " + MAX_CONTENT_TYPE_LENGTH + ").");
+            + " (the name \'" + docTypeName + "\' is " + docTypeName.length() + " - max is " + maxDoctypeNameLength + ").");
         // and ignore property
         break;
       }
@@ -856,5 +860,21 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
   public void setPropertyDefaultMarkupGrammar(String propertyDefaultMarkupGrammar) {
     this.propertyDefaultMarkupGrammar = propertyDefaultMarkupGrammar;
+  }
+
+  public int getMaxDoctypeNameLength() {
+    return maxDoctypeNameLength;
+  }
+
+  public void setMaxDoctypeNameLength(int maxDoctypeNameLength) {
+    this.maxDoctypeNameLength = maxDoctypeNameLength;
+  }
+
+  public int getMaxPropertyNameLength() {
+    return maxPropertyNameLength;
+  }
+
+  public void setMaxPropertyNameLength(int maxPropertyNameLength) {
+    this.maxPropertyNameLength = maxPropertyNameLength;
   }
 }
