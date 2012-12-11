@@ -77,4 +77,9 @@ public final class EmptyContentBeanInformation implements ContentBeanInformation
   public String getAspectDocumentName() {
     return null;
   }
+
+  @Override
+  public Set<CacheKeyableMethodInformation> getCacheKeyables() {
+    return Collections.EMPTY_SET;
+  }
 }

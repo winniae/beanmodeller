@@ -1,5 +1,6 @@
 package com.coremedia.beanmodeller.testcontentbeans.testmodel;
 
+import com.coremedia.beanmodeller.annotations.CacheKeyable;
 import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.beanmodeller.testcontentbeans.externalmodel.ExternalArticleImpl;
@@ -29,5 +30,10 @@ public abstract class CBGArticle<T extends CBGArticle> extends ExternalArticleIm
   @Override
   public T getMaster() {
     return (T) getMasterInternal();
+  }
+
+  @CacheKeyable
+  public String getSomeMethodToCache() {
+    return "I am the cachest!.";
   }
 }

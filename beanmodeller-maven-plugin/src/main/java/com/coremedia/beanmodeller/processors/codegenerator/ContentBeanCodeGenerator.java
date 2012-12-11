@@ -2,6 +2,7 @@ package com.coremedia.beanmodeller.processors.codegenerator;
 
 import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.BooleanPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.CacheKeyableMethodInformation;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.DatePropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.IntegerPropertyInformation;
@@ -10,6 +11,8 @@ import com.coremedia.beanmodeller.beaninformation.MarkupPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.PropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.StringPropertyInformation;
 import com.coremedia.beanmodeller.processors.MavenProcessor;
+import com.coremedia.cache.Cache;
+import com.coremedia.cache.CacheKey;
 import com.coremedia.cap.content.Content;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JClassAlreadyExistsException;
@@ -18,6 +21,7 @@ import com.sun.codemodel.JConditional;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JDocComment;
 import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
@@ -125,6 +129,10 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
         }
       }
 
+      // generate CacheKeys for CacheKeyables
+      for (CacheKeyableMethodInformation cacheKeyableMethodInformation : bean.getCacheKeyables()) {
+        generateCacheKeyMethod(beanClass, cacheKeyableMethodInformation, codeModel);
+      }
     }
     else {
       getLog().info(bean.getContentBean().getCanonicalName() + " is an abstract document - no accessorizer is generated");
@@ -145,7 +153,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     }
 
     //construct the correct modifiers
-    int modifiers = getModifiersForPropertyMethod(method);
+    int modifiers = getModifiersForMethod(method);
     //create the method
     JMethod propertyMethod = beanClass.method(modifiers, methodReturnType, method.getName());
     //TODO this comment has to be better
@@ -200,7 +208,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     }
 
     //construct the correct modifiers
-    int modifiers = getModifiersForPropertyMethod(method);
+    int modifiers = getModifiersForMethod(method);
     //create the method
     // strip name of 'get' or 'is' and add setter
     final String methodName = method.getName().startsWith("is") ? method.getName().substring(2) : method.getName().substring(3);
@@ -278,7 +286,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     }
   }
 
-  private int getModifiersForPropertyMethod(Method method) {
+  private int getModifiersForMethod(Method method) {
     //construct the correct modifiers
     int modifiers = 0;
     int abstractMethodModifiers = method.getModifiers();
@@ -295,6 +303,59 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     // modifiers |= JMod.FINAL;
     return modifiers;
   }
+
+
+  private void generateCacheKeyMethod(JDefinedClass beanClass, CacheKeyableMethodInformation cacheKeyableMethodInformation, JCodeModel codeModel) throws JClassAlreadyExistsException {
+    //we will use this quite often
+    Method method = cacheKeyableMethodInformation.getMethod();
+    Class<?> methodReturnType = method.getReturnType();
+
+    if (getLog().isDebugEnabled()) {
+      getLog().debug("Generating cached method for " + method.toString());
+    }
+
+    String shortMethodName = method.getName().startsWith("is") ? method.getName().substring(2) : method.getName().substring(3);
+
+    // !! create Uncached methodcall
+    JMethod uncachedMethod = beanClass.method(JMod.PROTECTED, methodReturnType, method.getName() + "Uncached");
+    uncachedMethod.body()._return(JExpr._super().invoke(method.getName()));
+
+
+    // !! create CacheKey calling uncached method
+    JDefinedClass cacheKeyClass = beanClass._class(shortMethodName + "CacheKey");
+    cacheKeyClass._extends(CacheKey.class);
+    JFieldVar delegateField = cacheKeyClass.field(JMod.PRIVATE | JMod.FINAL, beanClass, "delegate");
+    JMethod constructor = cacheKeyClass.constructor(JMod.PUBLIC);
+    JVar delegateParam = constructor.param(beanClass, "delegate");
+    constructor.body().assign(JExpr._this().ref(delegateField), delegateParam);
+    JMethod evaluate = cacheKeyClass.method(JMod.PUBLIC, Object.class, "evaluate");
+    evaluate.param(Cache.class, "cache");
+    evaluate._throws(Exception.class);
+    evaluate.body()._return(JExpr._this().ref(delegateField).invoke(uncachedMethod));
+
+    JMethod hashCode = cacheKeyClass.method(JMod.PUBLIC, codeModel.INT, "hashCode");
+    hashCode.body()._return(JExpr._this().ref(delegateField).invoke("hashCode"));
+    JMethod equals = cacheKeyClass.method(JMod.PUBLIC, codeModel.BOOLEAN, "equals");
+    JVar o = equals.param(Object.class, "o");
+    equals.body()._return(JExpr._this().ref(delegateField).invoke("equals").arg(o));
+
+    JMethod cacheClass = cacheKeyClass.method(JMod.PUBLIC, String.class, "cacheClass");
+    cacheClass.param(Cache.class, "cache");
+    cacheClass.param(Object.class, "value");
+    cacheClass.body()._return(JExpr.lit("beanmodeller.cacheclass"));
+
+    // !! overwrite the method to be cached
+    //construct the correct modifiers
+    int modifiers = getModifiersForMethod(method);
+    //create the method
+    JMethod cachedMethod = beanClass.method(modifiers, methodReturnType, method.getName());
+
+    JVar cacheKey = cachedMethod.body().decl(cacheKeyClass, "cacheKey", JExpr._new(cacheKeyClass).arg(JExpr._this()));
+    JInvocation cacheCall = JExpr.invoke("getContent").invoke("getRepository").invoke("getConnection").invoke("getCache").invoke("get").arg(cacheKey);
+    cachedMethod.body()._return(JExpr.cast(codeModel.ref(methodReturnType), cacheCall));
+  }
+
+
 
   public String getPackageName() {
     return packageName;

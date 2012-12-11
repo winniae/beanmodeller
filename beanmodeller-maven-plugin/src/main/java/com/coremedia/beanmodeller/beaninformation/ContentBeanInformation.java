@@ -73,4 +73,10 @@ public interface ContentBeanInformation {
    * @return empty if contentbean is generated with the BeanModeller
    */
   public String getAspectDocumentName();
+
+  /**
+   * Any method of this bean that should be cached with a CacheKey
+   * @return Set of all methods to generate CacheKeys for.
+   */
+  Set<CacheKeyableMethodInformation> getCacheKeyables();
 }

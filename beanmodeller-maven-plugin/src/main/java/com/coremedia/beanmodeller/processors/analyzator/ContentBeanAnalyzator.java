@@ -1,11 +1,13 @@
 package com.coremedia.beanmodeller.processors.analyzator;
 
+import com.coremedia.beanmodeller.annotations.CacheKeyable;
 import com.coremedia.beanmodeller.annotations.ContentBean;
 import com.coremedia.beanmodeller.annotations.ContentProperty;
 import com.coremedia.beanmodeller.beaninformation.AbstractPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.AnalyzatorContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.BlobPropertyInformation;
 import com.coremedia.beanmodeller.beaninformation.BooleanPropertyInformation;
+import com.coremedia.beanmodeller.beaninformation.CacheKeyableMethodInformation;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanHierarchy;
 import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.beaninformation.DatePropertyInformation;
@@ -144,6 +146,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     extractDocTypeBasicInformation(potentialException, hierarchy);
 
     extractDocProperties(potentialException, hierarchy);
+
+    extractCacheKeyables(potentialException, hierarchy);
 
     //have there been errors in the analyzation?
     if (potentialException.hasErrors()) {
@@ -843,6 +847,21 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     }
 
     return false;
+  }
+
+
+  private void extractCacheKeyables(ContentBeanAnalyzationException potentialException, ContentBeanHierarchy hierarchy) {
+
+    for (ContentBeanInformation contentBeanInformation : hierarchy.getAllContentBeanInformation()) {
+      Class contentBean = contentBeanInformation.getContentBean();
+
+      for (Method method : contentBean.getMethods()) {
+        CacheKeyable methodAnnotation = method.getAnnotation(CacheKeyable.class);
+        if (methodAnnotation != null) {
+          ((AnalyzatorContentBeanInformation) contentBeanInformation).addCacheKeyable(new CacheKeyableMethodInformation(method));
+        }
+      }
+    }
   }
 
 

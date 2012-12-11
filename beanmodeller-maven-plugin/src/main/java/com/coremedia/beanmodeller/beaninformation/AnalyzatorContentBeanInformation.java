@@ -16,6 +16,7 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
   private ContentBeanInformation parent;
   private Set<ContentBeanInformation> childs = new HashSet<ContentBeanInformation>();
   private Set<PropertyInformation> properties = new HashSet<PropertyInformation>();
+  private Set<CacheKeyableMethodInformation> cacheKeyables = new HashSet<CacheKeyableMethodInformation>();
 
   public AnalyzatorContentBeanInformation(Class beanClass) {
     this.contentBean = beanClass;
@@ -50,6 +51,11 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
   @Override
   public Set<? extends PropertyInformation> getProperties() {
     return properties;
+  }
+
+  @Override
+  public Set<CacheKeyableMethodInformation> getCacheKeyables() {
+    return cacheKeyables;
   }
 
   public void setParent(AnalyzatorContentBeanInformation parent) {
@@ -92,6 +98,10 @@ public class AnalyzatorContentBeanInformation implements ContentBeanInformation 
 
   public void addProperty(PropertyInformation propertyInformation) {
     properties.add(propertyInformation);
+  }
+
+  public void addCacheKeyable(CacheKeyableMethodInformation cacheKeyableMethodInformation) {
+    cacheKeyables.add(cacheKeyableMethodInformation);
   }
 
   @Override
