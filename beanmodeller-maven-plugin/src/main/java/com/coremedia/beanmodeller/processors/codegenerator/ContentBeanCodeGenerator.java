@@ -337,7 +337,8 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     hashCode.body()._return(JExpr._this().ref(delegateField).invoke("hashCode"));
     JMethod equals = cacheKeyClass.method(JMod.PUBLIC, codeModel.BOOLEAN, "equals");
     JVar o = equals.param(Object.class, "o");
-    equals.body()._return(JExpr._this().ref(delegateField).invoke("equals").arg(o));
+    JVar other = equals.body().decl(cacheKeyClass, "other", JExpr.cast(cacheKeyClass, o));
+    equals.body()._return(JExpr._this().ref(delegateField).invoke("equals").arg(other.ref(delegateField)));
 
     JMethod cacheClass = cacheKeyClass.method(JMod.PUBLIC, String.class, "cacheClass");
     cacheClass.param(Cache.class, "cache");
