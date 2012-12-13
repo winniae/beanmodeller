@@ -600,10 +600,15 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         returnTypeLinkType = (Class) listType;
       }
       else if (listType instanceof WildcardType) {
-        // whoo, still quite optimistic cast!?
+        // whoo, still quite optimistic cast!? -> now guarded ...
         // this handles cases like public abstract List<? extends CBGImage> getImages();
-        returnTypeLinkType = (Class) ((WildcardType) listType).getUpperBounds()[0];
-
+        Type type = ((WildcardType) listType).getUpperBounds()[0];
+        if (type instanceof Class) {
+          returnTypeLinkType = (Class) type;
+        }
+        else {
+          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE + listType + ". Is it a generic?");
+        }
       }
       else {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE + listType);
