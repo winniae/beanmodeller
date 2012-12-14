@@ -66,7 +66,7 @@ public class DocTypeMarshalerTest {
   public void testMarshalerBasic() {
     OutputStream os = marshalToOutputStream();
 
-    String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"telekom-document-type\">\n" +
+    String expectedXML = "<DocumentTypeModel xmlns=\"http://www.coremedia.com/2009/documenttypes\" Title=\"beanmodeller-document-type\">\n" +
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlGrammar Name=\"simple.dtd\" PublicId=\"-//simple//DTD//EN\" Root=\"simple\" SystemId=\"classpath:xml_schema_definitions/simple.dtd\"/>\n" +
         "    <XmlSchema Name=\"simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\"/>\n" +

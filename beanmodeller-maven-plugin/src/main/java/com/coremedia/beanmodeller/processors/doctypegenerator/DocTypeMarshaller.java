@@ -67,6 +67,11 @@ public class DocTypeMarshaller extends MavenProcessor {
   private Map<String, Object> knownDoctypes = new HashMap<String, Object>();
 
   /**
+   * title of the doctype.xml, purely cosmetic
+   */
+  private String doctypeTitle = "beanmodeller-document-type";
+
+    /**
    * @param rootBeanInformations Set of RootBeanInformation objects whose hierarchies must be marshaled
    */
   public DocTypeMarshaller(Set<ContentBeanInformation> rootBeanInformations, OutputStream outputStream) {
@@ -99,8 +104,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     getLog().info("Creating doctype XML");
 
     DocumentTypeModel documentTypeModel = objectFactory.createDocumentTypeModel();
-    //TODO this should be a parameter or something
-    documentTypeModel.setTitle("telekom-document-type");
+    documentTypeModel.setTitle(doctypeTitle);
 
     SortedSet<ContentBeanInformation> sortedRootBeansInformation = getSortedRootBeanInformation();
 
@@ -516,4 +520,12 @@ public class DocTypeMarshaller extends MavenProcessor {
   public Map<String, GrammarInformation> getFoundMarkupSchemaDefinitions() {
     return foundMarkupSchemaDefinitions;
   }
+
+  public String getDoctypeTitle() {
+    return doctypeTitle;
+  }
+
+    public void setDoctypeTitle(String doctypeTitle) {
+        this.doctypeTitle = doctypeTitle;
+    }
 }

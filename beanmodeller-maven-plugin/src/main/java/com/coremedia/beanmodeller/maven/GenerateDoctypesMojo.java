@@ -47,6 +47,13 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
    */
   private String xsdTargetPath;
 
+  /**
+   * Title of the generated doctypes.xml, purely cosmetic
+   *
+   * @parameter default-value="beanmodeller-document-type"
+   */
+  private String doctypeTitle;
+
   public static final String ERROR_CREATING_TARGET_FILE = "Error creating file ";
 
   public void execute() throws MojoExecutionException, MojoFailureException {
@@ -66,6 +73,7 @@ public class GenerateDoctypesMojo extends AbstractBeanModellerMojo {
         OutputStream doctypeXMLOutputStream = new FileOutputStream(destFile);
         marshaller = new DocTypeMarshaller(rootBeanInformations, doctypeXMLOutputStream);
         marshaller.setLog(getLog());
+        marshaller.setDoctypeTitle(doctypeTitle);
         marshaller.marshallDoctype();
       }
       catch (FileNotFoundException e) {
