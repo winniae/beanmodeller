@@ -168,7 +168,7 @@ public class ContentBeanPropertiesTest {
     }
     catch (ContentBeanAnalyzationException e) {
       exceptionThrown = true;
-      assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE));
+      assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE));
     }
     assertTrue(exceptionThrown);
   }

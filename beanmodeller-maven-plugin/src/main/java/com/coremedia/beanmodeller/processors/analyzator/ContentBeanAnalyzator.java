@@ -266,7 +266,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
       else if (!hasValidReturnType) {
         getLog().error("Added potential exception for invalid return type for " + contentBean + " " + method);
-        potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
       }
       else {
         methodIsContentBeanMethod = true;
@@ -302,7 +302,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       // methods must have specific return types
     }
     else if (!hasValidReturnType) {
-      potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+      potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
     }
     else {
       methodIsContentBeanMethod = true;
