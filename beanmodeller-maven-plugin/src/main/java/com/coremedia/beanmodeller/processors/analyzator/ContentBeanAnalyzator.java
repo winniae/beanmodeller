@@ -234,7 +234,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     for (Method method : findDeclaredMethods(currentClass, contentBean)) {
       ContentProperty methodAnnotation = method.getAnnotation(ContentProperty.class);
       boolean isValidPropertyMethod = isValidPropertyMethod(method);
-      boolean hasValidReturnType = hasValidReturnType(method, hierarchy);
+      MethodReturnTypeResult hasValidReturnType = hasValidReturnType(method, hierarchy);
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
         methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType, methodAnnotation);
@@ -254,7 +254,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
 
   private boolean analyzeNotAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Method method, boolean validPropertyMethod,
-                                            boolean hasValidReturnType) {
+                                            MethodReturnTypeResult hasValidReturnType) {
     boolean methodIsContentBeanMethod = false;
     //we want to look at abstract methods only
     if (Modifier.isAbstract(method.getModifiers())) {
@@ -264,9 +264,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         getLog().info("Method " + method + " has been ignored since it is no valid property method" +
             ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
       }
-      else if (!hasValidReturnType) {
-        getLog().error("Added potential exception for invalid return type for " + contentBean + " " + method);
-        potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+      else if (!hasValidReturnType.equals(MethodReturnTypeResult.OK)) {
+          if (hasValidReturnType.equals(MethodReturnTypeResult.PRIMITIVE)) {
+              potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+          } else if (hasValidReturnType.equals(MethodReturnTypeResult.NO_CONTENT_BEAN)) {
+              potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+          }
       }
       else {
         methodIsContentBeanMethod = true;
@@ -279,7 +282,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   }
 
   private boolean analyzeAnnotatedMethod(ContentBeanAnalyzationException potentialException, Class contentBean, Class currentClass, boolean isContentBean, Method method,
-                                         boolean validPropertyMethod, boolean hasValidReturnType, ContentProperty methodAnnotation) {
+                                         boolean validPropertyMethod, MethodReturnTypeResult hasValidReturnType, ContentProperty methodAnnotation) {
     boolean methodIsContentBeanMethod = false;
     //bean properties only in content beans
     if (!isContentBean) {
@@ -301,8 +304,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       );
       // methods must have specific return types
     }
-    else if (!hasValidReturnType) {
-      potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+    else if (!hasValidReturnType.equals(MethodReturnTypeResult.OK)) {
+      if (hasValidReturnType.equals(MethodReturnTypeResult.PRIMITIVE)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+      } else if (hasValidReturnType.equals(MethodReturnTypeResult.NO_CONTENT_BEAN)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+      }
     }
     else {
       methodIsContentBeanMethod = true;
@@ -776,14 +783,16 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     return true;
   }
 
-  private boolean hasValidReturnType(Method method, ContentBeanHierarchy hierarchy) {
+  private MethodReturnTypeResult hasValidReturnType(Method method, ContentBeanHierarchy hierarchy) {
     final Class<?> returnType = method.getReturnType();
 
-    return !returnType.isPrimitive()
-        && (VALID_METHOD_RETURN_TYPES.contains(returnType)
-        || hierarchy.getAllFoundContentBeans().contains(returnType));
+    if (returnType.isPrimitive()) {
+      return MethodReturnTypeResult.PRIMITIVE;
+    } else if (!VALID_METHOD_RETURN_TYPES.contains(returnType) && !hierarchy.getAllFoundContentBeans().contains(returnType)){
+      return MethodReturnTypeResult.NO_CONTENT_BEAN;
+    }
+    return MethodReturnTypeResult.OK;
   }
-
 
   private Collection<Method> findDeclaredMethods(Class currentClass, Class latestContentBean) {
     // it's a set to filter duplicates

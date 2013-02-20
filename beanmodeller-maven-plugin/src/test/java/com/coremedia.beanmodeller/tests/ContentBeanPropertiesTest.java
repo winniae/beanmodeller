@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -169,6 +170,7 @@ public class ContentBeanPropertiesTest {
     }
     catch (ContentBeanAnalyzationException e) {
       exceptionThrown = true;
+      assertFalse(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE));
       assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE));
     }
     assertTrue(exceptionThrown);
@@ -184,6 +186,7 @@ public class ContentBeanPropertiesTest {
       catch (ContentBeanAnalyzationException e) {
           exceptionThrown = true;
           assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE));
+          assertFalse(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE));
       }
       assertTrue(exceptionThrown);
   }
