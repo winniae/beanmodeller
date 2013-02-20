@@ -11,6 +11,7 @@ import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationEx
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
 import com.coremedia.beanmodeller.testcontentbeans.CBGContentBeanInWreckedHierarchy;
+import com.coremedia.beanmodeller.testcontentbeans.CBGUsesInvalidObjects;
 import com.coremedia.beanmodeller.testcontentbeans.CBGUsesPrimitives;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
@@ -171,6 +172,20 @@ public class ContentBeanPropertiesTest {
       assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE));
     }
     assertTrue(exceptionThrown);
+  }
+
+  @Test
+  public void testNonContentBeanType() {
+      contentBeanAnalyzator.addContentBean(CBGUsesInvalidObjects.class);
+      boolean exceptionThrown = false;
+      try {
+          contentBeanAnalyzator.analyzeContentBeanInformation();
+      }
+      catch (ContentBeanAnalyzationException e) {
+          exceptionThrown = true;
+          assertTrue(BeanModellerTestUtils.analyzationErrorContainsMessage(e, ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE));
+      }
+      assertTrue(exceptionThrown);
   }
 
   @Test
