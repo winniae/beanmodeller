@@ -5,31 +5,34 @@ import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
+import com.coremedia.beanmodeller.processors.codegenerator.ContentBeanCodeGenerator;
 import com.coremedia.beanmodeller.testcontentbeans.*;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;
+import com.sun.codemodel.CodeWriter;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.writer.SingleStreamCodeWriter;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isOneOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * This test the class hierarchy of the content beans, i.e., check parent child relationships of content beans
  */
 public class ContentBeanHierarchyTest {
 
-  ContentBeanAnalyzator analyzator = null;
+    private static final String TEST_PACKAGE_NAME = "com.coremedia.beanmodeller.tests.beans";
+    ContentBeanAnalyzator analyzator = null;
   ContentBeanInformation rootBeanInformation = null;
   ContentBeanInformation childBeanInformation = null;
   Set<ContentBeanInformation> rootBeanInformationSet = null;
@@ -101,14 +104,26 @@ public class ContentBeanHierarchyTest {
   }
 
   @Test
-  public void testMiddleBean() {
+  public void testMiddleBean() throws IOException {
     analyzator.addContentBean(CBGHBaseBean.class);
     analyzator.addContentBean(CBGHMiddleBean.class);
     analyzator.addContentBean(CBGHNearlyEndBean.class);
     analyzator.addContentBean(CBGHEndBean.class);
     try {
         ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
+        Set<ContentBeanInformation> roots = hierarchy.getRootBeanInformation();
+
+        ContentBeanCodeGenerator codegenerator = new ContentBeanCodeGenerator();
+        codegenerator.setPackageName(TEST_PACKAGE_NAME);
+        assertNotNull(roots);
+        assertFalse(roots.isEmpty());
+        JCodeModel code = codegenerator.generateCode(roots);
+        CodeWriter output = new SingleStreamCodeWriter(System.out);
+        code.build(output);
+
     } catch (ContentBeanAnalyzationException e) {
+        System.out.println("this should not happen");
+        e.printStackTrace();
         fail();
     }
   }

@@ -26,6 +26,7 @@ import com.coremedia.xml.Markup;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -287,7 +288,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     //bean properties only in content beans
     if (!isContentBean) {
       potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
-          "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is marked as bean property but the class is no content bean");
+          "In bean '" + currentClass.getCanonicalName() + "' the method '" + method.getName() + "' is marked as bean property but the class is no content bean");
       //bean properties must be abstract
     }
     else if (methodAnnotation.thisAintOne()) {
@@ -299,7 +300,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     }
     else if (!validPropertyMethod) {
       potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
-          "In bean " + currentClass.getCanonicalName() + "the method " + method.getName() + " is not valid." +
+          "In bean '" + currentClass.getCanonicalName() + "' the method '" + method.getName() + "' is not valid." +
           ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
       );
       // methods must have specific return types
@@ -767,18 +768,29 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     // - start with "get" or "is"
     // - have no parameters
     if (!Modifier.isAbstract(method.getModifiers())) {
+      getLog().debug(method+" is not abstract, not considered");
       return false;
     }
     if (!Modifier.isProtected(method.getModifiers()) && !Modifier.isPublic(method.getModifiers())) {
+      getLog().debug(method+" is not protected or public, not considered");
       return false;
     }
     boolean isBoolean = Boolean.class.isAssignableFrom(method.getReturnType());
     String methodPrefix = (isBoolean) ? "is" : "get";
     if (!(method.getName().startsWith(methodPrefix))) {
+      getLog().debug(method+" is boolean but does not start with 'is' or 'get', not considered");
       return false;
     }
     if (method.getParameterTypes().length > 0) {
+      getLog().debug(method+" has parameters, not considered");
       return false;
+    }
+    Class<?> declaringClass = method.getDeclaringClass();
+    if (!declaringClass.isInterface()) {
+        if (declaringClass.getAnnotation(ContentBean.class)==null) {
+            getLog().debug(method+" declaring class is no content bean, not considered");
+            return false;
+        }
     }
     return true;
   }

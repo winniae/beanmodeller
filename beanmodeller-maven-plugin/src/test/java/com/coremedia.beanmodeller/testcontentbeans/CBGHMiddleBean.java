@@ -1,5 +1,6 @@
 package com.coremedia.beanmodeller.testcontentbeans;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ public abstract class CBGHMiddleBean extends CBGHBaseBean {
      * a test method for an allowed abstract method
      * @return
      */
-    public abstract Integer thisMethodIsNoBeanMethod();
+    public abstract Integer getThisMethodIsNoBeanMethod();
 
-    public abstract Map thisMethodIsNoBeanMethodToo();
+    public abstract Map<String, List> getThisMethodIsNoBeanMethodToo();
 }

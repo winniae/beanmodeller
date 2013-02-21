@@ -21,7 +21,7 @@ public class ContentBeanAnalyzationException extends ContentBeanAnalyzatorIntern
   public static final String STRING_PROPERTY_TOO_SHORT_MESSAGE = "String property must have a positive length, but is: ";
   public static final String PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE = "Method return type could not be mapped to a property type :";
   public static final String INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE = "Property type invalid! Thou shalt not use primitive data types like int or boolean. Allowed types include content beans and ";
-  public static final String INVALID_OBJECT_RETURN_TYPES_MESSAGE = "Property type invalid! Thou shalt not use objects which are not supported or content beans. Allowed types include content beans and ";
+  public static final String INVALID_OBJECT_RETURN_TYPES_MESSAGE = "Property type invalid! Thou shalt not use objects which are not supported or no content beans. Allowed types include content beans and ";
   public static final String SCHEMA_DEFINITION_NOT_FOUND_MESSAGE = "The schema definition could not be found: ";
   public static final String LINKED_DOCTYPE_UNKNOWN_MESSAGE = "A referenced document type is not part of the defined ContentBeans: ";
   public static final String VALID_METHOD_HINTS_MESSAGE = "\nKeep in mind it has to be abstract, without parameters and either public or protected.";
