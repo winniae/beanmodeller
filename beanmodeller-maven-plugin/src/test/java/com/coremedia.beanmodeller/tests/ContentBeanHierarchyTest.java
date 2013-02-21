@@ -5,11 +5,12 @@ import com.coremedia.beanmodeller.beaninformation.ContentBeanInformation;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzationException;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzator;
 import com.coremedia.beanmodeller.processors.analyzator.ContentBeanAnalyzatorInternalException;
-import com.coremedia.beanmodeller.testcontentbeans.CBGContentBeanInWreckedHierarchy;
+import com.coremedia.beanmodeller.testcontentbeans.*;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAppointment;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGAttendee;
 import com.coremedia.beanmodeller.testcontentbeans.testmodel.CBGContent;
 import com.coremedia.beanmodeller.testutils.BeanModellerTestUtils;
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,6 +98,19 @@ public class ContentBeanHierarchyTest {
     analyzator.addContentBean(CBGContent.class);
     analyzator.addContentBean(CBGAttendee.class);
     checkChildParentRelationship();
+  }
+
+  @Test
+  public void testMiddleBean() {
+    analyzator.addContentBean(CBGHBaseBean.class);
+    analyzator.addContentBean(CBGHMiddleBean.class);
+    analyzator.addContentBean(CBGHNearlyEndBean.class);
+    analyzator.addContentBean(CBGHEndBean.class);
+    try {
+        ContentBeanHierarchy hierarchy = analyzator.analyzeContentBeanInformation();
+    } catch (ContentBeanAnalyzationException e) {
+        fail();
+    }
   }
 
   /**
