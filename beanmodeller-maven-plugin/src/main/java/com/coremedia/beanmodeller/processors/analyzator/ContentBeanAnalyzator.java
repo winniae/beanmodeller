@@ -26,7 +26,6 @@ import com.coremedia.xml.Markup;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -86,6 +85,13 @@ public class ContentBeanAnalyzator extends MavenProcessor {
   private String propertyDefaultMarkupGrammar = MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME;
   private int propertyDefaultLinkListMin = 0;
   private int propertyDefaultLinkListMax = Integer.MAX_VALUE;
+
+  // todo make it configurable via maven plugin property settings
+  private List<String> knownGrammars = new LinkedList<String>();
+  {
+    knownGrammars.add(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
+    knownGrammars.add(MarkupPropertyInformation.COREMEDIA_STRUCT_GRAMMAR_NAME);
+  }
 
   /**
    * <p>Finds all candidate content beans that reside in a "packageName". Call this method
@@ -239,8 +245,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       boolean methodIsContentBeanMethod = false;
       if (methodAnnotation != null) {
         methodIsContentBeanMethod = analyzeAnnotatedMethod(potentialException, contentBean, currentClass, isContentBean, method, isValidPropertyMethod, hasValidReturnType, methodAnnotation);
-      }
-      else {
+      } else {
         methodIsContentBeanMethod = analyzeNotAnnotatedMethod(potentialException, contentBean, method, isValidPropertyMethod, hasValidReturnType);
       }
 
@@ -263,20 +268,17 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       // don't be so strict.. if it passes "isValidPropertyMethod" then "hasValidReturnType" must pass too, though.
       if (!validPropertyMethod) {
         getLog().info("Method " + method + " has been ignored since it is no valid property method" +
-            ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
-      }
-      else if (!hasValidReturnType.equals(MethodReturnTypeResult.OK)) {
-          if (hasValidReturnType.equals(MethodReturnTypeResult.PRIMITIVE)) {
-              potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
-          } else if (hasValidReturnType.equals(MethodReturnTypeResult.NO_CONTENT_BEAN)) {
-              potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
-          }
-      }
-      else {
+                ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE);
+      } else if (!hasValidReturnType.equals(MethodReturnTypeResult.OK)) {
+        if (hasValidReturnType.equals(MethodReturnTypeResult.PRIMITIVE)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        } else if (hasValidReturnType.equals(MethodReturnTypeResult.NO_CONTENT_BEAN)) {
+          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        }
+      } else {
         methodIsContentBeanMethod = true;
       }
-    }
-    else {
+    } else {
       getLog().debug("Method " + method.getName() + " has been ignored since only abstract methods are considered.");
     }
     return methodIsContentBeanMethod;
@@ -288,31 +290,27 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     //bean properties only in content beans
     if (!isContentBean) {
       potentialException.addError(contentBean, ContentBeanAnalyzationException.PROPERTY_NOT_IN_CB_MESSAGE +
-          "In bean '" + currentClass.getCanonicalName() + "' the method '" + method.getName() + "' is marked as bean property but the class is no content bean");
+              "In bean '" + currentClass.getCanonicalName() + "' the method '" + method.getName() + "' is marked as bean property but the class is no content bean");
       //bean properties must be abstract
-    }
-    else if (methodAnnotation.thisAintOne()) {
+    } else if (methodAnnotation.thisAintOne()) {
       // this ain't definately no property method
       if (getLog().isDebugEnabled()) {
         getLog().debug(method + " is marked as not a ContentProperty explicitly");
       }
       return false;
-    }
-    else if (!validPropertyMethod) {
+    } else if (!validPropertyMethod) {
       potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PROPERTY_MESSAGE +
-          "In bean '" + currentClass.getCanonicalName() + "' the method '" + method.getName() + "' is not valid." +
-          ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
+              "In bean '" + currentClass.getCanonicalName() + "' the method '" + method.getName() + "' is not valid." +
+              ContentBeanAnalyzationException.VALID_METHOD_HINTS_MESSAGE
       );
       // methods must have specific return types
-    }
-    else if (!hasValidReturnType.equals(MethodReturnTypeResult.OK)) {
+    } else if (!hasValidReturnType.equals(MethodReturnTypeResult.OK)) {
       if (hasValidReturnType.equals(MethodReturnTypeResult.PRIMITIVE)) {
-          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_PRIMITIVE_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
       } else if (hasValidReturnType.equals(MethodReturnTypeResult.NO_CONTENT_BEAN)) {
-          potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
+        potentialException.addError(contentBean, method.getName(), ContentBeanAnalyzationException.INVALID_OBJECT_RETURN_TYPES_MESSAGE + VALID_METHOD_RETURN_TYPES);
       }
-    }
-    else {
+    } else {
       methodIsContentBeanMethod = true;
     }
     return methodIsContentBeanMethod;
@@ -421,14 +419,12 @@ public class ContentBeanAnalyzator extends MavenProcessor {
         if (getLog().isDebugEnabled()) {
           getLog().debug("Using annotation name " + docTypeName + " as content type name for " + classToAnalyze.getCanonicalName() + ".");
         }
-      }
-      else if (isAspectDoctype) {
+      } else if (isAspectDoctype) {
         docTypeName = beanAnnotation.aspectDoctypeName();
         if (getLog().isDebugEnabled()) {
           getLog().debug("Using annotation name " + docTypeName + " as aspect content type name for " + classToAnalyze.getCanonicalName() + ".");
         }
-      }
-      else /*if (!isDoctype && !isAspectDoctype)*/ {
+      } else /*if (!isDoctype && !isAspectDoctype)*/ {
         // neither is set
         docTypeName = classToAnalyze.getSimpleName();
         if (getLog().isDebugEnabled()) {
@@ -439,7 +435,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       //check if the doctpye name name is too long
       if (docTypeName.length() > maxDoctypeNameLength) {
         potentialException.addError(classToAnalyze, ContentBeanAnalyzationException.CLASSNAME_TOO_LOGN_FOR_DOCTPYENAME_MESSAGE + classToAnalyze.getCanonicalName()
-            + " (the name \'" + docTypeName + "\' is " + docTypeName.length() + " - max is " + maxDoctypeNameLength + ").");
+                + " (the name \'" + docTypeName + "\' is " + docTypeName.length() + " - max is " + maxDoctypeNameLength + ").");
         // and ignore property
         break;
       }
@@ -447,8 +443,8 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       Class otherClass = foundDocTypeNames.get(docTypeName);
       if (otherClass != null) {
         potentialException.addError(classToAnalyze, ContentBeanAnalyzationException.DUPLICATE_DOCTYPE_NAMES_MESSAGE
-            + classToAnalyze.getCanonicalName() + " and " + otherClass.getCanonicalName()
-            + " use both " + docTypeName + " as document type name");
+                + classToAnalyze.getCanonicalName() + " and " + otherClass.getCanonicalName()
+                + " use both " + docTypeName + " as document type name");
         //and ignore this property
         break;
       }
@@ -488,8 +484,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
           try {
             propertyInformation = getPropertyInformationForMethod(method, hierarchy);
-          }
-          catch (ContentBeanAnalyzatorInternalException e) {
+          } catch (ContentBeanAnalyzatorInternalException e) {
             potentialException.addError(classToAnalyze, documentTypePropertyName, e.getMessage());
 
             // don't include this method in result
@@ -499,7 +494,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
           // POST CHECK
           if (propertyInformation instanceof UnknownPropertyInformation) {
             potentialException.addError(classToAnalyze, documentTypePropertyName, ContentBeanAnalyzationException.PROPERTY_RETURN_TYPE_UNKNOWN_MESSAGE + method
-                .getReturnType());
+                    .getReturnType());
 
             // don't include this method in result
             break;
@@ -527,29 +522,21 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     final Class<?> returnType = method.getReturnType();
     if (returnType.equals(Integer.class)) {
       return new IntegerPropertyInformation(method);
-    }
-    else if (returnType.equals(Boolean.class)) {
+    } else if (returnType.equals(Boolean.class)) {
       return new BooleanPropertyInformation(method);
-    }
-    else if (returnType.equals(Calendar.class) || returnType.equals(Date.class)) {
+    } else if (returnType.equals(Calendar.class) || returnType.equals(Date.class)) {
       return new DatePropertyInformation(method);
-    }
-    else if (returnType.equals(Markup.class)) {
+    } else if (returnType.equals(Markup.class)) {
       return getMarkupPropertyInformation(method);
-    }
-    else if (returnType.equals(String.class)) {
+    } else if (returnType.equals(String.class)) {
       return getStringPropertyInformation(method);
-    }
-    else if (returnType.equals(List.class)) {
+    } else if (returnType.equals(List.class)) {
       return getLinkListPropertyInformation(method, hierarchy);
-    }
-    else if (hierarchy.getAllFoundContentBeans().contains(returnType)) {
+    } else if (hierarchy.getAllFoundContentBeans().contains(returnType)) {
       return getLinkListPropertyInformationSingle(method, (AnalyzatorContentBeanInformation) hierarchy.getContentBeanInformation(returnType));
-    }
-    else if (returnType.equals(Blob.class)) {
+    } else if (returnType.equals(Blob.class)) {
       return getBlobPropertyInformation(method);
-    }
-    else {
+    } else {
       // default
       return new UnknownPropertyInformation(method);
     }
@@ -560,10 +547,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     String mimeTypeName = (annotation != null) ? annotation.propertyBlobMimeType() : ContentProperty.BLOB_PROPERTY_DEFAULT_MIME_TYPE;
     try {
       MimeType mimetype = new MimeType(mimeTypeName); //NOSONAR - this is a test if it is a proper mime type
-    }
-    catch (MimeTypeParseException e) {
+    } catch (MimeTypeParseException e) {
       throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.INVALID_MIME_TYPE_MESSAGE + mimeTypeName + " is not a valid mime type (it should " +
-          "have the pattern X/Y", e);
+              "have the pattern X/Y", e);
     }
 
     BlobPropertyInformation blobPropertyInformation = new BlobPropertyInformation(method);
@@ -606,19 +592,16 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
       if (listType instanceof Class) {
         returnTypeLinkType = (Class) listType;
-      }
-      else if (listType instanceof WildcardType) {
+      } else if (listType instanceof WildcardType) {
         // whoo, still quite optimistic cast!? -> now guarded ...
         // this handles cases like public abstract List<? extends CBGImage> getImages();
         Type type = ((WildcardType) listType).getUpperBounds()[0];
         if (type instanceof Class) {
           returnTypeLinkType = (Class) type;
-        }
-        else {
+        } else {
           throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE + listType + ". Is it a generic?");
         }
-      }
-      else {
+      } else {
         throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.LINKED_DOCTYPE_UNKNOWN_MESSAGE + listType);
       }
 
@@ -639,8 +622,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
 
       linkListPropertyInformation.setLinkType(contentBeanInformationLinkType);
-    }
-    else {
+    } else {
       // no explicit type for linktype given -> use the default
       linkListPropertyInformation.setLinkType(PROPERTY_DEFAULT_LINKLIST_TYPE);
     }
@@ -657,8 +639,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     if (methodAnnotation == null || methodAnnotation.stringLength() == ContentProperty.STRING_PROPERTY_DEFAULT_LENGTH) {
       // use property default value
       stringLength = getPropertyDefaultStringLength();
-    }
-    else {
+    } else {
       // it is defined and not the "marker default", use that value then, of course
       stringLength = methodAnnotation.stringLength();
     }
@@ -698,27 +679,31 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       URL grammarURL;
       String grammarLocation = null;
 
+      if (knownGrammars.contains(grammarName)) {
+        // leave url blank and continue
+        grammarURL = null;
+      }
       // distinguish between classpath and http locations
-      if (grammarName.startsWith("classpath:")) {
-        String grammarSource = grammarName.substring("classpath:".length());
-        // get URL just like com.coremedia.io.ResourceLoader (line 119) gets it
-        grammarURL = Thread.currentThread().getContextClassLoader().getResource(grammarSource);
-        grammarLocation = grammarName;
-        if (grammarName.contains("/")) { // get plain grammar name without any path information
-          grammarName = grammarName.substring(grammarName.lastIndexOf('/') + 1);
-        }
-      }
       else {
-        try {
-          grammarURL = new URL(grammarName);
+        if (grammarName.startsWith("classpath:")) {
+          String grammarSource = grammarName.substring("classpath:".length());
+          // get URL just like com.coremedia.io.ResourceLoader (line 119) gets it
+          grammarURL = Thread.currentThread().getContextClassLoader().getResource(grammarSource);
+          grammarLocation = grammarName;
+          if (grammarName.contains("/")) { // get plain grammar name without any path information
+            grammarName = grammarName.substring(grammarName.lastIndexOf('/') + 1);
+          }
+        } else {
+          try {
+            grammarURL = new URL(grammarName);
+          } catch (MalformedURLException e) {
+            throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable " +
+                    "as URL", e);
+          }
         }
-        catch (MalformedURLException e) {
-          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName + ". It is not decodable " +
-              "as URL", e);
+        if (grammarURL == null) {
+          throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
         }
-      }
-      if (grammarURL == null) {
-        throw new ContentBeanAnalyzatorInternalException(ContentBeanAnalyzationException.SCHEMA_DEFINITION_NOT_FOUND_MESSAGE + grammarName);
       }
 
       // set GrammarName and URL only for the first Grammar specified
@@ -728,7 +713,9 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       }
 
       // add location for all given Schemas
-      grammarInformation.addGrammarLocation(grammarLocation);
+      if (grammarLocation != null) {
+        grammarInformation.addGrammarLocation(grammarLocation);
+      }
     }
 
     //only add grammar information for no default grammars.
@@ -768,29 +755,29 @@ public class ContentBeanAnalyzator extends MavenProcessor {
     // - start with "get" or "is"
     // - have no parameters
     if (!Modifier.isAbstract(method.getModifiers())) {
-      getLog().debug(method+" is not abstract, not considered");
+      getLog().debug(method + " is not abstract, not considered");
       return false;
     }
     if (!Modifier.isProtected(method.getModifiers()) && !Modifier.isPublic(method.getModifiers())) {
-      getLog().debug(method+" is not protected or public, not considered");
+      getLog().debug(method + " is not protected or public, not considered");
       return false;
     }
     boolean isBoolean = Boolean.class.isAssignableFrom(method.getReturnType());
     String methodPrefix = (isBoolean) ? "is" : "get";
     if (!(method.getName().startsWith(methodPrefix))) {
-      getLog().debug(method+" is boolean but does not start with 'is' or 'get', not considered");
+      getLog().debug(method + " is boolean but does not start with 'is' or 'get', not considered");
       return false;
     }
     if (method.getParameterTypes().length > 0) {
-      getLog().debug(method+" has parameters, not considered");
+      getLog().debug(method + " has parameters, not considered");
       return false;
     }
     Class<?> declaringClass = method.getDeclaringClass();
     if (!declaringClass.isInterface()) {
-        if (declaringClass.getAnnotation(ContentBean.class)==null) {
-            getLog().debug(method+" declaring class is no content bean, not considered");
-            return false;
-        }
+      if (declaringClass.getAnnotation(ContentBean.class) == null) {
+        getLog().debug(method + " declaring class is no content bean, not considered");
+        return false;
+      }
     }
     return true;
   }
@@ -800,7 +787,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
 
     if (returnType.isPrimitive()) {
       return MethodReturnTypeResult.PRIMITIVE;
-    } else if (!VALID_METHOD_RETURN_TYPES.contains(returnType) && !hierarchy.getAllFoundContentBeans().contains(returnType)){
+    } else if (!VALID_METHOD_RETURN_TYPES.contains(returnType) && !hierarchy.getAllFoundContentBeans().contains(returnType)) {
       return MethodReturnTypeResult.NO_CONTENT_BEAN;
     }
     return MethodReturnTypeResult.OK;

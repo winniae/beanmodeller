@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 public class MarkupPropertyInformation extends AbstractPropertyInformation {
 
   public static final String COREMEDIA_RICHTEXT_GRAMMAR_NAME = "coremedia-richtext-1.0";
+  public static final String COREMEDIA_STRUCT_GRAMMAR_NAME = "coremedia-struct-2008";
 
   private GrammarInformation grammarInformation = null;
 

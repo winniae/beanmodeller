@@ -53,6 +53,12 @@ public abstract class CBGAppointment extends CBGContent {
   @ContentProperty(propertyXmlGrammar = "classpath:xml_schema_definitions/simple.dtd")
   public abstract Markup getCustomXML2();
 
+  @ContentProperty(propertyXmlGrammar = "coremedia-richtext-1.0")
+  public abstract Markup getCustomRichtext();
+
+  @ContentProperty(propertyXmlGrammar = "coremedia-struct-2008")
+  public abstract Markup getCustomStruct();
+
   /**
    * @return Duration of Appointment in Milliseconds.
    */

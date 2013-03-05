@@ -71,7 +71,7 @@ public class DocTypeMarshaller extends MavenProcessor {
    */
   private String doctypeTitle = "beanmodeller-document-type";
 
-    /**
+  /**
    * @param rootBeanInformations Set of RootBeanInformation objects whose hierarchies must be marshaled
    */
   public DocTypeMarshaller(Set<ContentBeanInformation> rootBeanInformations, OutputStream outputStream) {
@@ -132,21 +132,33 @@ public class DocTypeMarshaller extends MavenProcessor {
     List<Object> schemaEntries = new LinkedList<Object>();
     for (String grammarName : schemaNames) {
       Object schema = getXmlObjectForGrammarInformation(foundMarkupSchemaDefinitions.get(grammarName));
-      schemaEntries.add(schema);
-      schemaReferences.put(grammarName, schema);
+      if (schema != null) {
+        schemaEntries.add(schema);
+        schemaReferences.put(grammarName, schema);
+      }
+      else {
+        // adding as import (e.g. the coremedia richtext grammar)
+        Import importElement = objectFactory.createImport();
+        importElement.setName(grammarName);
+        headerElements.add(0, objectFactory.createImportGrammar(importElement));
+        schemaReferences.put(grammarName, importElement);
+      }
     }
     // add all schema xml objects
     headerElements.addAll(0, schemaEntries);
 
-    //adding the coremedia richtext grammar
-    Import importElement = objectFactory.createImport();
-    importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
-    headerElements.add(0, objectFactory.createImportGrammar(importElement));
-    schemaReferences.put(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME, importElement);
+    //adding the coremedia richtext grammar, if not there already
+    if (!schemaReferences.containsKey(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME)) {
+      Import importElement = objectFactory.createImport();
+      importElement.setName(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
+      headerElements.add(0, objectFactory.createImportGrammar(importElement));
+      schemaReferences.put(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME, importElement);
+    }
   }
 
   /**
    * Return type is either XMLGrammar or XMLSchema
+   *
    * @param grammarInformation
    * @return
    */
@@ -157,7 +169,7 @@ public class DocTypeMarshaller extends MavenProcessor {
       grammar.setName(grammarName);
       // strip .dtd
 
-      String plainname = grammarName.substring(0, grammarName.length()-4);
+      String plainname = grammarName.substring(0, grammarName.length() - 4);
 
       // just take the first.. can DTDs have a list?
       String grammarLocation = grammarInformation.getGrammarLocations().get(0);
@@ -173,13 +185,12 @@ public class DocTypeMarshaller extends MavenProcessor {
       // find first ELEMENT from DTD and use that as root
       final InputStream resoruceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(grammarLocation);
       final Scanner scanner = new Scanner(resoruceStream);
-      rootElement = scanner.findWithinHorizon(DTD_ELEMENT + " \\w+ ",0).substring(DTD_ELEMENT.length()).trim();
+      rootElement = scanner.findWithinHorizon(DTD_ELEMENT + " \\w+ ", 0).substring(DTD_ELEMENT.length()).trim();
 
       grammar.setRoot(rootElement);
 
       return grammar;
-    }
-    else if (grammarName.endsWith(".xsd")) {
+    } else if (grammarName.endsWith(".xsd")) {
       XmlSchema schema = objectFactory.createXmlSchema();
       schema.setName(grammarName);
       // create white space separated list of schema locations
@@ -190,9 +201,13 @@ public class DocTypeMarshaller extends MavenProcessor {
       schema.setSchemaLocation(schemaLocations.toString().trim());
       schema.setLanguage(XML_SCHEMA_NAME);
       return schema;
+    } else {
+      // adding as import (e.g. the coremedia richtext grammar)
+      // mark with null ...
+      return null;
     }
 
-    throw new DocTypeMarshallerException("unrecognized XML schema "+grammarInformation);
+//    throw new DocTypeMarshallerException("unrecognized XML schema "+grammarInformation);
   }
 
   private void getGrammars(SortedSet<ContentBeanInformation> sortedRootBeansInformation) {
@@ -248,12 +263,12 @@ public class DocTypeMarshaller extends MavenProcessor {
 
   private SortedSet<ContentBeanInformation> getSortedRootBeanInformation() {
     SortedSet<ContentBeanInformation> sortedRootBeansInformation = new TreeSet<ContentBeanInformation>(
-        new Comparator<ContentBeanInformation>() {
-          @Override
-          public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
-            return o1.getDocumentName().compareTo(o2.getDocumentName());
-          }
-        });
+            new Comparator<ContentBeanInformation>() {
+              @Override
+              public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
+                return o1.getDocumentName().compareTo(o2.getDocumentName());
+              }
+            });
     sortedRootBeansInformation.addAll(rootBeanInformations);
     return sortedRootBeansInformation;
   }
@@ -270,16 +285,13 @@ public class DocTypeMarshaller extends MavenProcessor {
       Marshaller m = jc.createMarshaller();
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
       m.marshal(documentTypeModel, this.outputStream);
-    }
-    catch (JAXBException e) {
+    } catch (JAXBException e) {
       throw new DocTypeMarshallerException("unable to write the doctypes xml", e);
-    }
-    finally {
+    } finally {
       try {
         this.outputStream.flush();
         this.outputStream.close();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         throw new DocTypeMarshallerException("unable to write the doctypes xml", e);
       }
     }
@@ -311,8 +323,7 @@ public class DocTypeMarshaller extends MavenProcessor {
       knownDoctypes.put(doctypeImportReference.getName(), currentDocTypeAspect);
       currentDoc = currentDocTypeAspect;
       newParentDoc = doctypeImportReference;
-    }
-    else {
+    } else {
       // ContentBeanInformation contains information for a one DocType
       DocType currentDocType = objectFactory.createDocType();
       currentDocType.setName(contentBeanInformation.getDocumentName());
@@ -339,12 +350,12 @@ public class DocTypeMarshaller extends MavenProcessor {
 
     // add children recursively to docTypes
     SortedSet<ContentBeanInformation> childBeanInformationsSorted = new TreeSet<ContentBeanInformation>(
-        new Comparator<ContentBeanInformation>() {
-          @Override
-          public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
-            return o1.getDocumentName().compareTo(o2.getDocumentName());
-          }
-        });
+            new Comparator<ContentBeanInformation>() {
+              @Override
+              public int compare(ContentBeanInformation o1, ContentBeanInformation o2) {
+                return o1.getDocumentName().compareTo(o2.getDocumentName());
+              }
+            });
 
     childBeanInformationsSorted.addAll(contentBeanInformation.getChilds());
 
@@ -362,19 +373,18 @@ public class DocTypeMarshaller extends MavenProcessor {
     DocTypeAspect currentDocTypeAspect = null;
     if (!contentBeanInformation.getAspectDocumentName().equals(ContentBean.DOC_TYPE_ASPECT_DISABLED)) {
       currentDocTypeAspect = (DocTypeAspect) knownDoctypes.get(contentBeanInformation.getAspectDocumentName());
-    }
-    else {
+    } else {
       currentDocType = (DocType) knownDoctypes.get(contentBeanInformation.getDocumentName());
     }
 
     // add Properties
     SortedSet<PropertyInformation> propertyInformationsSorted = new TreeSet<PropertyInformation>(
-        new Comparator<PropertyInformation>() {
-          @Override
-          public int compare(PropertyInformation o1, PropertyInformation o2) {
-            return o1.getDocumentTypePropertyName().compareToIgnoreCase(o2.getDocumentTypePropertyName());
-          }
-        });
+            new Comparator<PropertyInformation>() {
+              @Override
+              public int compare(PropertyInformation o1, PropertyInformation o2) {
+                return o1.getDocumentTypePropertyName().compareToIgnoreCase(o2.getDocumentTypePropertyName());
+              }
+            });
 
     propertyInformationsSorted.addAll(contentBeanInformation.getProperties());
 
@@ -387,15 +397,13 @@ public class DocTypeMarshaller extends MavenProcessor {
         if (parentProperty.equals(propertyInformation)) {
           skip = true;
           break;
-        }
-        else if (parentProperty.getDocumentTypePropertyName().equals(propertyInformation.getDocumentTypePropertyName())) {
+        } else if (parentProperty.getDocumentTypePropertyName().equals(propertyInformation.getDocumentTypePropertyName())) {
           // names are the same, but method signature is different
           // -> override if not doctypeaspect, skip if it is one!
           if (currentDocType != null) {
             isOverride = true;
             break;
-          }
-          else {
+          } else {
             skip = true;
             break;
           }
@@ -412,8 +420,7 @@ public class DocTypeMarshaller extends MavenProcessor {
       if (isOverride) {
         if (element instanceof JAXBElement) {
           ((JAXBElement<? extends Propertydescriptor>) element).getValue().setOverride(true);
-        }
-        else {
+        } else {
           ((Propertydescriptor) element).setOverride(true);
         }
       }
@@ -422,8 +429,7 @@ public class DocTypeMarshaller extends MavenProcessor {
         // doctype or doctypeaspect
         if (currentDocType != null) {
           currentDocType.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
-        }
-        else {
+        } else {
           currentDocTypeAspect.getBlobPropertyOrDatePropertyOrIntProperty().add(element);
         }
       }
@@ -490,8 +496,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     if (grammarInformation != null) {
       // get only the first grammar
       xmlProperty.setGrammar(grammarInformation.getGrammarName());
-    }
-    else {
+    } else {
       xmlProperty.setGrammar(MarkupPropertyInformation.COREMEDIA_RICHTEXT_GRAMMAR_NAME);
     }
     //rewrite the grammar object to it's reference
@@ -525,7 +530,7 @@ public class DocTypeMarshaller extends MavenProcessor {
     return doctypeTitle;
   }
 
-    public void setDoctypeTitle(String doctypeTitle) {
-        this.doctypeTitle = doctypeTitle;
-    }
+  public void setDoctypeTitle(String doctypeTitle) {
+    this.doctypeTitle = doctypeTitle;
+  }
 }

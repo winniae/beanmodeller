@@ -70,6 +70,7 @@ public class DocTypeMarshalerTest {
         "    <ImportGrammar Name=\"coremedia-richtext-1.0\"/>\n" +
         "    <XmlGrammar Name=\"simple.dtd\" PublicId=\"-//simple//DTD//EN\" Root=\"simple\" SystemId=\"classpath:xml_schema_definitions/simple.dtd\"/>\n" +
         "    <XmlSchema Name=\"simple.xsd\" Language=\"http://www.w3.org/2001/XMLSchema\" SchemaLocation=\"classpath:xml_schema_definitions/simple.xsd\"/>\n" +
+        "    <ImportGrammar Name=\"coremedia-struct-2008\"/>\n" +
         "    <ImportDocType Name=\"CMArticle\"/>\n" +
         "    <ImportDocType Name=\"CBGSpecialArt\"/>\n" +
         "    <DocType Name=\"CBGContent\" Abstract=\"true\">\n" +
@@ -78,6 +79,8 @@ public class DocTypeMarshalerTest {
         "    <DocType Name=\"CBGAppointment\" Parent=\"CBGContent\">\n" +
         "        <LinkListProperty LinkType=\"CBGAttendee\" Name=\"attendees\" Max=\"" + Integer.MAX_VALUE + "\" Min=\"0\"/>\n" +
         "        <DateProperty Name=\"beginDate\"/>\n" +
+        "        <XmlProperty Grammar=\"coremedia-richtext-1.0\" Name=\"customRichtext\"/>\n" +
+        "        <XmlProperty Grammar=\"coremedia-struct-2008\" Name=\"customStruct\"/>\n" +
         "        <XmlProperty Grammar=\"simple.xsd\" Name=\"customXML\"/>\n" +
         "        <XmlProperty Grammar=\"simple.dtd\" Name=\"customXML2\"/>\n" +
         "        <DateProperty Name=\"endDate\"/>\n" +
