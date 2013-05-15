@@ -14,4 +14,11 @@ import java.lang.annotation.Target;
 @Target(value = {ElementType.METHOD})
 public @interface CacheKeyable {
 
+    String CACHECLASS_DEFAULT = "beanmodeller.cacheclass";
+
+    /**
+     * The cacheclass to associate with the generated CacheKey
+     * @return the name of the cacheclass. default to "beanmodeller.cacheclass"
+     */
+    String cacheClass() default CACHECLASS_DEFAULT;
 }

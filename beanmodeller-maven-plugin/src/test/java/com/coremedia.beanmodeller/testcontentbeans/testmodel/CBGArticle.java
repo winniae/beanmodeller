@@ -36,4 +36,9 @@ public abstract class CBGArticle<T extends CBGArticle> extends ExternalArticleIm
   public String getSomeMethodToCache() {
     return "I am the cachest!.";
   }
+
+  @CacheKeyable(cacheClass = "mycacheclass")
+  public String getSomeMethodToCache2() {
+    return "I am the cachest of the mycacheclass!.";
+  }
 }

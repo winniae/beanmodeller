@@ -871,7 +871,7 @@ public class ContentBeanAnalyzator extends MavenProcessor {
       for (Method method : contentBean.getMethods()) {
         CacheKeyable methodAnnotation = method.getAnnotation(CacheKeyable.class);
         if (methodAnnotation != null) {
-          ((AnalyzatorContentBeanInformation) contentBeanInformation).addCacheKeyable(new CacheKeyableMethodInformation(method));
+          ((AnalyzatorContentBeanInformation) contentBeanInformation).addCacheKeyable(new CacheKeyableMethodInformation(method, methodAnnotation.cacheClass()));
         }
       }
     }

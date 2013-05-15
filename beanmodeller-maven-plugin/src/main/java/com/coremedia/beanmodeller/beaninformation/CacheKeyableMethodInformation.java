@@ -8,13 +8,19 @@ import java.lang.reflect.Method;
 public class CacheKeyableMethodInformation {
 
   private final Method method;
+  private final String cacheClass;
 
-  public CacheKeyableMethodInformation(Method method) {
+  public CacheKeyableMethodInformation(Method method, String cacheClass) {
 
     this.method = method;
+    this.cacheClass = cacheClass;
   }
 
   public Method getMethod() {
     return method;
+  }
+
+  public String getCacheClass() {
+    return cacheClass;
   }
 }

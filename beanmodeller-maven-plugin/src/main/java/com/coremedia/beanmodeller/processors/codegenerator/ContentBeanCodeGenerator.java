@@ -348,7 +348,7 @@ public class ContentBeanCodeGenerator extends MavenProcessor {
     JMethod cacheClass = cacheKeyClass.method(JMod.PUBLIC, String.class, "cacheClass");
     cacheClass.param(Cache.class, "cache");
     cacheClass.param(Object.class, "value");
-    cacheClass.body()._return(JExpr.lit("beanmodeller.cacheclass"));
+    cacheClass.body()._return(JExpr.lit(cacheKeyableMethodInformation.getCacheClass()));
 
     // !! overwrite the method to be cached
     //construct the correct modifiers
